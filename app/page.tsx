@@ -12,11 +12,27 @@ export default function Home() {
   const [easterEgg, setEasterEgg] = useState(false);
   const [konami, setKonami] = useState<string[]>([]);
   const [secretUnlocked, setSecretUnlocked] = useState(false);
-  const [soundEnabled, setSoundEnabled] = useState(false);
+  const [soundEnabled, setSoundEnabled] = useState(true);
   const [quote, setQuote] = useState(0);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const particleIdRef = useRef(0);
   const audioContextRef = useRef<AudioContext | null>(null);
+
+  // NEW: Single-screen engagement states
+  const [holdProgress, setHoldProgress] = useState(0);
+  const [isHolding, setIsHolding] = useState(false);
+  const [achievements, setAchievements] = useState<Array<{ id: number; text: string }>>([]);
+  const [bgHue] = useState(230);
+  const [comboCount, setComboCount] = useState(0);
+  const [lastTapTime, setLastTapTime] = useState(0);
+  const [tiltX, setTiltX] = useState(0);
+  const [tiltY, setTiltY] = useState(0);
+  const [shakeCount, setShakeCount] = useState(0);
+
+  const holdTimerRef = useRef<number | null>(null);
+  const comboTimerRef = useRef<number | null>(null);
+  const achievementIdRef = useRef(0);
+  const lastShakeTime = useRef(0);
 
   const quotes = [
     'Building the future, one line at a time',
@@ -63,6 +79,171 @@ export default function Home() {
     oscillator.stop(ctx.currentTime + duration);
   };
 
+  // Achievement system
+  const addAchievement = (text: string) => {
+    const id = achievementIdRef.current++;
+    setAchievements(prev => [...prev, { id, text }]);
+    playSound(800, 0.3);
+    setTimeout(() => {
+      setAchievements(prev => prev.filter(a => a.id !== id));
+    }, 3000);
+  };
+
+  // NEW: Shake detection
+  useEffect(() => {
+    let lastX = 0,
+      lastY = 0,
+      lastZ = 0;
+
+    const handleMotion = (e: DeviceMotionEvent) => {
+      const acc = e.accelerationIncludingGravity;
+      if (!acc || !acc.x || !acc.y || !acc.z) return;
+
+      const deltaX = Math.abs(acc.x - lastX);
+      const deltaY = Math.abs(acc.y - lastY);
+      const deltaZ = Math.abs(acc.z - lastZ);
+
+      if (deltaX + deltaY + deltaZ > 30) {
+        const now = Date.now();
+        if (now - lastShakeTime.current > 1000) {
+          lastShakeTime.current = now;
+          handleShake();
+        }
+      }
+
+      lastX = acc.x;
+      lastY = acc.y;
+      lastZ = acc.z;
+    };
+
+    window.addEventListener('devicemotion', handleMotion);
+    return () => window.removeEventListener('devicemotion', handleMotion);
+  }, []);
+
+  const handleShake = () => {
+    const newShakeCount = shakeCount + 1;
+    setShakeCount(newShakeCount);
+
+    // Trigger confetti explosion
+    const centerX = window.innerWidth / 2;
+    const centerY = window.innerHeight / 2;
+
+    for (let i = 0; i < 20; i++) {
+      const angle = (Math.PI * 2 * i) / 20;
+      const distance = 100;
+      const x = centerX + Math.cos(angle) * distance;
+      const y = centerY + Math.sin(angle) * distance;
+
+      const id = particleIdRef.current++;
+      const emojis = ['✨', '⭐', '💫', '🌟', '💥', '🎉', '🎊', '🔥'];
+      setParticles(prev => [
+        ...prev,
+        {
+          id,
+          x,
+          y,
+          emoji: emojis[Math.floor(Math.random() * emojis.length)],
+        },
+      ]);
+
+      setTimeout(() => {
+        setParticles(prev => prev.filter(p => p.id !== id));
+      }, 1500);
+    }
+
+    playSound(600 + newShakeCount * 100, 0.5);
+
+    if (newShakeCount === 1) {
+      addAchievement('🎉 Shake Master! Keep shaking!');
+    } else if (newShakeCount === 5) {
+      addAchievement('💪 Earthquake Mode Activated!');
+    }
+
+    // Vibrate if supported
+    if (navigator.vibrate) {
+      navigator.vibrate([50, 100, 50]);
+    }
+  };
+
+  // NEW: Device tilt (gyroscope)
+  useEffect(() => {
+    const handleOrientation = (e: DeviceOrientationEvent) => {
+      if (e.beta && e.gamma) {
+        // Beta is front-to-back tilt (-180 to 180)
+        // Gamma is left-to-right tilt (-90 to 90)
+        setTiltX(e.gamma / 90); // Normalize to -1 to 1
+        setTiltY(e.beta / 180);
+      }
+    };
+
+    window.addEventListener('deviceorientation', handleOrientation);
+    return () => window.removeEventListener('deviceorientation', handleOrientation);
+  }, []);
+
+  // NEW: Hold to charge mechanism
+  const handlePressStart = (e: React.MouseEvent | React.TouchEvent) => {
+    e.preventDefault();
+    setIsHolding(true);
+
+    let progress = 0;
+    holdTimerRef.current = window.setInterval(() => {
+      progress += 2;
+      setHoldProgress(progress);
+
+      if (progress >= 100) {
+        handleChargeComplete();
+        if (holdTimerRef.current) clearInterval(holdTimerRef.current);
+      }
+    }, 20);
+  };
+
+  const handlePressEnd = () => {
+    setIsHolding(false);
+    setHoldProgress(0);
+    if (holdTimerRef.current) {
+      clearInterval(holdTimerRef.current);
+      holdTimerRef.current = null;
+    }
+  };
+
+  const handleChargeComplete = () => {
+    // Massive explosion effect
+    const centerX = window.innerWidth / 2;
+    const centerY = window.innerHeight / 2;
+
+    for (let i = 0; i < 50; i++) {
+      setTimeout(() => {
+        const angle = Math.random() * Math.PI * 2;
+        const distance = Math.random() * 200 + 50;
+        const x = centerX + Math.cos(angle) * distance;
+        const y = centerY + Math.sin(angle) * distance;
+
+        const id = particleIdRef.current++;
+        const emojis = ['💥', '⚡', '🌟', '✨', '💫', '🔥'];
+        setParticles(prev => [
+          ...prev,
+          {
+            id,
+            x,
+            y,
+            emoji: emojis[Math.floor(Math.random() * emojis.length)],
+          },
+        ]);
+
+        setTimeout(() => {
+          setParticles(prev => prev.filter(p => p.id !== id));
+        }, 1500);
+      }, i * 10);
+    }
+
+    addAchievement('⚡ POWER UNLEASHED! ⚡');
+    playSound(200, 1);
+
+    if (navigator.vibrate) {
+      navigator.vibrate([100, 50, 100, 50, 200]);
+    }
+  };
+
   // Konami code detector
   useEffect(() => {
     const konamiCode = [
@@ -84,6 +265,7 @@ export default function Home() {
         if (newKonami.join(',') === konamiCode.join(',')) {
           setSecretUnlocked(true);
           playSound(800, 0.5);
+          addAchievement('🎮 KONAMI CODE ACTIVATED!');
           setTimeout(() => setSecretUnlocked(false), 5000);
         }
         return newKonami;
@@ -103,7 +285,7 @@ export default function Home() {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
-  // Interactive canvas background
+  // Interactive canvas background with tilt
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -118,27 +300,32 @@ export default function Home() {
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
 
-    // Floating orbs with trails
     const orbs: Array<{
       x: number;
       y: number;
       vx: number;
       vy: number;
       size: number;
-      color: string;
+      baseX: number;
+      baseY: number;
+      hue: number;
       trail: Array<{ x: number; y: number }>;
     }> = [];
 
+    const hues = [230, 330, 140, 25, 280, 190]; // Blue, Pink, Green, Orange, Purple, Cyan
+
     for (let i = 0; i < 12; i++) {
+      const x = Math.random() * canvas.width;
+      const y = Math.random() * canvas.height;
       orbs.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
+        x,
+        y,
+        baseX: x,
+        baseY: y,
         vx: (Math.random() - 0.5) * 0.8,
         vy: (Math.random() - 0.5) * 0.8,
         size: Math.random() * 120 + 60,
-        color: ['#4a9eff', '#ff6b9d', '#ffd93d', '#6bcf7f', '#a78bfa', '#fb923c'][
-          Math.floor(Math.random() * 6)
-        ],
+        hue: hues[i % hues.length],
         trail: [],
       });
     }
@@ -147,29 +334,29 @@ export default function Home() {
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Update and draw orbs with trails
       orbs.forEach(orb => {
+        // Apply tilt effect
+        const tiltOffsetX = tiltX * 50;
+        const tiltOffsetY = tiltY * 50;
+
         orb.x += orb.vx;
         orb.y += orb.vy;
+
+        // Gentle attraction to tilt position
+        orb.x += (tiltOffsetX - (orb.x - orb.baseX)) * 0.02;
+        orb.y += (tiltOffsetY - (orb.y - orb.baseY)) * 0.02;
 
         if (orb.x < 0 || orb.x > canvas.width) orb.vx *= -1;
         if (orb.y < 0 || orb.y > canvas.height) orb.vy *= -1;
 
-        // Draw trail
         orb.trail.push({ x: orb.x, y: orb.y });
         if (orb.trail.length > 20) orb.trail.shift();
 
         orb.trail.forEach((pos, i) => {
           const alpha = (i / orb.trail.length) * 0.3;
           const gradient = ctx.createRadialGradient(pos.x, pos.y, 0, pos.x, pos.y, orb.size * 0.5);
-          gradient.addColorStop(
-            0,
-            orb.color +
-              Math.floor(alpha * 255)
-                .toString(16)
-                .padStart(2, '0')
-          );
-          gradient.addColorStop(1, orb.color + '00');
+          gradient.addColorStop(0, `hsl(${orb.hue}, 70%, 60%, ${alpha})`);
+          gradient.addColorStop(1, `hsl(${orb.hue}, 70%, 60%, 0)`);
 
           ctx.fillStyle = gradient;
           ctx.beginPath();
@@ -177,10 +364,9 @@ export default function Home() {
           ctx.fill();
         });
 
-        // Draw main orb
         const gradient = ctx.createRadialGradient(orb.x, orb.y, 0, orb.x, orb.y, orb.size);
-        gradient.addColorStop(0, orb.color + '50');
-        gradient.addColorStop(1, orb.color + '00');
+        gradient.addColorStop(0, `hsl(${orb.hue}, 70%, 60%, 0.3)`);
+        gradient.addColorStop(1, `hsl(${orb.hue}, 70%, 60%, 0)`);
 
         ctx.fillStyle = gradient;
         ctx.beginPath();
@@ -196,36 +382,77 @@ export default function Home() {
       cancelAnimationFrame(animationFrame);
       window.removeEventListener('resize', resizeCanvas);
     };
-  }, []);
+  }, [tiltX, tiltY]);
 
-  // Handle click particles
+  // Handle click particles with combo system
   const handleClick = (e: React.MouseEvent) => {
+    const now = Date.now();
+    const timeSinceLastTap = now - lastTapTime;
+
+    // Combo system: rapid taps within 500ms
+    if (timeSinceLastTap < 500) {
+      setComboCount(prev => prev + 1);
+
+      if (comboTimerRef.current) clearTimeout(comboTimerRef.current);
+      comboTimerRef.current = window.setTimeout(() => {
+        setComboCount(0);
+      }, 500);
+    } else {
+      setComboCount(0);
+    }
+
+    setLastTapTime(now);
+
     const newClicks = clicks + 1;
     setClicks(newClicks);
 
-    playSound(400 + newClicks * 50, 0.1);
+    const comboMultiplier = Math.min(comboCount + 1, 5);
+    playSound(400 + newClicks * 50 + comboMultiplier * 100, 0.1);
 
-    // Easter egg after 10 clicks
+    // Achievement milestones
+    if (newClicks === 1) addAchievement('🎯 First Tap!');
     if (newClicks === 10) {
       setEasterEgg(true);
-      playSound(800, 0.5);
+      addAchievement('🎉 10 Taps Milestone!');
       setTimeout(() => setEasterEgg(false), 3000);
     }
+    if (newClicks === 50) addAchievement('🔥 50 Taps! On Fire!');
+    if (newClicks === 100) addAchievement('💯 Century Club!');
 
-    // Create particle with random emoji
+    if (comboCount >= 5) {
+      addAchievement(`⚡ ${comboCount}x COMBO!`);
+    }
+
+    // Vibrate on mobile
+    if (navigator.vibrate) {
+      navigator.vibrate(comboMultiplier * 10);
+    }
+
     const emojis = ['✨', '⭐', '💫', '🌟', '💥', '🎉', '🎊', '🔥'];
     const rect = e.currentTarget.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
-    const id = particleIdRef.current++;
 
-    setParticles(prev => [
-      ...prev,
-      { id, x, y, emoji: emojis[Math.floor(Math.random() * emojis.length)] },
-    ]);
-    setTimeout(() => {
-      setParticles(prev => prev.filter(p => p.id !== id));
-    }, 1500);
+    // More particles with combo
+    for (let i = 0; i < comboMultiplier; i++) {
+      const id = particleIdRef.current++;
+      const offsetX = (Math.random() - 0.5) * 40;
+      const offsetY = (Math.random() - 0.5) * 40;
+
+      setParticles(prev => [
+        ...prev,
+        {
+          id,
+          x: x + offsetX,
+          y: y + offsetY,
+          emoji: emojis[Math.floor(Math.random() * emojis.length)],
+        },
+      ]);
+
+      setTimeout(() => {
+        setParticles(prev => prev.filter(p => p.id !== id));
+      }, 1500);
+    }
   };
 
   const formatTime = (date: Date) => {
@@ -240,177 +467,222 @@ export default function Home() {
   const progress = Math.min((clicks / 10) * 100, 100);
 
   return (
-    <main
-      className="min-h-screen bg-gradient-to-br from-[#0a0a0a] via-[#0f0f1e] to-[#0a0a0a] text-[#e8e8e8] relative overflow-hidden cursor-crosshair"
-      onClick={handleClick}
-    >
-      {/* Animated canvas background */}
-      <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none" />
-
-      {/* Grid overlay */}
-      <div className="grid-overlay" />
-
-      {/* Vignette */}
-      <div className="vignette" />
-
-      {/* Mouse follower */}
-      <div
-        className="mouse-follower"
+    <>
+      <style jsx global>{`
+        html,
+        body {
+          overflow: hidden;
+          height: 100%;
+          width: 100%;
+          position: fixed;
+          touch-action: none;
+          user-select: none;
+        }
+      `}</style>
+      <main
+        className="h-screen w-screen text-[#e8e8e8] relative overflow-hidden cursor-crosshair transition-all duration-1000"
         style={{
-          left: `${mousePos.x}px`,
-          top: `${mousePos.y}px`,
+          background: `linear-gradient(135deg, hsl(${bgHue}, 20%, 4%), hsl(${bgHue}, 30%, 8%), hsl(${bgHue}, 20%, 4%))`,
         }}
-      />
-
-      {/* Click particles */}
-      {particles.map(particle => (
-        <div
-          key={particle.id}
-          className="click-particle"
-          style={{
-            left: `${particle.x}px`,
-            top: `${particle.y}px`,
-          }}
-        >
-          {particle.emoji}
-        </div>
-      ))}
-
-      {/* Sound toggle */}
-      <button
-        onClick={e => {
-          e.stopPropagation();
-          setSoundEnabled(!soundEnabled);
-          playSound(600, 0.1);
-        }}
-        className="sound-toggle"
+        onClick={handleClick}
+        onMouseDown={handlePressStart}
+        onMouseUp={handlePressEnd}
+        onMouseLeave={handlePressEnd}
+        onTouchStart={handlePressStart}
+        onTouchEnd={handlePressEnd}
       >
-        {soundEnabled ? '🔊' : '🔇'}
-      </button>
+        {/* Animated canvas background */}
+        <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none" />
 
-      {/* Secret unlock notification */}
-      {secretUnlocked && <div className="secret-notification">🎮 KONAMI CODE ACTIVATED! 🎮</div>}
+        {/* Grid overlay */}
+        <div className="grid-overlay" style={{ opacity: 0.3 }} />
 
-      {/* Main content */}
-      <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-4 sm:px-6">
-        <div className={`content-wrapper ${mounted ? 'mounted' : ''} max-w-5xl w-full`}>
-          {/* Rotating badge */}
-          <div className="flex justify-center mb-8">
-            <div className="rotating-badge">
-              <svg viewBox="0 0 100 100" className="w-24 h-24 sm:w-32 sm:h-32">
-                <circle
-                  cx="50"
-                  cy="50"
-                  r="45"
-                  fill="none"
-                  stroke="url(#gradient)"
-                  strokeWidth="2"
-                  strokeDasharray="4 4"
-                  className="rotating-circle"
-                />
-                <defs>
-                  <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#4a9eff" />
-                    <stop offset="50%" stopColor="#ff6b9d" />
-                    <stop offset="100%" stopColor="#ffd93d" />
-                  </linearGradient>
-                </defs>
-                <text x="50" y="55" textAnchor="middle" className="badge-text" fill="#e8e8e8">
-                  {secretUnlocked ? '👾' : 'SOON'}
-                </text>
-              </svg>
+        {/* Vignette */}
+        <div className="vignette" />
+
+        {/* Mouse follower */}
+        <div
+          className="mouse-follower"
+          style={{
+            left: `${mousePos.x}px`,
+            top: `${mousePos.y}px`,
+            borderColor: `hsl(${bgHue}, 70%, 60%)`,
+            boxShadow: `0 0 20px hsl(${bgHue}, 70%, 60%, 0.3)`,
+          }}
+        />
+
+        {/* Click particles */}
+        {particles.map(particle => (
+          <div
+            key={particle.id}
+            className="click-particle"
+            style={{
+              left: `${particle.x}px`,
+              top: `${particle.y}px`,
+            }}
+          >
+            {particle.emoji}
+          </div>
+        ))}
+
+        {/* Achievement toasts */}
+        <div className="achievement-container">
+          {achievements.map(achievement => (
+            <div key={achievement.id} className="achievement-toast">
+              {achievement.text}
             </div>
+          ))}
+        </div>
+
+        {/* Combo counter */}
+        {comboCount > 0 && <div className="combo-display">{comboCount}x COMBO!</div>}
+
+        {/* Hold to charge indicator */}
+        {isHolding && (
+          <div className="charge-indicator">
+            <div className="charge-text">HOLD TO CHARGE</div>
+            <div className="charge-bar">
+              <div className="charge-fill" style={{ width: `${holdProgress}%` }} />
+            </div>
+            <div className="charge-percentage">{Math.floor(holdProgress)}%</div>
           </div>
+        )}
 
-          {/* Name with glitch on hover */}
-          <h1 className="name-title group">
-            <span className="name-main">Mehran Khan</span>
-            <span className="name-glitch" aria-hidden="true">
-              Mehran Khan
-            </span>
-            <span className="name-glitch" aria-hidden="true">
-              Mehran Khan
-            </span>
-          </h1>
+        {/* Sound toggle */}
+        <button
+          onClick={e => {
+            e.stopPropagation();
+            setSoundEnabled(!soundEnabled);
+            playSound(600, 0.1);
+          }}
+          className="sound-toggle"
+        >
+          {soundEnabled ? '🔊' : '🔇'}
+        </button>
 
-          {/* Under Construction badge */}
-          <div className="construction-badge">
-            <span className="construction-icon">🚧</span>
-            <span className="construction-text">Under Construction</span>
-            <span className="construction-icon">🚧</span>
-          </div>
+        {/* Main content */}
+        <div className="relative z-10 h-full flex flex-col items-center justify-center px-4 sm:px-6">
+          <div className={`content-wrapper ${mounted ? 'mounted' : ''} max-w-5xl w-full`}>
+            {/* Rotating badge */}
+            <div className="flex justify-center mb-4">
+              <div className="rotating-badge">
+                <svg viewBox="0 0 100 100" className="w-16 h-16 sm:w-20 sm:h-20">
+                  <circle
+                    cx="50"
+                    cy="50"
+                    r="45"
+                    fill="none"
+                    stroke={`hsl(${bgHue}, 70%, 60%)`}
+                    strokeWidth="2"
+                    strokeDasharray="4 4"
+                    className="rotating-circle"
+                  />
+                  <text x="50" y="55" textAnchor="middle" className="badge-text" fill="#e8e8e8">
+                    {secretUnlocked ? '👾' : 'SOON'}
+                  </text>
+                </svg>
+              </div>
+            </div>
 
-          {/* Rotating taglines */}
-          <div className="tagline-container">
-            <p className="tagline">
-              {easterEgg ? (
-                <span className="easter-egg">🎉 You found the secret! Keep exploring... 🎉</span>
-              ) : (
-                <>
+            {/* Name with glitch on hover */}
+            <h1 className="name-title group">
+              <span className="name-main">Mehran Khan</span>
+              <span className="name-glitch" aria-hidden="true">
+                Mehran Khan
+              </span>
+              <span className="name-glitch" aria-hidden="true">
+                Mehran Khan
+              </span>
+            </h1>
+
+            {/* Under Construction badge */}
+            <div className="construction-badge">
+              <span className="construction-icon">🚧</span>
+              <span className="construction-text">Under Construction</span>
+              <span className="construction-icon">🚧</span>
+            </div>
+
+            {/* Rotating taglines */}
+            <div className="tagline-container">
+              <p className="tagline">
+                {easterEgg ? (
+                  <span className="easter-egg">🎉 You found the secret! Keep exploring... 🎉</span>
+                ) : (
                   <span className="rotating-quote">{quotes[quote]}</span>
-                </>
-              )}
+                )}
+              </p>
+            </div>
+
+            {/* Progress bar with click counter */}
+            <div className="progress-section">
+              <div className="progress-label">
+                <span className="text-sm sm:text-base">Development Progress</span>
+                <span className="text-sm sm:text-base font-mono">{Math.floor(progress)}%</span>
+              </div>
+              <div className="progress-bar">
+                <div
+                  className="progress-fill"
+                  style={{
+                    width: `${progress}%`,
+                    background: `linear-gradient(90deg, hsl(${bgHue}, 70%, 50%), hsl(${bgHue + 60}, 70%, 60%))`,
+                  }}
+                />
+                <div className="progress-shine" />
+              </div>
+              <p className="progress-hint">
+                {clicks < 10
+                  ? `Tap to contribute • ${10 - clicks} more needed`
+                  : '✅ Milestone Achieved!'}
+              </p>
+            </div>
+
+            {/* Live stats grid */}
+            <div className="stats-grid">
+              <div className="stat-card">
+                <div className="stat-icon">⏰</div>
+                <div className="stat-value font-mono">
+                  {mounted ? formatTime(time) : '00:00:00'}
+                </div>
+                <div className="stat-label">System Time</div>
+              </div>
+              <div className="stat-card">
+                <div className="stat-icon">👆</div>
+                <div className="stat-value">{clicks}</div>
+                <div className="stat-label">Taps</div>
+              </div>
+              <div className="stat-card">
+                <div className="stat-icon">📳</div>
+                <div className="stat-value">{shakeCount}</div>
+                <div className="stat-label">Shakes</div>
+              </div>
+            </div>
+
+            {/* Fun messages */}
+            <div className="fun-messages">
+              <p className="text-center text-sm sm:text-base">
+                💡 Try: Shake your phone • Hold anywhere 💡
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <footer className="absolute bottom-4 sm:bottom-8 left-0 right-0 z-10">
+          <div className="text-center">
+            <p className="footer-text text-sm sm:text-base">
+              © {new Date().getFullYear()} Mehran Khan
             </p>
           </div>
+        </footer>
 
-          {/* Progress bar with click counter */}
-          <div className="progress-section">
-            <div className="progress-label">
-              <span className="text-sm sm:text-base">Development Progress</span>
-              <span className="text-sm sm:text-base font-mono">{Math.floor(progress)}%</span>
-            </div>
-            <div className="progress-bar">
-              <div className="progress-fill" style={{ width: `${progress}%` }} />
-              <div className="progress-shine" />
-            </div>
-            <p className="progress-hint">
-              {clicks < 10
-                ? `Click to contribute • ${10 - clicks} more clicks needed`
-                : '✅ Milestone Achieved!'}
-            </p>
-          </div>
-
-          {/* Live stats grid */}
-          <div className="stats-grid">
-            <div className="stat-card">
-              <div className="stat-icon">⏰</div>
-              <div className="stat-value font-mono">{mounted ? formatTime(time) : '00:00:00'}</div>
-              <div className="stat-label">System Time</div>
-            </div>
-            <div className="stat-card">
-              <div className="stat-icon">👆</div>
-              <div className="stat-value">{clicks}</div>
-              <div className="stat-label">Interactions</div>
-            </div>
-            <div className="stat-card">
-              <div className="stat-icon">🚀</div>
-              <div className="stat-value">2026</div>
-              <div className="stat-label">Launch Year</div>
-            </div>
-          </div>
-
-          {/* Fun messages */}
-          <div className="fun-messages"></div>
-        </div>
-      </div>
-
-      {/* Footer */}
-      <footer className="absolute bottom-4 sm:bottom-8 left-0 right-0 z-10">
-        <div className="text-center">
-          <p className="footer-text text-sm sm:text-base">
-            © {new Date().getFullYear()} Mehran Khan
-          </p>
-        </div>
-      </footer>
-
-      <style jsx>{`
+        <style>{`
         /* Grid overlay */
         .grid-overlay {
           position: fixed;
           inset: 0;
           background-image:
-            linear-gradient(rgba(74, 158, 255, 0.03) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(74, 158, 255, 0.03) 1px, transparent 1px);
+            linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
           background-size: 50px 50px;
           pointer-events: none;
           z-index: 1;
@@ -423,6 +695,118 @@ export default function Home() {
           background: radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.4) 100%);
           pointer-events: none;
           z-index: 1;
+        }
+
+        /* Achievement toasts */
+        .achievement-container {
+          position: fixed;
+          top: 5rem;
+          left: 50%;
+          transform: translateX(-50%);
+          z-index: 100;
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+          pointer-events: none;
+          max-width: 90vw;
+        }
+
+        .achievement-toast {
+          background: linear-gradient(135deg, rgba(74, 158, 255, 0.9), rgba(255, 107, 157, 0.9));
+          color: white;
+          padding: 1rem 1.5rem;
+          border-radius: 0.75rem;
+          font-weight: 600;
+          text-align: center;
+          animation: achievementSlide 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+          box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+          font-size: 0.9rem;
+        }
+
+        @keyframes achievementSlide {
+          from {
+            opacity: 0;
+            transform: translateY(-20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        /* Combo display */
+        .combo-display {
+          position: fixed;
+          top: 30%;
+          left: 50%;
+          transform: translate(-50%, -50%) scale(1);
+          z-index: 99;
+          font-size: 3rem;
+          font-weight: 900;
+          background: linear-gradient(135deg, #ffd93d, #ff6b9d);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+          pointer-events: none;
+          animation: comboPulse 0.3s ease-in-out;
+          text-shadow: 0 0 30px rgba(255, 217, 61, 0.5);
+        }
+
+        @keyframes comboPulse {
+          0%, 100% { transform: translate(-50%, -50%) scale(1); }
+          50% { transform: translate(-50%, -50%) scale(1.2); }
+        }
+
+        /* Hold to charge */
+        .charge-indicator {
+          position: fixed;
+          bottom: 8rem;
+          left: 50%;
+          transform: translateX(-50%);
+          z-index: 99;
+          text-align: center;
+          pointer-events: none;
+          width: 90%;
+          max-width: 400px;
+        }
+
+        .charge-text {
+          font-size: 1.5rem;
+          font-weight: 700;
+          color: #4a9eff;
+          margin-bottom: 1rem;
+          animation: chargePulse 0.5s ease-in-out infinite;
+        }
+
+        @keyframes chargePulse {
+          0%, 100% { opacity: 0.6; }
+          50% { opacity: 1; }
+        }
+
+        .charge-bar {
+          width: 300px;
+          max-width: 80vw;
+          height: 30px;
+          background: rgba(0, 0, 0, 0.5);
+          border-radius: 15px;
+          overflow: hidden;
+          border: 2px solid #4a9eff;
+          box-shadow: 0 0 20px rgba(74, 158, 255, 0.5);
+        }
+
+        .charge-fill {
+          height: 100%;
+          background: linear-gradient(90deg, #4a9eff, #ff6b9d, #ffd93d);
+          border-radius: 15px;
+          transition: width 0.02s linear;
+          box-shadow: 0 0 20px rgba(74, 158, 255, 0.8);
+        }
+
+        .charge-percentage {
+          font-size: 2rem;
+          font-weight: 700;
+          color: #ffd93d;
+          margin-top: 1rem;
         }
 
         /* Sound toggle */
@@ -450,48 +834,18 @@ export default function Home() {
           transform: scale(1.1);
         }
 
-        /* Secret notification */
-        .secret-notification {
-          position: fixed;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          z-index: 100;
-          background: linear-gradient(135deg, #4a9eff, #ff6b9d);
-          color: white;
-          padding: 2rem 3rem;
-          border-radius: 1rem;
-          font-size: 1.5rem;
-          font-weight: bold;
-          text-align: center;
-          animation: secretAppear 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-          box-shadow: 0 20px 60px rgba(74, 158, 255, 0.4);
-        }
-
-        @keyframes secretAppear {
-          from {
-            opacity: 0;
-            transform: translate(-50%, -50%) scale(0.5);
-          }
-          to {
-            opacity: 1;
-            transform: translate(-50%, -50%) scale(1);
-          }
-        }
-
         /* Mouse follower */
         .mouse-follower {
           position: fixed;
           width: 30px;
           height: 30px;
-          border: 2px solid #4a9eff;
+          border: 2px solid;
           border-radius: 50%;
           pointer-events: none;
           transform: translate(-50%, -50%);
           transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
           z-index: 9999;
           opacity: 0.5;
-          box-shadow: 0 0 20px rgba(74, 158, 255, 0.3);
         }
 
         /* Click particles */
@@ -527,22 +881,13 @@ export default function Home() {
         }
 
         @keyframes rotate {
-          from {
-            transform: rotate(0deg);
-          }
-          to {
-            transform: rotate(360deg);
-          }
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
         }
 
         @keyframes float {
-          0%,
-          100% {
-            transform: translateY(0px);
-          }
-          50% {
-            transform: translateY(-15px);
-          }
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-15px); }
         }
 
         .badge-text {
@@ -572,11 +917,11 @@ export default function Home() {
         /* Name with glitch effect on hover */
         .name-title {
           font-family: 'Times New Roman', Georgia, serif;
-          font-size: clamp(2.5rem, 10vw, 6rem);
+          font-size: clamp(2rem, 8vw, 4.5rem);
           font-weight: 300;
           letter-spacing: -0.02em;
           text-align: center;
-          margin-bottom: 2rem;
+          margin-bottom: 1.5rem;
           position: relative;
           display: inline-block;
           width: 100%;
@@ -614,45 +959,21 @@ export default function Home() {
         }
 
         @keyframes glitch1 {
-          0% {
-            transform: translate(0);
-          }
-          20% {
-            transform: translate(-3px, 3px);
-          }
-          40% {
-            transform: translate(-3px, -3px);
-          }
-          60% {
-            transform: translate(3px, 3px);
-          }
-          80% {
-            transform: translate(3px, -3px);
-          }
-          100% {
-            transform: translate(0);
-          }
+          0% { transform: translate(0); }
+          20% { transform: translate(-3px, 3px); }
+          40% { transform: translate(-3px, -3px); }
+          60% { transform: translate(3px, 3px); }
+          80% { transform: translate(3px, -3px); }
+          100% { transform: translate(0); }
         }
 
         @keyframes glitch2 {
-          0% {
-            transform: translate(0);
-          }
-          20% {
-            transform: translate(3px, -3px);
-          }
-          40% {
-            transform: translate(3px, 3px);
-          }
-          60% {
-            transform: translate(-3px, -3px);
-          }
-          80% {
-            transform: translate(-3px, 3px);
-          }
-          100% {
-            transform: translate(0);
-          }
+          0% { transform: translate(0); }
+          20% { transform: translate(3px, -3px); }
+          40% { transform: translate(3px, 3px); }
+          60% { transform: translate(-3px, -3px); }
+          80% { transform: translate(-3px, 3px); }
+          100% { transform: translate(0); }
         }
 
         /* Under Construction Badge */
@@ -660,10 +981,10 @@ export default function Home() {
           display: flex;
           align-items: center;
           justify-content: center;
-          gap: 0.75rem;
-          margin-bottom: 2rem;
-          padding: 0.75rem 1.5rem;
-          background: linear-gradient(135deg, rgba(255, 193, 7, 0.1), rgba(255, 152, 0, 0.1));
+          gap: 0.5rem;
+          margin-bottom: 1.5rem;
+          padding: 0.5rem 1rem;
+          background: rgba(255, 255, 255, 0.05);
           border: 2px solid rgba(255, 193, 7, 0.3);
           border-radius: 999px;
           backdrop-filter: blur(10px);
@@ -675,7 +996,7 @@ export default function Home() {
 
         .construction-text {
           font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-          font-size: clamp(0.875rem, 2vw, 1rem);
+          font-size: clamp(0.75rem, 2vw, 0.875rem);
           font-weight: 600;
           text-transform: uppercase;
           letter-spacing: 0.1em;
@@ -686,7 +1007,7 @@ export default function Home() {
         }
 
         .construction-icon {
-          font-size: 1.25rem;
+          font-size: 1rem;
           animation: constructionBlink 1.5s ease-in-out infinite;
         }
 
@@ -695,8 +1016,7 @@ export default function Home() {
         }
 
         @keyframes constructionPulse {
-          0%,
-          100% {
+          0%, 100% {
             border-color: rgba(255, 193, 7, 0.3);
             box-shadow: 0 0 20px rgba(255, 193, 7, 0.2);
           }
@@ -707,26 +1027,21 @@ export default function Home() {
         }
 
         @keyframes constructionBlink {
-          0%,
-          100% {
-            opacity: 1;
-          }
-          50% {
-            opacity: 0.3;
-          }
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.3; }
         }
 
         /* Tagline */
         .tagline-container {
           display: flex;
           justify-content: center;
-          margin-bottom: 3rem;
-          min-height: 3rem;
+          margin-bottom: 2rem;
+          min-height: 2rem;
         }
 
         .tagline {
           font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-          font-size: clamp(1rem, 3vw, 1.5rem);
+          font-size: clamp(0.875rem, 2.5vw, 1.125rem);
           font-weight: 400;
           letter-spacing: 0.02em;
           text-align: center;
@@ -740,39 +1055,18 @@ export default function Home() {
           -webkit-text-fill-color: transparent;
           background-clip: text;
           background-size: 200% 200%;
-          animation:
-            gradientShift 8s ease-in-out infinite,
-            fadeIn 0.5s ease-in;
+          animation: gradientShift 8s ease-in-out infinite, fadeIn 0.5s ease-in;
           font-weight: 500;
         }
 
         @keyframes gradientShift {
-          0%,
-          100% {
-            background-position: 0% 50%;
-          }
-          50% {
-            background-position: 100% 50%;
-          }
-        }
-
-        @keyframes shimmer {
-          0%,
-          100% {
-            background-position: 0% center;
-          }
-          50% {
-            background-position: 100% center;
-          }
+          0%, 100% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
         }
 
         @keyframes fadeIn {
-          from {
-            opacity: 0;
-          }
-          to {
-            opacity: 1;
-          }
+          from { opacity: 0; }
+          to { opacity: 1; }
         }
 
         .easter-egg {
@@ -782,19 +1076,14 @@ export default function Home() {
         }
 
         @keyframes bounce {
-          0%,
-          100% {
-            transform: translateY(0);
-          }
-          50% {
-            transform: translateY(-10px);
-          }
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-10px); }
         }
 
         /* Progress section */
         .progress-section {
           max-width: 600px;
-          margin: 0 auto 3rem;
+          margin: 0 auto 2rem;
           padding: 0 1rem;
         }
 
@@ -818,11 +1107,9 @@ export default function Home() {
 
         .progress-fill {
           height: 100%;
-          background: linear-gradient(90deg, #4a9eff, #ff6b9d, #ffd93d);
           border-radius: 999px;
           transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
           position: relative;
-          box-shadow: 0 0 20px rgba(74, 158, 255, 0.5);
         }
 
         .progress-shine {
@@ -836,9 +1123,7 @@ export default function Home() {
         }
 
         @keyframes shine {
-          to {
-            left: 200%;
-          }
+          to { left: 200%; }
         }
 
         .progress-hint {
@@ -852,18 +1137,18 @@ export default function Home() {
         /* Stats grid */
         .stats-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-          gap: 1rem;
-          max-width: 700px;
-          margin: 0 auto 2.5rem;
+          grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+          gap: 0.75rem;
+          max-width: 500px;
+          margin: 0 auto 1.5rem;
           padding: 0 1rem;
         }
 
         .stat-card {
           background: rgba(255, 255, 255, 0.02);
           border: 1px solid rgba(255, 255, 255, 0.1);
-          border-radius: 16px;
-          padding: 1.5rem 1rem;
+          border-radius: 12px;
+          padding: 1rem 0.75rem;
           text-align: center;
           transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
           backdrop-filter: blur(10px);
@@ -871,46 +1156,34 @@ export default function Home() {
 
         .stat-card:hover {
           background: rgba(255, 255, 255, 0.08);
-          transform: translateY(-8px);
+          transform: translateY(-4px);
           border-color: rgba(255, 255, 255, 0.3);
-          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         }
 
         .stat-icon {
-          font-size: 2rem;
-          margin-bottom: 0.75rem;
+          font-size: 1.5rem;
+          margin-bottom: 0.5rem;
           animation: iconBob 2s ease-in-out infinite;
         }
 
         @keyframes iconBob {
-          0%,
-          100% {
-            transform: translateY(0);
-          }
-          50% {
-            transform: translateY(-5px);
-          }
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-3px); }
         }
 
-        .stat-card:nth-child(2) .stat-icon {
-          animation-delay: 0.2s;
-        }
-        .stat-card:nth-child(3) .stat-icon {
-          animation-delay: 0.4s;
-        }
-        .stat-card:nth-child(4) .stat-icon {
-          animation-delay: 0.6s;
-        }
+        .stat-card:nth-child(2) .stat-icon { animation-delay: 0.2s; }
+        .stat-card:nth-child(3) .stat-icon { animation-delay: 0.4s; }
 
         .stat-value {
-          font-size: 1.75rem;
+          font-size: 1.25rem;
           font-weight: 600;
           color: #e8e8e8;
           margin-bottom: 0.25rem;
         }
 
         .stat-label {
-          font-size: 0.75rem;
+          font-size: 0.65rem;
           color: #b0b0b0;
           text-transform: uppercase;
           letter-spacing: 0.08em;
@@ -919,16 +1192,11 @@ export default function Home() {
 
         /* Fun messages */
         .fun-messages {
-          margin-top: 2rem;
+          margin-top: 1rem;
         }
 
         .fun-messages p {
           color: #ffffff;
-        }
-
-        .tip-text {
-          color: #4a9eff;
-          font-weight: 600;
         }
 
         /* Footer */
@@ -950,8 +1218,13 @@ export default function Home() {
             height: 2.5rem;
             font-size: 1.25rem;
           }
+
+          .stat-value {
+            font-size: 1.2rem;
+          }
         }
       `}</style>
-    </main>
+      </main>
+    </>
   );
 }
