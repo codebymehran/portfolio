@@ -390,11 +390,7 @@ export default function Home() {
           </div>
 
           {/* Fun messages */}
-          <div className="fun-messages">
-            <p className="text-center text-sm sm:text-base">
-              Keep clicking around and see what happens 😉
-            </p>
-          </div>
+          <div className="fun-messages"></div>
         </div>
       </div>
 
