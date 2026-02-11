@@ -32,6 +32,9 @@ export default function MemoryGame() {
   const [playerName, setPlayerName] = useState('');
   const [pendingScore, setPendingScore] = useState<{ moves: number; time: number } | null>(null);
   const [showDifficultyModal, setShowDifficultyModal] = useState(false);
+  const [leaderboardPosition, setLeaderboardPosition] = useState<number | null>(null);
+  const [scoreSaved, setScoreSaved] = useState(false); // Prevent duplicate saves
+  const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
 
   const emojis = {
     easy: ['🚧', '🏗️', '👷', '🔨', '⚒️', '🧱'],
@@ -49,6 +52,15 @@ export default function MemoryGame() {
     setMounted(true);
     loadLeaderboard();
     loadBestScore();
+
+    // Disable pull-to-refresh on mobile
+    document.body.style.overscrollBehavior = 'none';
+    document.documentElement.style.overscrollBehavior = 'none';
+
+    return () => {
+      document.body.style.overscrollBehavior = 'auto';
+      document.documentElement.style.overscrollBehavior = 'auto';
+    };
   }, []);
 
   // Timer
@@ -100,13 +112,33 @@ export default function MemoryGame() {
     if (best) setBestScore(parseInt(best));
   };
 
+  const calculateLeaderboardPosition = (finalMoves: number, finalTime: number): number => {
+    const score = finalMoves * 1000 + finalTime;
+    let position = 1;
+
+    for (const entry of leaderboard) {
+      const entryScore = entry.moves * 1000 + entry.time;
+      if (entryScore < score) {
+        position++;
+      }
+    }
+
+    return position;
+  };
+
   const saveScore = async (finalMoves: number, finalTime: number) => {
+    if (scoreSaved) return; // Prevent duplicate saves
+
+    const position = calculateLeaderboardPosition(finalMoves, finalTime);
+    setLeaderboardPosition(position);
     setPendingScore({ moves: finalMoves, time: finalTime });
     setShowNameModal(true);
   };
 
   const submitScore = async () => {
-    if (!playerName.trim() || !pendingScore) return;
+    if (!playerName.trim() || !pendingScore || scoreSaved) return;
+
+    setScoreSaved(true); // Mark as saved to prevent duplicates
 
     const entry: LeaderboardEntry = {
       name: playerName.trim().slice(0, 20),
@@ -126,6 +158,8 @@ export default function MemoryGame() {
     } catch (error) {
       console.error('Failed to save score:', error);
       alert('Failed to save to leaderboard.');
+      setScoreSaved(false); // Reset on error
+      return;
     }
 
     if (!bestScore || pendingScore.moves < bestScore) {
@@ -142,13 +176,20 @@ export default function MemoryGame() {
     setShowNameModal(false);
     setPlayerName('');
     setPendingScore(null);
+    setScoreSaved(false);
   };
 
   const playSound = (frequency: number, duration: number) => {
     if (!soundEnabled) return;
 
     try {
-      const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      // Reuse existing AudioContext or create one
+      let ctx = audioContext;
+      if (!ctx) {
+        ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+        setAudioContext(ctx);
+      }
+
       const oscillator = ctx.createOscillator();
       const gainNode = ctx.createGain();
 
@@ -163,7 +204,9 @@ export default function MemoryGame() {
 
       oscillator.start(ctx.currentTime);
       oscillator.stop(ctx.currentTime + duration);
-    } catch (e) {}
+    } catch (e) {
+      console.error('Audio error:', e);
+    }
   };
 
   const initializeGame = (diff: 'easy' | 'medium' | 'hard') => {
@@ -190,6 +233,8 @@ export default function MemoryGame() {
     setTime(0);
     setGameState('playing');
     setDifficulty(diff);
+    setLeaderboardPosition(null);
+    setScoreSaved(false); // Reset for new game
   };
 
   const handleCardClick = (cardId: number) => {
@@ -218,7 +263,7 @@ export default function MemoryGame() {
         playSound(800, 0.3);
         if (navigator.vibrate) navigator.vibrate(50);
 
-        // FASTER: Reduced from 600ms to 400ms
+        // FASTER: Reduced to 300ms for instant feel
         setTimeout(() => {
           setCards(prev =>
             prev.map(c => (c.id === firstId || c.id === secondId ? { ...c, isMatched: true } : c))
@@ -231,17 +276,17 @@ export default function MemoryGame() {
             setTimeout(() => saveScore(moves + 1, time), 500);
             setGameState('won');
           }
-        }, 400);
+        }, 300);
       } else {
         playSound(200, 0.2);
-        // FASTER: Reduced from 1000ms to 700ms
+        // FASTER: Reduced to 500ms for quicker gameplay
         setTimeout(() => {
           setCards(prev =>
             prev.map(c => (c.id === firstId || c.id === secondId ? { ...c, isFlipped: false } : c))
           );
           setFlippedCards([]);
           setIsChecking(false);
-        }, 700);
+        }, 500);
       }
     }
   };
@@ -262,7 +307,7 @@ export default function MemoryGame() {
       {/* Fixed header - MORE PROMINENT */}
       <div className="sticky top-0 z-50 bg-gradient-to-r from-yellow-500 to-orange-500 border-b-4 border-yellow-600 shadow-2xl">
         <div className="max-w-6xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-center gap-3 relative">
+          <div className="flex items-center justify-center gap-3">
             <div className="flex items-center gap-2 animate-pulse">
               <span className="text-3xl">🚧</span>
               <h1 className="text-2xl md:text-3xl font-black tracking-wider text-black drop-shadow-lg">
@@ -270,35 +315,12 @@ export default function MemoryGame() {
               </h1>
               <span className="text-3xl">🚧</span>
             </div>
-            <button
-              onClick={() => setSoundEnabled(!soundEnabled)}
-              className="absolute right-0 bg-black/40 hover:bg-black/60 p-2 rounded-lg transition-colors"
-              aria-label="Toggle sound"
-            >
-              {soundEnabled ? '🔊' : '🔇'}
-            </button>
           </div>
         </div>
       </div>
 
       {/* Brick wall background */}
-      <div className="fixed inset-0 pointer-events-none opacity-10 z-0">
-        {Array.from({ length: 15 }).map((_, row) => (
-          <div
-            key={row}
-            className="flex gap-1"
-            style={{ marginLeft: row % 2 === 0 ? '0' : '60px' }}
-          >
-            {Array.from({ length: 25 }).map((_, col) => (
-              <div
-                key={col}
-                className="w-20 h-10 bg-orange-800 border border-orange-900"
-                style={{ marginBottom: '2px' }}
-              />
-            ))}
-          </div>
-        ))}
-      </div>
+      {/* Removed for cleaner UI */}
 
       <div className="max-w-6xl mx-auto px-4 py-6 pb-20">
         {/* Menu State */}
@@ -311,10 +333,6 @@ export default function MemoryGame() {
                 <p className="text-lg text-slate-300">
                   Test your memory while we build something amazing!
                 </p>
-
-                {bestScore && (
-                  <p className="text-xl text-yellow-400 font-bold">Your Best: {bestScore} moves</p>
-                )}
 
                 <button
                   onClick={() => setShowDifficultyModal(true)}
@@ -438,8 +456,30 @@ export default function MemoryGame() {
         {gameState === 'won' && (
           <div className="max-w-2xl mx-auto">
             <div className="bg-slate-800/90 backdrop-blur-lg rounded-2xl border-4 border-yellow-500 p-8 shadow-2xl text-center space-y-6">
-              <div className="text-6xl mb-4">🎉</div>
-              <h2 className="text-4xl font-bold">You Won!</h2>
+              <div className="text-6xl mb-4">
+                {leaderboardPosition === 1
+                  ? '🏆'
+                  : leaderboardPosition === 2
+                    ? '🥈'
+                    : leaderboardPosition === 3
+                      ? '🥉'
+                      : leaderboardPosition && leaderboardPosition <= 10
+                        ? '🎯'
+                        : '💪'}
+              </div>
+              <h2 className="text-4xl font-bold">
+                {leaderboardPosition === 1
+                  ? '#1 ON LEADERBOARD!'
+                  : leaderboardPosition === 2
+                    ? '#2 ON LEADERBOARD!'
+                    : leaderboardPosition === 3
+                      ? '#3 ON LEADERBOARD!'
+                      : leaderboardPosition && leaderboardPosition <= 10
+                        ? `#${leaderboardPosition} ON LEADERBOARD!`
+                        : leaderboardPosition
+                          ? 'Not in Top 10'
+                          : 'Not in Top 10'}
+              </h2>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-slate-700/50 p-4 rounded-xl">
@@ -452,18 +492,12 @@ export default function MemoryGame() {
                 </div>
               </div>
 
-              {bestScore && moves <= bestScore && (
-                <div className="bg-gradient-to-r from-yellow-500 to-orange-500 p-4 rounded-xl text-black">
-                  <p className="text-xl font-bold">🏆 NEW PERSONAL BEST! 🏆</p>
-                </div>
-              )}
-
               <div className="space-y-3">
                 <button
                   onClick={() => initializeGame(difficulty)}
                   className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-bold py-4 px-6 rounded-xl transition-all transform hover:scale-105 shadow-lg"
                 >
-                  PLAY AGAIN
+                  🎮 PLAY AGAIN
                 </button>
                 <button
                   onClick={() => setGameState('menu')}
@@ -478,11 +512,22 @@ export default function MemoryGame() {
       </div>
 
       {/* Footer - BETTER COLORS */}
-      <footer className="fixed bottom-0 left-0 right-0 bg-slate-900/90 backdrop-blur-lg border-t border-slate-700 py-3 text-center text-sm">
-        <span className="text-slate-400">© {new Date().getFullYear()}</span>{' '}
-        <span className="font-bold bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">
-          Mehran Khan
-        </span>
+      <footer className="fixed bottom-0 left-0 right-0 bg-slate-900/90 backdrop-blur-lg border-t border-slate-700 py-3 text-center text-sm z-40">
+        <div className="max-w-6xl mx-auto px-4 relative">
+          <div>
+            <span className="text-slate-400">© {mounted ? new Date().getFullYear() : '2024'}</span>{' '}
+            <span className="font-bold bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">
+              Mehran Khan
+            </span>
+          </div>
+          <button
+            onClick={() => setSoundEnabled(!soundEnabled)}
+            className="absolute right-4 top-1/2 -translate-y-1/2 bg-slate-800 hover:bg-slate-700 p-2 rounded-lg transition-colors border border-slate-600"
+            aria-label="Toggle sound"
+          >
+            {soundEnabled ? '🔊' : '🔇'}
+          </button>
+        </div>
       </footer>
 
       {/* Difficulty Selection Modal */}
@@ -539,7 +584,22 @@ export default function MemoryGame() {
       {showNameModal && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-slate-800 rounded-2xl border-4 border-yellow-500 p-6 max-w-md w-full shadow-2xl">
-            <h3 className="text-2xl font-bold text-center mb-4">🎉 Great Job!</h3>
+            <h3 className="text-2xl font-bold text-center mb-2">🎉 Congratulations!</h3>
+
+            {leaderboardPosition && leaderboardPosition <= 10 && (
+              <div className="text-center mb-4">
+                <p className="text-lg text-yellow-400 font-bold">
+                  {leaderboardPosition === 1
+                    ? '👑 You got 1st place!'
+                    : leaderboardPosition === 2
+                      ? '🥈 You got 2nd place!'
+                      : leaderboardPosition === 3
+                        ? '🥉 You got 3rd place!'
+                        : `You ranked #${leaderboardPosition}!`}
+                </p>
+              </div>
+            )}
+
             <p className="text-center text-slate-300 mb-6">Enter your name for the leaderboard:</p>
             <input
               type="text"
