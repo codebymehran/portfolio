@@ -92,7 +92,7 @@ function PhaseIcon({ color, phase }: { color: string; phase: number }) {
 // ─── TILE ILLUSTRATIONS ───────────────────────────────────────────────────────
 
 function TileArt({ index, color }: { index: number; color: string }) {
-  const arts: JSX.Element[] = [
+  const arts = [
     <svg key={0} width="44" height="44" viewBox="0 0 44 44" fill="none">
       <rect x="6" y="8" width="32" height="28" rx="4" fill={color} opacity=".1"/>
       <circle cx="10" cy="17" r="2" fill={color}/><line x1="14" y1="17" x2="34" y2="17" stroke={color} strokeWidth="1.8" strokeLinecap="round"/>
