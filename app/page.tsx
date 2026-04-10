@@ -1,634 +1,436 @@
-'use client';
-import { useEffect, useState } from 'react';
+"use client";
 
-interface Card {
-  id: number;
-  emoji: string;
-  isFlipped: boolean;
-  isMatched: boolean;
+import { useState, useEffect } from "react";
+
+// ─── DATA ────────────────────────────────────────────────────────────────────
+
+const phases = [
+  {
+    label: "Phase 1", title: "Core React", desc: "components · state · hooks · TypeScript",
+    color: "#7F77DD", colorBg: "rgba(127,119,221,0.12)", colorBorder: "rgba(127,119,221,0.3)",
+    projects: [
+      { id:"01",  name:"Task manager",      tag:"useState · CRUD · derived state",     live:"", type:"" },
+      { id:"02",  name:"Expense tracker",   tag:"useReducer · complex forms",          live:"", type:"" },
+      { id:"02.5",name:"Weather widget",    tag:"useEffect · fetch · API keys",        live:"", type:"gap" },
+      { id:"03",  name:"Quiz app",          tag:"TypeScript · multi-step UI",          live:"", type:"" },
+      { id:"04",  name:"Recipe book",       tag:"useRef · custom hooks",               live:"", type:"" },
+      { id:"05",  name:"Kanban board",      tag:"useReducer · drag & drop",            live:"", type:"" },
+      { id:"05.5",name:"Theme & settings",  tag:"useContext + useReducer",             live:"", type:"gap" },
+      { id:"05C", name:"Habit tracker",     tag:"Every Phase 1 concept",               live:"", type:"con" },
+    ],
+  },
+  {
+    label: "Phase 2", title: "Next.js Frontend", desc: "App Router · Tailwind · real APIs",
+    color: "#5DCAA5", colorBg: "rgba(93,202,165,0.12)", colorBorder: "rgba(93,202,165,0.3)",
+    projects: [
+      { id:"06",  name:"Portfolio site",    tag:"App Router · layouts · next/font",    live:"", type:"" },
+      { id:"07",  name:"Movie browser",     tag:"Server fetch · dynamic routes",       live:"", type:"" },
+      { id:"07.5",name:"Notes app",         tag:"Tiptap · rich text · debounce",       live:"", type:"gap" },
+      { id:"08",  name:"Dashboard UI",      tag:"Recharts · Zod · useTransition",      live:"", type:"" },
+      { id:"09",  name:"E-commerce store",  tag:"Context · React Hook Form · Zod",     live:"", type:"" },
+      { id:"09C", name:"Music library",     tag:"Every Phase 2 concept",               live:"", type:"con" },
+    ],
+  },
+  {
+    label: "Phase 3", title: "Full Stack", desc: "Prisma · PostgreSQL · auth · Stripe",
+    color: "#F0997B", colorBg: "rgba(240,153,123,0.12)", colorBorder: "rgba(240,153,123,0.3)",
+    projects: [
+      { id:"10",  name:"Full stack tasks",  tag:"Prisma · NextAuth · TanStack Query",  live:"", type:"" },
+      { id:"10.5",name:"Link shortener",    tag:"Server actions · rate limiting",      live:"", type:"gap" },
+      { id:"11",  name:"Blog + CMS",        tag:"RBAC · image uploads · Sentry",       live:"", type:"" },
+      { id:"12",  name:"SaaS starter",      tag:"Multi-tenant · Stripe · webhooks",    live:"", type:"" },
+      { id:"12C", name:"Real-time chat",    tag:"Pusher · useOptimistic",              live:"", type:"con" },
+    ],
+  },
+  {
+    label: "Phase 4", title: "Production Level", desc: "testing · CI/CD · real users",
+    color: "#EF9F27", colorBg: "rgba(239,159,39,0.12)", colorBorder: "rgba(239,159,39,0.3)",
+    projects: [
+      { id:"13",  name:"Test coverage",     tag:"Vitest · Playwright · GitHub CI",     live:"", type:"" },
+      { id:"13.5",name:"Perf & a11y audit", tag:"Lighthouse · WCAG · bundle",          live:"", type:"gap" },
+      { id:"14",  name:"Real product",      tag:"My idea · real users · Stripe",       live:"", type:"" },
+    ],
+  },
+];
+
+// ── Update this single number each time you ship a project ──────────────────
+const DONE = 0;
+
+// ─── PHASE ICONS ─────────────────────────────────────────────────────────────
+
+function PhaseIcon({ color, phase }: { color: string; phase: number }) {
+  if (phase === 0) return (
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+      <circle cx="10" cy="10" r="3" fill={color}/>
+      <ellipse cx="10" cy="10" rx="9" ry="4" stroke={color} strokeWidth="1.3" fill="none"/>
+      <ellipse cx="10" cy="10" rx="9" ry="4" stroke={color} strokeWidth="1.3" fill="none" transform="rotate(60 10 10)"/>
+      <ellipse cx="10" cy="10" rx="9" ry="4" stroke={color} strokeWidth="1.3" fill="none" transform="rotate(120 10 10)"/>
+    </svg>
+  );
+  if (phase === 1) return (
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+      <rect x="2" y="2" width="7" height="7" rx="2" fill={color}/>
+      <rect x="11" y="2" width="7" height="7" rx="2" fill={color} opacity=".5"/>
+      <rect x="2" y="11" width="7" height="7" rx="2" fill={color} opacity=".5"/>
+      <rect x="11" y="11" width="7" height="7" rx="2" fill={color}/>
+    </svg>
+  );
+  if (phase === 2) return (
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+      <ellipse cx="10" cy="5.5" rx="7" ry="3" stroke={color} strokeWidth="1.3" fill="none"/>
+      <path d="M3 5.5v5c0 1.65 3.13 3 7 3s7-1.35 7-3v-5" stroke={color} strokeWidth="1.3" fill="none"/>
+      <path d="M3 10.5v5c0 1.65 3.13 3 7 3s7-1.35 7-3v-5" stroke={color} strokeWidth="1.3" fill="none"/>
+    </svg>
+  );
+  return (
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+      <path d="M10 2l2 6h6l-5 3.5 2 6L10 14l-5 3.5 2-6L2 8h6l2-6z" fill={color}/>
+    </svg>
+  );
 }
 
-interface LeaderboardEntry {
-  name: string;
-  moves: number;
-  time: number;
-  date: string;
+// ─── TILE ILLUSTRATIONS ───────────────────────────────────────────────────────
+
+function TileArt({ index, color }: { index: number; color: string }) {
+  const arts: JSX.Element[] = [
+    <svg key={0} width="44" height="44" viewBox="0 0 44 44" fill="none">
+      <rect x="6" y="8" width="32" height="28" rx="4" fill={color} opacity=".1"/>
+      <circle cx="10" cy="17" r="2" fill={color}/><line x1="14" y1="17" x2="34" y2="17" stroke={color} strokeWidth="1.8" strokeLinecap="round"/>
+      <circle cx="10" cy="24" r="2" fill={color} opacity=".55"/><line x1="14" y1="24" x2="28" y2="24" stroke={color} strokeWidth="1.8" strokeLinecap="round" opacity=".55"/>
+      <circle cx="10" cy="31" r="2" fill={color} opacity=".3"/><line x1="14" y1="31" x2="23" y2="31" stroke={color} strokeWidth="1.8" strokeLinecap="round" opacity=".3"/>
+    </svg>,
+    <svg key={1} width="44" height="44" viewBox="0 0 44 44" fill="none">
+      <rect x="5"  y="32" width="7" height="8" rx="2" fill={color} opacity=".3"/>
+      <rect x="14" y="24" width="7" height="16" rx="2" fill={color} opacity=".5"/>
+      <rect x="23" y="16" width="7" height="24" rx="2" fill={color} opacity=".75"/>
+      <rect x="32" y="8"  width="7" height="32" rx="2" fill={color}/>
+    </svg>,
+    <svg key={2} width="44" height="44" viewBox="0 0 44 44" fill="none">
+      <circle cx="22" cy="22" r="8" fill={color} opacity=".8"/>
+      {[0,45,90,135,180,225,270,315].map((a,i)=>{const r=Math.PI*a/180;return <line key={i} x1={22+12*Math.cos(r)} y1={22+12*Math.sin(r)} x2={22+16*Math.cos(r)} y2={22+16*Math.sin(r)} stroke={color} strokeWidth="2" strokeLinecap="round"/>})}
+    </svg>,
+    <svg key={3} width="44" height="44" viewBox="0 0 44 44" fill="none">
+      <circle cx="22" cy="22" r="17" fill={color} opacity=".1" stroke={color} strokeWidth="1.2"/>
+      <text x="22" y="30" fontSize="22" fontFamily="system-ui" fontWeight="700" fill={color} textAnchor="middle">?</text>
+    </svg>,
+    <svg key={4} width="44" height="44" viewBox="0 0 44 44" fill="none">
+      <rect x="8" y="6" width="18" height="32" rx="2" fill={color} opacity=".12" stroke={color} strokeWidth="1.3"/>
+      <rect x="18" y="6" width="18" height="32" rx="2" fill={color} opacity=".22" stroke={color} strokeWidth="1.3"/>
+      <line x1="22" y1="14" x2="32" y2="14" stroke={color} strokeWidth="1.5" strokeLinecap="round" opacity=".7"/>
+      <line x1="22" y1="20" x2="32" y2="20" stroke={color} strokeWidth="1.5" strokeLinecap="round" opacity=".5"/>
+      <line x1="22" y1="26" x2="28" y2="26" stroke={color} strokeWidth="1.5" strokeLinecap="round" opacity=".3"/>
+    </svg>,
+    <svg key={5} width="44" height="44" viewBox="0 0 44 44" fill="none">
+      <rect x="4"  y="8" width="10" height="28" rx="3" fill={color} opacity=".15" stroke={color} strokeWidth="1.2"/>
+      <rect x="17" y="8" width="10" height="28" rx="3" fill={color} opacity=".35" stroke={color} strokeWidth="1.2"/>
+      <rect x="30" y="8" width="10" height="28" rx="3" fill={color} opacity=".6"  stroke={color} strokeWidth="1.2"/>
+      <rect x="6"  y="12" width="6" height="5" rx="1.5" fill={color} opacity=".7"/>
+      <rect x="19" y="12" width="6" height="5" rx="1.5" fill={color} opacity=".8"/>
+      <rect x="19" y="20" width="6" height="5" rx="1.5" fill={color} opacity=".6"/>
+      <rect x="32" y="12" width="6" height="5" rx="1.5" fill={color}/>
+    </svg>,
+    <svg key={6} width="44" height="44" viewBox="0 0 44 44" fill="none">
+      <rect x="6" y="17" width="32" height="12" rx="6" fill={color} opacity=".18" stroke={color} strokeWidth="1.3"/>
+      <circle cx="32" cy="23" r="5.5" fill={color}/>
+      <circle cx="13" cy="23" r="3" fill={color} opacity=".3"/>
+    </svg>,
+    <svg key={7} width="44" height="44" viewBox="0 0 44 44" fill="none">
+      {Array.from({length:7}).map((_,col)=>Array.from({length:4}).map((_,row)=>{
+        const seed=(col*4+row)*2654435761;const filled=(seed%100)>38;
+        return <rect key={`${col}-${row}`} x={6+col*5.2} y={13+row*5.2} width="3.8" height="3.8" rx="1" fill={color} opacity={filled?0.8:0.12}/>
+      }))}
+    </svg>,
+    <svg key={8} width="44" height="44" viewBox="0 0 44 44" fill="none">
+      <rect x="4" y="8" width="36" height="28" rx="4" fill={color} opacity=".1" stroke={color} strokeWidth="1.3"/>
+      <line x1="4" y1="16" x2="40" y2="16" stroke={color} strokeWidth="1" opacity=".4"/>
+      <circle cx="10" cy="12" r="2" fill={color} opacity=".5"/>
+      <circle cx="16" cy="12" r="2" fill={color} opacity=".3"/>
+      <rect x="10" y="20" width="24" height="3" rx="1.5" fill={color} opacity=".4"/>
+      <rect x="10" y="26" width="16" height="3" rx="1.5" fill={color} opacity=".25"/>
+      <rect x="10" y="32" width="10" height="3" rx="1.5" fill={color} opacity=".15"/>
+    </svg>,
+    <svg key={9} width="44" height="44" viewBox="0 0 44 44" fill="none">
+      <rect x="6" y="10" width="32" height="24" rx="3" fill={color} opacity=".1" stroke={color} strokeWidth="1.3"/>
+      <rect x="6"  y="10" width="6" height="24" fill={color} opacity=".18"/>
+      <rect x="32" y="10" width="6" height="24" fill={color} opacity=".18"/>
+      {[0,1,2,3].map(i=><rect key={i} x="8"  y={13+i*5} width="2" height="3" rx="1" fill={color} opacity=".6"/>)}
+      {[0,1,2,3].map(i=><rect key={i} x="34" y={13+i*5} width="2" height="3" rx="1" fill={color} opacity=".6"/>)}
+      <polygon points="20,18 20,26 28,22" fill={color} opacity=".7"/>
+    </svg>,
+    <svg key={10} width="44" height="44" viewBox="0 0 44 44" fill="none">
+      <rect x="8" y="5" width="28" height="34" rx="3" fill={color} opacity=".1" stroke={color} strokeWidth="1.3"/>
+      <line x1="14" y1="15" x2="30" y2="15" stroke={color} strokeWidth="1.8" strokeLinecap="round" opacity=".65"/>
+      <line x1="14" y1="21" x2="30" y2="21" stroke={color} strokeWidth="1.8" strokeLinecap="round" opacity=".45"/>
+      <line x1="14" y1="27" x2="24" y2="27" stroke={color} strokeWidth="1.8" strokeLinecap="round" opacity=".28"/>
+      <rect x="26" y="26" width="10" height="10" rx="2" fill={color} opacity=".75"/>
+      <path d="M28 31h6M31 28v6" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
+    </svg>,
+    <svg key={11} width="44" height="44" viewBox="0 0 44 44" fill="none">
+      <path d="M22 8 A14 14 0 0 1 36 22 L22 22Z" fill={color} opacity=".8"/>
+      <path d="M36 22 A14 14 0 0 1 12 32 L22 22Z" fill={color} opacity=".5"/>
+      <path d="M12 32 A14 14 0 0 1 22 8 L22 22Z" fill={color} opacity=".25"/>
+      <circle cx="22" cy="22" r="5.5" fill="none" stroke={color} strokeWidth="2" opacity=".35"/>
+    </svg>,
+    <svg key={12} width="44" height="44" viewBox="0 0 44 44" fill="none">
+      <path d="M6 8h4l5 18h18l4-12H14" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+      <circle cx="20" cy="33" r="3" fill={color} opacity=".7"/>
+      <circle cx="32" cy="33" r="3" fill={color} opacity=".7"/>
+    </svg>,
+    <svg key={13} width="44" height="44" viewBox="0 0 44 44" fill="none">
+      {[6,12,18,24,30,36,42].map((x,i)=>{const h=[8,16,26,20,30,14,10][i];return <rect key={i} x={x-1.5} y={22-h/2} width="3" height={h} rx="1.5" fill={color} opacity={0.3+i*0.1}/>})}
+    </svg>,
+    <svg key={14} width="44" height="44" viewBox="0 0 44 44" fill="none">
+      <rect x="4"  y="4"  width="16" height="16" rx="4" fill={color} opacity=".2" stroke={color} strokeWidth="1.2"/>
+      <rect x="24" y="4"  width="16" height="16" rx="4" fill={color} opacity=".45" stroke={color} strokeWidth="1.2"/>
+      <rect x="4"  y="24" width="16" height="16" rx="4" fill={color} opacity=".7" stroke={color} strokeWidth="1.2"/>
+      <rect x="24" y="24" width="16" height="16" rx="4" fill={color} stroke={color} strokeWidth="1.2"/>
+      <path d="M27 32l3 3 5-5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>,
+    <svg key={15} width="44" height="44" viewBox="0 0 44 44" fill="none">
+      <path d="M18 26a7 7 0 0 0 9.9 0l5-5a7 7 0 0 0-9.9-9.9L21 13" stroke={color} strokeWidth="2.5" strokeLinecap="round" fill="none"/>
+      <path d="M26 18a7 7 0 0 0-9.9 0l-5 5a7 7 0 0 0 9.9 9.9L23 31" stroke={color} strokeWidth="2.5" strokeLinecap="round" fill="none" opacity=".55"/>
+    </svg>,
+    <svg key={16} width="44" height="44" viewBox="0 0 44 44" fill="none">
+      <rect x="8" y="8" width="22" height="28" rx="2" fill={color} opacity=".1" stroke={color} strokeWidth="1.3"/>
+      <line x1="13" y1="17" x2="25" y2="17" stroke={color} strokeWidth="1.7" strokeLinecap="round" opacity=".6"/>
+      <line x1="13" y1="23" x2="25" y2="23" stroke={color} strokeWidth="1.7" strokeLinecap="round" opacity=".4"/>
+      <line x1="13" y1="29" x2="20" y2="29" stroke={color} strokeWidth="1.7" strokeLinecap="round" opacity=".25"/>
+      <path d="M28 26l8-8-4-4-8 8v4h4z" fill={color} opacity=".85"/>
+    </svg>,
+    <svg key={17} width="44" height="44" viewBox="0 0 44 44" fill="none">
+      <path d="M22 8l17 9-17 9-17-9 17-9z" fill={color} opacity=".55"/>
+      <path d="M5 22l17 9 17-9" stroke={color} strokeWidth="2" strokeLinecap="round" fill="none" opacity=".75"/>
+      <path d="M5 29l17 9 17-9" stroke={color} strokeWidth="2" strokeLinecap="round" fill="none" opacity=".45"/>
+    </svg>,
+    <svg key={18} width="44" height="44" viewBox="0 0 44 44" fill="none">
+      <path d="M8 12h24a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3H18l-6 5v-5H8a3 3 0 0 1-3-3V15a3 3 0 0 1 3-3z" fill={color} opacity=".18" stroke={color} strokeWidth="1.3"/>
+      <circle cx="16" cy="19" r="2" fill={color} opacity=".7"/>
+      <circle cx="22" cy="19" r="2" fill={color} opacity=".7"/>
+      <circle cx="28" cy="19" r="2" fill={color} opacity=".7"/>
+    </svg>,
+    <svg key={19} width="44" height="44" viewBox="0 0 44 44" fill="none">
+      <path d="M22 5L7 12v13c0 9 6.5 16 15 18 8.5-2 15-9 15-18V12L22 5z" fill={color} opacity=".12" stroke={color} strokeWidth="1.3"/>
+      <path d="M15 22l5 5 9-9" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>,
+    <svg key={20} width="44" height="44" viewBox="0 0 44 44" fill="none">
+      <path d="M8 30a14 14 0 1 1 28 0" stroke={color} strokeWidth="2.5" strokeLinecap="round" fill="none" opacity=".25"/>
+      <path d="M8 30a14 14 0 0 1 22-13" stroke={color} strokeWidth="2.5" strokeLinecap="round" fill="none"/>
+      <line x1="22" y1="30" x2="29" y2="17" stroke={color} strokeWidth="2" strokeLinecap="round"/>
+      <circle cx="22" cy="30" r="3" fill={color}/>
+    </svg>,
+    <svg key={21} width="44" height="44" viewBox="0 0 44 44" fill="none">
+      <path d="M22 6c0 0-11 7-11 19v5l5 5h12l5-5v-5C33 13 22 6 22 6z" fill={color} opacity=".22" stroke={color} strokeWidth="1.3"/>
+      <circle cx="22" cy="21" r="4.5" fill={color} opacity=".8"/>
+      <path d="M17 35l-4 6h4l2-4 2 4h5l-5-6" fill={color} opacity=".4"/>
+    </svg>,
+  ];
+  return arts[index] ?? arts[0];
 }
 
-export default function MemoryGame() {
-  const [mounted, setMounted] = useState(false);
-  const [gameState, setGameState] = useState<'menu' | 'difficulty' | 'playing' | 'won'>('menu');
-  const [cards, setCards] = useState<Card[]>([]);
-  const [flippedCards, setFlippedCards] = useState<number[]>([]);
-  const [moves, setMoves] = useState(0);
-  const [matchedPairs, setMatchedPairs] = useState(0);
-  const [time, setTime] = useState(0);
-  const [isChecking, setIsChecking] = useState(false);
-  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
-  const [soundEnabled, setSoundEnabled] = useState(true);
-  const [difficulty, setDifficulty] = useState<'easy' | 'medium' | 'hard'>('medium');
-  const [bestScore, setBestScore] = useState<number | null>(null);
-  const [showNameModal, setShowNameModal] = useState(false);
-  const [playerName, setPlayerName] = useState('');
-  const [pendingScore, setPendingScore] = useState<{ moves: number; time: number } | null>(null);
-  const [showDifficultyModal, setShowDifficultyModal] = useState(false);
-  const [leaderboardPosition, setLeaderboardPosition] = useState<number | null>(null);
-  const [scoreSaved, setScoreSaved] = useState(false); // Prevent duplicate saves
-  const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
+// ─── COMPONENT ───────────────────────────────────────────────────────────────
 
-  const emojis = {
-    easy: ['🚧', '🏗️', '👷', '🔨', '⚒️', '🧱'],
-    medium: ['🚧', '🏗️', '👷', '🔨', '⚒️', '🧱', '🪜', '⛏️'],
-    hard: ['🚧', '🏗️', '👷', '🔨', '⚒️', '🧱', '🪜', '⛏️', '🔩', '🪛', '🏭', '🏢'],
-  };
+const FAVICON = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%237F77DD'/><text x='16' y='22' font-size='16' font-family='system-ui' font-weight='700' fill='white' text-anchor='middle'>MK</text></svg>`;
 
-  const totalPairs = {
-    easy: 6,
-    medium: 8,
-    hard: 12,
-  };
+export default function Home() {
+  const [dark, setDark] = useState(true);
+  const [days, setDays] = useState(1);
+  const [hovered, setHovered] = useState<number | null>(null);
 
   useEffect(() => {
-    setMounted(true);
-    loadLeaderboard();
-    loadBestScore();
-
-    // Disable pull-to-refresh on mobile
-    document.body.style.overscrollBehavior = 'none';
-    document.documentElement.style.overscrollBehavior = 'none';
-
-    return () => {
-      document.body.style.overscrollBehavior = 'auto';
-      document.documentElement.style.overscrollBehavior = 'auto';
-    };
+    const link: HTMLLinkElement = document.querySelector("link[rel='icon']") ?? document.createElement("link");
+    link.rel = "icon";
+    link.href = `data:image/svg+xml,${FAVICON}`;
+    document.head.appendChild(link);
+    document.title = "Mehran Khan — Building 22 Apps";
+    const start = new Date("2026-04-10");
+    setDays(Math.max(1, Math.floor((Date.now() - start.getTime()) / 86400000)));
   }, []);
 
-  // Timer
-  useEffect(() => {
-    if (gameState !== 'playing') return;
+  const allProjects = phases.flatMap((p) => p.projects);
 
-    const timer = setInterval(() => {
-      setTime(prev => prev + 1);
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, [gameState]);
-
-  // Safe leaderboard loader
-  const loadLeaderboard = async () => {
-    try {
-      const res = await fetch('/api/leaderboard');
-      const data = await res.json();
-
-      // Check if data is an array
-      if (!Array.isArray(data)) {
-        console.error('Leaderboard response is not an array:', data);
-        setLeaderboard([]);
-        return;
-      }
-
-      // Data is already parsed objects from the API
-      const validated: LeaderboardEntry[] = data.filter((entry): entry is LeaderboardEntry => {
-        // Validate that each entry has the required fields
-        return (
-          entry &&
-          typeof entry === 'object' &&
-          typeof entry.name === 'string' &&
-          typeof entry.moves === 'number' &&
-          typeof entry.time === 'number' &&
-          typeof entry.date === 'string'
-        );
-      });
-
-      setLeaderboard(validated);
-    } catch (error) {
-      console.error('Error loading leaderboard:', error);
-      setLeaderboard([]);
-    }
+  const c = dark ? {
+    bg: "#07070e", bg2: "#0d0d1c", bg3: "#15152a",
+    card: "#0f0f1e", border: "rgba(255,255,255,0.07)", borderH: "rgba(255,255,255,0.16)",
+    text: "#f0eee8", text2: "rgba(240,238,232,0.52)", text3: "rgba(240,238,232,0.24)",
+    acc1: "#7F77DD", acc2: "#5DCAA5",
+  } : {
+    bg: "#f3f2ee", bg2: "#ffffff", bg3: "#e5e4df",
+    card: "#ffffff", border: "rgba(0,0,0,0.08)", borderH: "rgba(127,119,221,0.4)",
+    text: "#1a1928", text2: "rgba(26,25,40,0.55)", text3: "rgba(26,25,40,0.28)",
+    acc1: "#534AB7", acc2: "#0F6E56",
   };
 
-  const loadBestScore = () => {
-    const best = localStorage.getItem('memoryBestScore');
-    if (best) setBestScore(parseInt(best));
-  };
+  let globalIdx = 0;
 
-  const calculateLeaderboardPosition = (finalMoves: number, finalTime: number): number => {
-    const score = finalMoves * 1000 + finalTime;
-    let position = 1;
-
-    for (const entry of leaderboard) {
-      const entryScore = entry.moves * 1000 + entry.time;
-      if (entryScore < score) {
-        position++;
-      }
-    }
-
-    return position;
-  };
-
-  const saveScore = async (finalMoves: number, finalTime: number) => {
-    if (scoreSaved) return; // Prevent duplicate saves
-
-    const position = calculateLeaderboardPosition(finalMoves, finalTime);
-    setLeaderboardPosition(position);
-    setPendingScore({ moves: finalMoves, time: finalTime });
-    setShowNameModal(true);
-  };
-
-  const submitScore = async () => {
-    if (!playerName.trim() || !pendingScore || scoreSaved) return;
-
-    setScoreSaved(true); // Mark as saved to prevent duplicates
-
-    const entry: LeaderboardEntry = {
-      name: playerName.trim().slice(0, 20),
-      moves: pendingScore.moves,
-      time: pendingScore.time,
-      date: new Date().toISOString(),
-    };
-
-    try {
-      await fetch('/api/leaderboard', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(entry),
-      });
-
-      await loadLeaderboard();
-    } catch (error) {
-      console.error('Failed to save score:', error);
-      alert('Failed to save to leaderboard.');
-      setScoreSaved(false); // Reset on error
-      return;
-    }
-
-    if (!bestScore || pendingScore.moves < bestScore) {
-      setBestScore(pendingScore.moves);
-      localStorage.setItem('memoryBestScore', pendingScore.moves.toString());
-    }
-
-    setShowNameModal(false);
-    setPlayerName('');
-    setPendingScore(null);
-  };
-
-  const skipSave = () => {
-    setShowNameModal(false);
-    setPlayerName('');
-    setPendingScore(null);
-    setScoreSaved(false);
-  };
-
-  const playSound = (frequency: number, duration: number) => {
-    if (!soundEnabled) return;
-
-    try {
-      // Reuse existing AudioContext or create one
-      let ctx = audioContext;
-      if (!ctx) {
-        ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
-        setAudioContext(ctx);
-      }
-
-      const oscillator = ctx.createOscillator();
-      const gainNode = ctx.createGain();
-
-      oscillator.connect(gainNode);
-      gainNode.connect(ctx.destination);
-
-      oscillator.frequency.value = frequency;
-      oscillator.type = 'sine';
-
-      gainNode.gain.setValueAtTime(0.1, ctx.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + duration);
-
-      oscillator.start(ctx.currentTime);
-      oscillator.stop(ctx.currentTime + duration);
-    } catch (e) {
-      console.error('Audio error:', e);
-    }
-  };
-
-  const initializeGame = (diff: 'easy' | 'medium' | 'hard') => {
-    const selectedEmojis = emojis[diff];
-    const gameCards: Card[] = [];
-
-    selectedEmojis.forEach((emoji, index) => {
-      gameCards.push(
-        { id: index * 2, emoji, isFlipped: false, isMatched: false },
-        { id: index * 2 + 1, emoji, isFlipped: false, isMatched: false }
-      );
-    });
-
-    // Shuffle
-    for (let i = gameCards.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [gameCards[i], gameCards[j]] = [gameCards[j], gameCards[i]];
-    }
-
-    setCards(gameCards);
-    setFlippedCards([]);
-    setMoves(0);
-    setMatchedPairs(0);
-    setTime(0);
-    setGameState('playing');
-    setDifficulty(diff);
-    setLeaderboardPosition(null);
-    setScoreSaved(false); // Reset for new game
-  };
-
-  const handleCardClick = (cardId: number) => {
-    if (isChecking) return;
-    if (flippedCards.includes(cardId)) return;
-    const card = cards.find(c => c.id === cardId);
-    if (!card || card.isMatched) return;
-    if (flippedCards.length >= 2) return;
-
-    playSound(400, 0.1);
-
-    const newFlipped = [...flippedCards, cardId];
-    setFlippedCards(newFlipped);
-
-    setCards(prev => prev.map(c => (c.id === cardId ? { ...c, isFlipped: true } : c)));
-
-    if (newFlipped.length === 2) {
-      setMoves(prev => prev + 1);
-      setIsChecking(true);
-
-      const [firstId, secondId] = newFlipped;
-      const firstCard = cards.find(c => c.id === firstId);
-      const secondCard = cards.find(c => c.id === secondId);
-
-      if (firstCard && secondCard && firstCard.emoji === secondCard.emoji) {
-        playSound(800, 0.3);
-        if (navigator.vibrate) navigator.vibrate(50);
-
-        // FASTER: Reduced to 300ms for instant feel
-        setTimeout(() => {
-          setCards(prev =>
-            prev.map(c => (c.id === firstId || c.id === secondId ? { ...c, isMatched: true } : c))
-          );
-          setMatchedPairs(prev => prev + 1);
-          setFlippedCards([]);
-          setIsChecking(false);
-
-          if (matchedPairs + 1 === totalPairs[difficulty]) {
-            setTimeout(() => saveScore(moves + 1, time), 500);
-            setGameState('won');
-          }
-        }, 300);
-      } else {
-        playSound(200, 0.2);
-        // FASTER: Reduced to 500ms for quicker gameplay
-        setTimeout(() => {
-          setCards(prev =>
-            prev.map(c => (c.id === firstId || c.id === secondId ? { ...c, isFlipped: false } : c))
-          );
-          setFlippedCards([]);
-          setIsChecking(false);
-        }, 500);
-      }
-    }
-  };
-
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
-  };
-
-  const gridCols = {
-    easy: 'grid-cols-3',
-    medium: 'grid-cols-4',
-    hard: 'grid-cols-4',
-  };
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white overflow-x-hidden">
-      {/* Fixed header - MORE PROMINENT */}
-      <div className="sticky top-0 z-50 bg-gradient-to-r from-yellow-500 to-orange-500 border-b-4 border-yellow-600 shadow-2xl">
-        <div className="max-w-6xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-center gap-3">
-            <div className="flex items-center gap-2 animate-pulse">
-              <span className="text-3xl">🚧</span>
-              <h1 className="text-2xl md:text-3xl font-black tracking-wider text-black drop-shadow-lg">
-                UNDER CONSTRUCTION
-              </h1>
-              <span className="text-3xl">🚧</span>
-            </div>
-          </div>
+    <main style={{ background: c.bg, minHeight: "100vh", fontFamily: "system-ui, sans-serif", color: c.text, transition: "background .25s, color .25s" }}>
+
+      {/* ── NAV ── */}
+      <nav style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 28px", borderBottom: `1px solid ${c.border}`, background: c.bg, position: "sticky", top: 0, zIndex: 100 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
+            <rect width="30" height="30" rx="8" fill={c.acc1}/>
+            <text x="15" y="21" fontSize="14" fontFamily="system-ui" fontWeight="700" fill="white" textAnchor="middle">MK</text>
+          </svg>
+          <span style={{ fontSize: 15, fontWeight: 500 }}>mehrankhan.net</span>
         </div>
-      </div>
-
-      {/* Brick wall background */}
-      {/* Removed for cleaner UI */}
-
-      <div className="max-w-6xl mx-auto px-4 py-6 pb-20">
-        {/* Menu State */}
-        {gameState === 'menu' && (
-          <div className="max-w-2xl mx-auto space-y-6">
-            <div className="bg-slate-800/80 backdrop-blur-lg rounded-2xl border-4 border-yellow-500 p-6 md:p-8 shadow-2xl">
-              <div className="text-center space-y-6">
-                <div className="text-6xl mb-4">🧠</div>
-                <h2 className="text-3xl md:text-4xl font-bold">Memory Match</h2>
-                <p className="text-lg text-slate-300">
-                  Test your memory while we build something amazing!
-                </p>
-
-                <button
-                  onClick={() => setShowDifficultyModal(true)}
-                  className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-bold py-6 px-8 rounded-xl transition-all transform hover:scale-105 shadow-lg text-2xl"
-                >
-                  ▶ PLAY NOW
-                </button>
-              </div>
-            </div>
-
-            {/* COMPACT Leaderboard */}
-            <div className="mt-6 bg-slate-800/80 backdrop-blur-lg rounded-2xl border-4 border-yellow-500 p-4 md:p-6 shadow-2xl">
-              <h3 className="text-xl md:text-2xl font-bold mb-3 text-center">
-                🏆 TOP 10 CHAMPIONS
-              </h3>
-              {leaderboard.length === 0 ? (
-                <div className="text-center text-slate-400 py-6">
-                  <p className="text-3xl mb-2">👀</p>
-                  <p className="text-sm">No scores yet! Be the first!</p>
-                </div>
-              ) : (
-                <div className="space-y-1.5">
-                  {leaderboard.map((entry, index) => (
-                    <div
-                      key={index}
-                      className={`flex items-center gap-2 p-2 rounded-lg text-sm ${
-                        index === 0
-                          ? 'bg-gradient-to-r from-yellow-500/20 to-yellow-600/20 border border-yellow-500'
-                          : index === 1
-                            ? 'bg-gradient-to-r from-gray-400/20 to-gray-500/20 border border-gray-400'
-                            : index === 2
-                              ? 'bg-gradient-to-r from-orange-600/20 to-orange-700/20 border border-orange-600'
-                              : 'bg-slate-700/50'
-                      }`}
-                    >
-                      <div className="text-lg min-w-[1.75rem] text-center">
-                        {index === 0
-                          ? '🥇'
-                          : index === 1
-                            ? '🥈'
-                            : index === 2
-                              ? '🥉'
-                              : `#${index + 1}`}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="font-bold truncate">{entry.name}</div>
-                        <div className="text-xs text-slate-400">
-                          {new Date(entry.date).toLocaleDateString('en-US', {
-                            month: 'short',
-                            day: 'numeric',
-                          })}
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div className="font-bold text-yellow-400">{entry.moves}</div>
-                        <div className="text-xs text-slate-400">{formatTime(entry.time)}</div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: c.text3 }}>
+            <span style={{ width: 6, height: 6, borderRadius: "50%", background: c.acc2, display: "inline-block", animation: "pulse 2s ease-in-out infinite" }} />
+            building live
           </div>
-        )}
-
-        {/* Playing State */}
-        {gameState === 'playing' && (
-          <div className="space-y-6">
-            {/* Stats */}
-            <div className="grid grid-cols-3 gap-3 max-w-2xl mx-auto">
-              <div className="bg-slate-800 border-2 border-yellow-500 rounded-xl p-4 text-center">
-                <div className="text-2xl md:text-3xl font-bold">{moves}</div>
-                <div className="text-xs md:text-sm text-slate-400">MOVES</div>
-              </div>
-              <div className="bg-slate-800 border-2 border-yellow-500 rounded-xl p-4 text-center">
-                <div className="text-2xl md:text-3xl font-bold">{formatTime(time)}</div>
-                <div className="text-xs md:text-sm text-slate-400">TIME</div>
-              </div>
-              <div className="bg-slate-800 border-2 border-yellow-500 rounded-xl p-4 text-center">
-                <div className="text-2xl md:text-3xl font-bold">
-                  {matchedPairs}/{totalPairs[difficulty]}
-                </div>
-                <div className="text-xs md:text-sm text-slate-400">PAIRS</div>
-              </div>
-            </div>
-
-            {/* Game Board */}
-            <div className="max-w-2xl mx-auto">
-              <div className={`grid ${gridCols[difficulty]} gap-2 md:gap-3`}>
-                {cards.map(card => (
-                  <button
-                    key={card.id}
-                    onClick={() => handleCardClick(card.id)}
-                    disabled={card.isMatched || isChecking}
-                    className={`aspect-square rounded-xl text-5xl md:text-6xl flex items-center justify-center transition-all transform ${
-                      card.isFlipped || card.isMatched
-                        ? 'bg-slate-800 scale-100'
-                        : 'bg-slate-700 hover:bg-slate-600 active:scale-95'
-                    } ${card.isMatched ? 'opacity-50 scale-95' : ''} shadow-lg border-2 ${
-                      card.isMatched ? 'border-green-500' : 'border-slate-600'
-                    }`}
-                  >
-                    {card.isFlipped || card.isMatched ? card.emoji : '❓'}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="text-center">
-              <button
-                onClick={() => setGameState('menu')}
-                className="bg-slate-700 hover:bg-slate-600 text-white px-6 py-3 rounded-xl font-bold transition-colors"
-              >
-                ← BACK TO MENU
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Won State */}
-        {gameState === 'won' && (
-          <div className="max-w-2xl mx-auto">
-            <div className="bg-slate-800/90 backdrop-blur-lg rounded-2xl border-4 border-yellow-500 p-8 shadow-2xl text-center space-y-6">
-              <div className="text-6xl mb-4">
-                {leaderboardPosition === 1
-                  ? '🏆'
-                  : leaderboardPosition === 2
-                    ? '🥈'
-                    : leaderboardPosition === 3
-                      ? '🥉'
-                      : leaderboardPosition && leaderboardPosition <= 10
-                        ? '🎯'
-                        : '💪'}
-              </div>
-              <h2 className="text-4xl font-bold">
-                {leaderboardPosition === 1
-                  ? '#1 ON LEADERBOARD!'
-                  : leaderboardPosition === 2
-                    ? '#2 ON LEADERBOARD!'
-                    : leaderboardPosition === 3
-                      ? '#3 ON LEADERBOARD!'
-                      : leaderboardPosition && leaderboardPosition <= 10
-                        ? `#${leaderboardPosition} ON LEADERBOARD!`
-                        : leaderboardPosition
-                          ? 'Not in Top 10'
-                          : 'Not in Top 10'}
-              </h2>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="bg-slate-700/50 p-4 rounded-xl">
-                  <div className="text-3xl font-bold text-yellow-400">{moves}</div>
-                  <div className="text-sm text-slate-400">MOVES</div>
-                </div>
-                <div className="bg-slate-700/50 p-4 rounded-xl">
-                  <div className="text-3xl font-bold text-yellow-400">{formatTime(time)}</div>
-                  <div className="text-sm text-slate-400">TIME</div>
-                </div>
-              </div>
-
-              <div className="space-y-3">
-                <button
-                  onClick={() => initializeGame(difficulty)}
-                  className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-bold py-4 px-6 rounded-xl transition-all transform hover:scale-105 shadow-lg"
-                >
-                  🎮 PLAY AGAIN
-                </button>
-                <button
-                  onClick={() => setGameState('menu')}
-                  className="w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-4 px-6 rounded-xl transition-colors"
-                >
-                  BACK TO MENU
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Footer - BETTER COLORS */}
-      <footer className="fixed bottom-0 left-0 right-0 bg-slate-900/90 backdrop-blur-lg border-t border-slate-700 py-3 text-center text-sm z-40">
-        <div className="max-w-6xl mx-auto px-4 relative">
-          <div>
-            <span className="text-slate-400">© {mounted ? new Date().getFullYear() : '2024'}</span>{' '}
-            <span className="font-bold bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">
-              Mehran Khan
-            </span>
-          </div>
-          <button
-            onClick={() => setSoundEnabled(!soundEnabled)}
-            className="absolute right-4 top-1/2 -translate-y-1/2 bg-slate-800 hover:bg-slate-700 p-2 rounded-lg transition-colors border border-slate-600"
-            aria-label="Toggle sound"
-          >
-            {soundEnabled ? '🔊' : '🔇'}
+          <button onClick={() => setDark(!dark)} aria-label="Toggle theme" style={{ width: 42, height: 24, borderRadius: 12, background: c.bg3, border: `1px solid ${c.border}`, cursor: "pointer", position: "relative", flexShrink: 0, transition: "background .25s" }}>
+            <span style={{ position: "absolute", top: 3, left: dark ? 3 : 19, width: 16, height: 16, borderRadius: "50%", background: c.acc1, transition: "left .2s", display: "block" }} />
           </button>
         </div>
+      </nav>
+
+      {/* ── TICKER ── */}
+      <div style={{ overflow: "hidden", background: c.bg2, borderBottom: `1px solid ${c.border}`, padding: "8px 0" }}>
+        <div style={{ display: "flex", whiteSpace: "nowrap", animation: "ticker 36s linear infinite" }}>
+          {[...allProjects, ...allProjects].map((p, i) => (
+            <span key={i} style={{ fontSize: 11, color: c.acc1, padding: "0 24px", letterSpacing: "0.05em", opacity: 0.75 }}>
+              {p.name} <span style={{ opacity: 0.3 }}>·</span>
+            </span>
+          ))}
+        </div>
+      </div>
+
+      {/* ── HERO ── */}
+      <div style={{ padding: "60px 28px 50px", textAlign: "center" }}>
+        <div style={{ margin: "0 auto 24px", width: 80, height: 80, borderRadius: "50%", background: `linear-gradient(135deg, ${c.acc1}, ${c.acc2})`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 26, fontWeight: 700, color: "#fff" }}>
+          MK
+        </div>
+        <div style={{ fontSize: 11, letterSpacing: "0.13em", color: c.acc2, textTransform: "uppercase", marginBottom: 14, fontWeight: 500 }}>
+          22 projects · 4 phases · 1 developer
+        </div>
+        <h1 style={{ fontSize: "clamp(40px,8vw,68px)", fontWeight: 500, lineHeight: 1.05, background: `linear-gradient(135deg,${c.text} 15%,${c.acc1} 50%,${c.acc2} 85%)`, backgroundSize: "200% 200%", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text", animation: "gradShift 6s ease infinite", marginBottom: 16 }}>
+          Mehran Khan
+        </h1>
+        <p style={{ fontSize: 17, color: c.text2, lineHeight: 1.72, maxWidth: 520, margin: "0 auto 8px" }}>
+          My journey is to build <strong style={{ color: c.text }}>22 world class apps</strong> from absolute zero.<br />Watch me do it.
+        </p>
+        <p style={{ fontSize: 12, color: c.text3, fontStyle: "italic", marginBottom: 32 }}>Every tile is a real app. Click the live ones.</p>
+        <div style={{ maxWidth: 400, margin: "0 auto" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: c.text3, marginBottom: 8 }}>
+            <span>journey progress</span><span>{DONE} of 22 shipped</span>
+          </div>
+          <div style={{ height: 4, background: c.bg3, borderRadius: 2, overflow: "hidden" }}>
+            <div style={{ height: "100%", width: `${Math.round((DONE / 22) * 100)}%`, background: `linear-gradient(90deg,${c.acc1},${c.acc2})`, borderRadius: 2, transition: "width 1.5s cubic-bezier(.4,0,.2,1)" }} />
+          </div>
+        </div>
+      </div>
+
+      {/* ── PHASES + TILES ── */}
+      {phases.map((phase, phaseIdx) => {
+        const phaseStart = globalIdx;
+        globalIdx += phase.projects.length;
+        return (
+          <div key={phase.label} style={{ padding: "0 28px 4px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 12, margin: "32px 0 16px" }}>
+              <PhaseIcon color={phase.color} phase={phaseIdx} />
+              <span style={{ fontSize: 10, fontWeight: 500, padding: "5px 12px", borderRadius: 20, letterSpacing: "0.05em", background: phase.colorBg, color: phase.color, border: `1px solid ${phase.colorBorder}`, flexShrink: 0 }}>
+                {phase.label}
+              </span>
+              <span style={{ fontSize: 14, fontWeight: 500, color: c.text }}>{phase.title}</span>
+              <span style={{ fontSize: 12, color: c.text3 }}>— {phase.desc}</span>
+              <div style={{ flex: 1, height: 1, background: c.border }} />
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(150px,1fr))", gap: 12, marginBottom: 8 }}>
+              {phase.projects.map((p, pi) => {
+                const i = phaseStart + pi;
+                const isDone = i < DONE;
+                const isNext = i === DONE;
+                const isLocked = !isDone && !isNext;
+                const isHov = hovered === i;
+
+                const badgeText = isDone ? "live" : isNext ? "up next" : p.type === "gap" ? "gap-filler" : p.type === "con" ? "consolidation" : null;
+                const badgeBg = isDone ? "rgba(93,202,165,0.15)" : isNext ? "rgba(127,119,221,0.18)" : p.type === "gap" ? "rgba(239,159,39,0.14)" : "rgba(240,153,123,0.14)";
+                const badgeColor = isDone ? c.acc2 : isNext ? c.acc1 : p.type === "gap" ? "#EF9F27" : "#F0997B";
+
+                return (
+                  <a
+                    key={p.id}
+                    href={isDone && p.live ? p.live : undefined}
+                    target={isDone && p.live ? "_blank" : undefined}
+                    rel="noreferrer"
+                    onClick={isLocked ? (e) => e.preventDefault() : undefined}
+                    onMouseEnter={() => !isLocked && setHovered(i)}
+                    onMouseLeave={() => setHovered(null)}
+                    style={{
+                      borderRadius: 16,
+                      border: `1px solid ${isHov || isDone || isNext ? phase.colorBorder : c.border}`,
+                      padding: "16px 14px 36px",
+                      background: isHov ? phase.colorBg : isDone ? phase.colorBg : c.card,
+                      cursor: isLocked ? "not-allowed" : "pointer",
+                      position: "relative",
+                      overflow: "hidden",
+                      textDecoration: "none",
+                      display: "block",
+                      opacity: isLocked ? 0.2 : 1,
+                      transform: isHov ? "translateY(-5px) scale(1.02)" : "none",
+                      transition: "all .2s ease",
+                    }}
+                  >
+                    <div style={{ marginBottom: 10 }}>
+                      <TileArt index={i} color={phase.color} />
+                    </div>
+                    <div style={{ fontSize: 10, color: c.text3, fontFamily: "monospace", marginBottom: 7 }}>{p.id}</div>
+                    <div style={{ fontSize: 13, fontWeight: 500, color: c.text, marginBottom: 4, lineHeight: 1.35 }}>{p.name}</div>
+                    <div style={{ fontSize: 11, color: c.text3, lineHeight: 1.5 }}>{p.tag}</div>
+                    {!isLocked && (
+                      <span style={{ position: "absolute", top: 12, right: 12, fontSize: 13, color: phase.color, opacity: isHov ? 1 : 0, transform: isHov ? "translate(0,0)" : "translate(-3px,3px)", transition: "all .2s" }}>↗</span>
+                    )}
+                    {badgeText && (
+                      <span style={{ position: "absolute", bottom: 10, right: 10, fontSize: 9, fontWeight: 500, padding: "2px 7px", borderRadius: 20, background: badgeBg, color: badgeColor }}>
+                        {badgeText}
+                      </span>
+                    )}
+                  </a>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })}
+
+      {/* ── ABOUT ── */}
+      <div style={{ margin: "36px 28px", borderRadius: 20, background: c.bg2, border: `1px solid ${c.border}`, padding: "28px 24px", display: "flex", gap: 20, alignItems: "flex-start" }}>
+        <div style={{ width: 58, height: 58, minWidth: 58, borderRadius: "50%", background: `linear-gradient(135deg,${c.acc1},${c.acc2})`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, fontWeight: 700, color: "#fff", flexShrink: 0 }}>MK</div>
+        <div>
+          <p style={{ fontSize: 15, fontWeight: 500, color: c.text, marginBottom: 6 }}>My mission</p>
+          <p style={{ fontSize: 14, color: c.text2, lineHeight: 1.8 }}>
+            To build 22 world class apps, learn everything along the way, and document every step publicly. Some of these will be rough early on. That&apos;s the point. Come back in 6 months and see the difference.
+          </p>
+        </div>
+      </div>
+
+      {/* ── STATS ── */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 10, margin: "0 28px 40px" }}>
+        {[
+          { n: DONE, label: "apps shipped", color: c.acc1 },
+          { n: 22,   label: "total planned", color: c.text },
+          { n: days, label: "days building", color: c.acc2 },
+        ].map((s) => (
+          <div key={s.label} style={{ background: c.bg2, border: `1px solid ${c.border}`, borderRadius: 16, padding: "20px 16px", textAlign: "center" }}>
+            <div style={{ fontSize: 30, fontWeight: 500, color: s.color, lineHeight: 1 }}>{s.n}</div>
+            <div style={{ fontSize: 11, color: c.text3, marginTop: 6 }}>{s.label}</div>
+          </div>
+        ))}
+      </div>
+
+      <footer style={{ padding: "22px 28px", borderTop: `1px solid ${c.border}`, textAlign: "center", fontSize: 11, color: c.text3 }}>
+        mehrankhan.net — updated every time something ships
       </footer>
 
-      {/* Difficulty Selection Modal */}
-      {showDifficultyModal && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-800 rounded-2xl border-4 border-yellow-500 p-6 max-w-md w-full shadow-2xl">
-            <h3 className="text-2xl font-bold text-center mb-6">Choose Difficulty</h3>
-            <div className="space-y-3">
-              <button
-                onClick={() => {
-                  setShowDifficultyModal(false);
-                  initializeGame('easy');
-                }}
-                className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 px-6 rounded-xl transition-all"
-              >
-                <div className="text-3xl mb-1">😊</div>
-                <div className="text-xl">EASY</div>
-                <div className="text-sm opacity-80">6 pairs - Perfect for beginners</div>
-              </button>
-              <button
-                onClick={() => {
-                  setShowDifficultyModal(false);
-                  initializeGame('medium');
-                }}
-                className="w-full bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-4 px-6 rounded-xl transition-all"
-              >
-                <div className="text-3xl mb-1">🤔</div>
-                <div className="text-xl">MEDIUM</div>
-                <div className="text-sm opacity-80">8 pairs - Good challenge</div>
-              </button>
-              <button
-                onClick={() => {
-                  setShowDifficultyModal(false);
-                  initializeGame('hard');
-                }}
-                className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-6 rounded-xl transition-all"
-              >
-                <div className="text-3xl mb-1">🔥</div>
-                <div className="text-xl">HARD</div>
-                <div className="text-sm opacity-80">12 pairs - Expert mode</div>
-              </button>
-            </div>
-            <button
-              onClick={() => setShowDifficultyModal(false)}
-              className="w-full mt-4 bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 px-6 rounded-xl transition-colors"
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Name Modal */}
-      {showNameModal && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-800 rounded-2xl border-4 border-yellow-500 p-6 max-w-md w-full shadow-2xl">
-            <h3 className="text-2xl font-bold text-center mb-2">🎉 Congratulations!</h3>
-
-            {leaderboardPosition && leaderboardPosition <= 10 && (
-              <div className="text-center mb-4">
-                <p className="text-lg text-yellow-400 font-bold">
-                  {leaderboardPosition === 1
-                    ? '👑 You got 1st place!'
-                    : leaderboardPosition === 2
-                      ? '🥈 You got 2nd place!'
-                      : leaderboardPosition === 3
-                        ? '🥉 You got 3rd place!'
-                        : `You ranked #${leaderboardPosition}!`}
-                </p>
-              </div>
-            )}
-
-            <p className="text-center text-slate-300 mb-6">Enter your name for the leaderboard:</p>
-            <input
-              type="text"
-              value={playerName}
-              onChange={e => setPlayerName(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && submitScore()}
-              placeholder="Your name..."
-              maxLength={20}
-              autoFocus
-              className="w-full bg-slate-700 border-2 border-slate-600 rounded-lg px-4 py-3 text-white placeholder-slate-400 focus:border-yellow-500 focus:outline-none mb-4"
-            />
-            <div className="flex gap-3">
-              <button
-                onClick={skipSave}
-                className="flex-1 bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 px-6 rounded-lg transition-colors"
-              >
-                Skip
-              </button>
-              <button
-                onClick={submitScore}
-                disabled={!playerName.trim()}
-                className="flex-1 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 disabled:from-slate-600 disabled:to-slate-600 disabled:cursor-not-allowed text-white font-bold py-3 px-6 rounded-lg transition-colors"
-              >
-                Save Score
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
+      <style>{`
+        @keyframes gradShift { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
+        @keyframes ticker    { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+        @keyframes pulse     { 0%,100%{opacity:.4;transform:scale(1)} 50%{opacity:1;transform:scale(1.2)} }
+        * { box-sizing: border-box; }
+        a { text-decoration: none; }
+      `}</style>
+    </main>
   );
 }
