@@ -464,8 +464,8 @@ function FeedbackModal({
               display: "flex", alignItems: "center", justifyContent: "center",
               margin: "0 auto 18px", color: "#10B981",
             }}>{Icons.check}</div>
-            <p style={{ fontSize: 18, fontWeight: 600, color: colors.text, marginBottom: 6, letterSpacing: "-0.02em" }}>Thank you!</p>
-            <p style={{ fontSize: 13.5, color: colors.text2 }}>Mehran will see this. 🙏</p>
+            <p style={{ fontSize: 18, fontWeight: 600, color: colors.text, marginBottom: 6, letterSpacing: "-0.02em" }}>Sent.</p>
+            <p style={{ fontSize: 13.5, color: colors.text2 }}>Mehran will see this.</p>
           </div>
         ) : (
           <>
@@ -476,7 +476,7 @@ function FeedbackModal({
               What do you think?
             </p>
             <p style={{ fontSize: 13.5, color: colors.text2, marginBottom: 22, lineHeight: 1.65 }}>
-              Encouragement, a question, anything — Mehran reads every message.
+              Encouragement, a question, or a critique — Mehran reads every message.
             </p>
             <textarea
               value={msg}
@@ -656,6 +656,7 @@ export default function Home() {
       background: colors.bg, minHeight: "100vh",
       fontFamily: "'Instrument Sans', system-ui, sans-serif",
       color: colors.text, transition: "background 0.3s, color 0.3s", overflowX: "hidden",
+      overscrollBehavior: "none",
     }}>
 
       {/* Ambient glows */}
@@ -700,7 +701,7 @@ export default function Home() {
               onMouseEnter={e => { e.currentTarget.style.borderColor = colors.acc1; e.currentTarget.style.color = colors.acc1; }}
               onMouseLeave={e => { e.currentTarget.style.borderColor = colors.border; e.currentTarget.style.color = colors.text3; }}
             >
-              Leave a note ✉︎
+              Leave a note
             </button>
             <button
               onClick={() => setDark(!dark)}
@@ -724,14 +725,14 @@ export default function Home() {
         {/* ── TICKER ── */}
         <div style={{
           overflow: "hidden",
-          background: dark ? "rgba(139,124,246,0.025)" : "rgba(90,76,200,0.025)",
+          background: dark ? "rgba(139,124,246,0.04)" : "rgba(90,76,200,0.025)",
           borderBottom: `1px solid ${colors.border}`,
-          padding: "8px 0",
+          padding: "9px 0",
         }}>
           <div style={{ display: "flex", whiteSpace: "nowrap", animation: "ticker 52s linear infinite" }}>
             {[...allProjects, ...allProjects].map((p, i) => (
-              <span key={i} style={{ fontSize: 11, color: colors.text4, padding: "0 20px", letterSpacing: "0.09em", textTransform: "uppercase" }}>
-                {p.name}<span style={{ marginLeft: 20, opacity: 0.5 }}>·</span>
+              <span key={i} style={{ fontSize: 11.5, color: dark ? "rgba(238,234,248,0.42)" : colors.text4, padding: "0 20px", letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 500 }}>
+                {p.name}<span style={{ marginLeft: 20, color: dark ? "rgba(139,124,246,0.5)" : colors.text4 }}>·</span>
               </span>
             ))}
           </div>
@@ -769,7 +770,7 @@ export default function Home() {
             background: dark ? "rgba(16,185,129,0.07)" : "rgba(10,122,86,0.06)",
             border: `1px solid ${dark ? "rgba(16,185,129,0.18)" : "rgba(10,122,86,0.14)"}`,
           }}>
-            {TOTAL} projects · 4 phases · 1 developer
+            22 projects · 4 phases · 1 developer
           </div>
 
           <h1 style={{
@@ -808,15 +809,15 @@ export default function Home() {
 
           <p style={{
             fontSize: "clamp(16px,2.1vw,20px)", color: colors.text2,
-            lineHeight: 1.68, maxWidth: 570, margin: "0 auto 12px", letterSpacing: "-0.01em",
+            lineHeight: 1.72, maxWidth: 580, margin: "0 auto 14px", letterSpacing: "-0.01em",
           }}>
             I set myself a challenge: build{" "}
-            <strong style={{ color: colors.text, fontWeight: 600 }}>22 fully working apps</strong>{" "}
-            — from the simplest to-do list right up to a product that real people pay for.
-            Every single one shipped. No shortcuts.
+            <strong style={{ color: colors.text, fontWeight: 600 }}>22 fully working apps</strong>
+            {" "}— from a simple to-do list to a product with real paying users.
+            Each one shipped. Each one taught me something the last one couldn&apos;t.
           </p>
-          <p style={{ fontSize: 14, color: colors.text3, lineHeight: 1.78, maxWidth: 480, margin: "0 auto 28px" }}>
-            This page is the live record of that journey. Watch the tiles light up one by one.
+          <p style={{ fontSize: 15, color: colors.text3, lineHeight: 1.8, maxWidth: 500, margin: "0 auto 28px" }}>
+            This page tracks it in real time. Every tile that lights up is something that&apos;s live in the world.
           </p>
 
           {/* GitHub last commit banner */}
@@ -826,7 +827,7 @@ export default function Home() {
 
           <div style={{ maxWidth: 400, margin: "0 auto" }}>
             <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: colors.text3, marginBottom: 10 }}>
-              <span>journey progress</span>
+              <span>progress</span>
               <span style={{ color: colors.text2 }}>{DONE} of {TOTAL} shipped</span>
             </div>
             <div style={{ height: 6, background: dark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.07)", borderRadius: 3, overflow: "hidden" }}>
@@ -959,16 +960,19 @@ export default function Home() {
               }}>MK</div>
               <div>
                 <p style={{ fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase", color: colors.acc1, fontWeight: 600, marginBottom: 10 }}>
-                  Why I&apos;m doing this
+                  The reasoning
                 </p>
                 <p style={{ fontSize: 17, fontWeight: 600, color: colors.text, marginBottom: 14, lineHeight: 1.45, letterSpacing: "-0.025em" }}>
-                  I wanted to build things that actually work — apps people use, not code that sits in a folder.
+                  Tutorials teach you syntax. Building things teaches you to think.
                 </p>
                 <p style={{ fontSize: 14.5, color: colors.text2, lineHeight: 1.82, marginBottom: 12 }}>
-                  So I planned out 22 projects, each one designed to teach me something the previous one couldn&apos;t. Starting from the basics and ending with a real product with real users. No skipped steps, no faking it.
+                  I mapped out 22 projects in deliberate sequence — each one introducing a concept the previous couldn&apos;t.
+                  Starting with React fundamentals and ending with a full production product: real auth, real payments, real users.
+                  No skipping steps. No half-finished repos collecting dust.
                 </p>
                 <p style={{ fontSize: 14.5, color: colors.text2, lineHeight: 1.82 }}>
-                  This page exists so anyone who cares can follow along. If you&apos;re proud of me, I&apos;d love to know. If you have thoughts, drop a note — the button&apos;s at the top.
+                  This page is the public record of that commitment. If you want to follow along or
+                  leave a thought, the button&apos;s at the top.
                 </p>
               </div>
             </div>
@@ -981,9 +985,9 @@ export default function Home() {
           gap: 12, padding: "24px 32px 56px", maxWidth: 1100, margin: "0 auto",
         }}>
           {[
-            { n: DONE,  label: "apps shipped", sub: `out of ${TOTAL}`, color: colors.acc1 },
-            { n: days,  label: "days in",       sub: "and still going",  color: colors.acc2 },
-            { n: TOTAL, label: "apps planned",  sub: "from scratch",     color: colors.text },
+            { n: DONE,  label: "apps shipped",  sub: `${TOTAL - DONE} remaining`,   color: colors.acc1 },
+            { n: days,  label: "days in",        sub: "and still building",           color: colors.acc2 },
+            { n: TOTAL, label: "apps planned",   sub: "from scratch",                 color: colors.text },
           ].map(s => (
             <div key={s.label} style={{
               background: colors.card, border: `1px solid ${colors.border}`,
@@ -1043,6 +1047,7 @@ export default function Home() {
           100% { transform: translate(var(--vx), var(--vy)) scale(0); opacity: 0; }
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { overscroll-behavior: none; overscroll-behavior-y: none; }
         a { text-decoration: none; color: inherit; }
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
