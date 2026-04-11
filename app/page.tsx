@@ -656,7 +656,6 @@ export default function Home() {
       background: colors.bg, minHeight: "100vh",
       fontFamily: "'Instrument Sans', system-ui, sans-serif",
       color: colors.text, transition: "background 0.3s, color 0.3s", overflowX: "hidden",
-      overscrollBehavior: "none",
     }}>
 
       {/* Ambient glows */}
