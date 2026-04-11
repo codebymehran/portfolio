@@ -615,6 +615,187 @@ function PhaseIcon({ color, phase }: { color: string; phase: number }) {
   return <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M10 2l2 6h6l-5 3.5 2 6L10 14l-5 3.5 2-6L2 8h6l2-6z" fill={color}/></svg>;
 }
 
+// ─── ROCKET VISUAL ────────────────────────────────────────────────────────────
+
+function RocketVisual({
+  done, total, dark, colors, mounted,
+}: {
+  done: number; total: number; dark: boolean;
+  colors: ReturnType<typeof buildColors>; mounted: boolean;
+}) {
+  const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+  const phases = [
+    [0,  8,  "Phase 1 — Core React"],
+    [8,  14, "Phase 2 — Next.js Frontend"],
+    [14, 19, "Phase 3 — Full Stack"],
+    [19, 22, "Phase 4 — Production"],
+  ] as const;
+  const currentPhase = phases.find(([s, e]) => done >= s && done < e) ?? phases[phases.length - 1];
+
+  const tags = ["React", "Next.js", "TypeScript", "Prisma", "Postgres", "Stripe", "Auth", "Vitest"];
+  const orbitR = 118;
+
+  return (
+    <div style={{
+      display: "flex", flexDirection: "column", alignItems: "center",
+      padding: "32px 0 24px",
+      opacity: mounted ? 1 : 0, transition: "opacity 0.8s ease 0.3s",
+    }}>
+      {/* Scene */}
+      <div style={{ position: "relative", width: 300, height: 300, display: "flex", alignItems: "center", justifyContent: "center" }}>
+
+        {/* Stars */}
+        {Array.from({ length: 26 }).map((_, i) => {
+          const seed = i * 137.5;
+          const size = (seed % 1.8) + 0.8;
+          const top = (seed * 3.1) % 100;
+          const left = (seed * 7.3) % 100;
+          const dur = 1.4 + (seed % 2.8);
+          const delay = -(seed % 3.5);
+          return (
+            <span key={i} style={{
+              position: "absolute", borderRadius: "50%",
+              width: size, height: size,
+              top: `${top}%`, left: `${left}%`,
+              background: dark ? `rgba(196,181,253,${0.12 + (i % 4) * 0.08})` : `rgba(79,60,210,${0.08 + (i % 3) * 0.06})`,
+              animation: `starPulse ${dur}s ease-in-out ${delay}s infinite`,
+            }} />
+          );
+        })}
+
+        {/* Orbiting tech tags */}
+        {tags.map((tag, i) => {
+          const isReverse = i % 2 === 1;
+          const dur = isReverse ? 19 + (i * 1.3) : 14 + (i * 1.1);
+          const delay = -(i * (isReverse ? 2.4 : 3.5));
+          const angle = (i / tags.length) * 360;
+          const rad = (angle * Math.PI) / 180;
+          const x = 150 + orbitR * Math.cos(rad) - 28;
+          const y = 150 + orbitR * Math.sin(rad) - 12;
+          return (
+            <span key={tag} style={{
+              position: "absolute",
+              left: x, top: y,
+              fontSize: 10.5,
+              fontFamily: "'JetBrains Mono', monospace",
+              color: dark ? "rgba(196,181,253,0.65)" : colors.acc1,
+              background: dark ? "rgba(139,124,246,0.1)" : "rgba(79,60,210,0.06)",
+              border: `1px solid ${dark ? "rgba(139,124,246,0.2)" : "rgba(79,60,210,0.12)"}`,
+              borderRadius: 20,
+              padding: "2px 8px",
+              whiteSpace: "nowrap",
+              animation: `${isReverse ? "orbitTagR" : "orbitTag"} ${dur}s linear ${delay}s infinite`,
+              transformOrigin: `${150 - x + 28}px ${150 - y + 12}px`,
+            }}>{tag}</span>
+          );
+        })}
+
+        {/* Rocket SVG */}
+        <svg
+          width="110" height="200" viewBox="0 0 110 200" fill="none"
+          style={{ position: "relative", zIndex: 2, animation: "rocketFloat 3.2s ease-in-out infinite" }}
+        >
+          <defs>
+            <linearGradient id="rBodyGrad" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stopColor="#5b4fbe"/>
+              <stop offset="50%" stopColor="#8b7cf6"/>
+              <stop offset="100%" stopColor="#5b4fbe"/>
+            </linearGradient>
+            <linearGradient id="rFuelGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#10b981"/>
+              <stop offset="100%" stopColor="#059669" stopOpacity="0.7"/>
+            </linearGradient>
+            <linearGradient id="rFlame1" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#fbbf24"/>
+              <stop offset="55%" stopColor="#f97316"/>
+              <stop offset="100%" stopColor="#ef4444" stopOpacity="0"/>
+            </linearGradient>
+            <linearGradient id="rFlame2" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#fef9c3"/>
+              <stop offset="60%" stopColor="#fbbf24"/>
+              <stop offset="100%" stopColor="#f97316" stopOpacity="0"/>
+            </linearGradient>
+            <clipPath id="rBodyClip">
+              <path d="M38 50 Q55 10 72 50 L72 142 Q55 150 38 142 Z"/>
+            </clipPath>
+          </defs>
+
+          {/* Wings */}
+          <polygon points="16,142 38,108 38,150" fill="#3c3489" opacity="0.9"/>
+          <polygon points="94,142 72,108 72,150" fill="#3c3489" opacity="0.9"/>
+
+          {/* Body */}
+          <path d="M38 50 Q55 10 72 50 L72 142 Q55 150 38 142 Z" fill="url(#rBodyGrad)"/>
+
+          {/* Fuel fill — grows from bottom */}
+          {done > 0 && (
+            <rect
+              x="38" y={50 + 92 * (1 - pct / 100)} width="34"
+              height={92 * (pct / 100)}
+              fill="url(#rFuelGrad)" opacity="0.45"
+              clipPath="url(#rBodyClip)"
+              style={{ transition: "y 1.8s cubic-bezier(.4,0,.2,1), height 1.8s cubic-bezier(.4,0,.2,1)" }}
+            />
+          )}
+
+          {/* Body outline */}
+          <path d="M38 50 Q55 10 72 50 L72 142 Q55 150 38 142 Z" fill="none" stroke="#a78bfa" strokeWidth="1" opacity="0.4"/>
+
+          {/* Porthole */}
+          <circle cx="55" cy="88" r="14" fill={dark ? "#0d0d1c" : "#e8e4ff"} opacity="0.95"/>
+          <circle cx="55" cy="88" r="14" fill="none" stroke="#a78bfa" strokeWidth="1.5" opacity="0.7"/>
+          <circle cx="55" cy="88" r="6" fill="#8b7cf6" opacity="0.9"/>
+          <circle cx="55" cy="88" r="2.5" fill="#c4b5fd"/>
+
+          {/* Stripe */}
+          <line x1="38" y1="108" x2="72" y2="108" stroke="#a78bfa" strokeWidth="0.5" opacity="0.25"/>
+
+          {/* Pct label inside porthole — only when done > 0 */}
+          {done > 0 && (
+            <text x="55" y="92" textAnchor="middle"
+              fontFamily="JetBrains Mono, monospace" fontSize="9" fontWeight="500"
+              fill={dark ? "#c4b5fd" : "#4338ca"} opacity="0.9"
+            >{pct}%</text>
+          )}
+
+          {/* Flames */}
+          <g style={{ animation: "flameOuter .18s ease-in-out infinite", transformOrigin: "55px 150px" }}>
+            <path d="M43 150 Q46 172 51 178 Q55 184 59 178 Q64 172 67 150 Z" fill="url(#rFlame1)" opacity="0.9"/>
+          </g>
+          <g style={{ animation: "flameInner .13s ease-in-out infinite", transformOrigin: "55px 150px" }}>
+            <path d="M48 150 Q51 164 55 170 Q59 164 62 150 Z" fill="url(#rFlame2)"/>
+          </g>
+        </svg>
+      </div>
+
+      {/* Labels */}
+      <div style={{ display: "flex", alignItems: "center", gap: 20, marginTop: 4 }}>
+        <div style={{ textAlign: "center" }}>
+          <div style={{ fontSize: 28, fontWeight: 500, color: colors.acc1, lineHeight: 1, fontFamily: "'JetBrains Mono', monospace" }}>{done}</div>
+          <div style={{ fontSize: 10.5, color: colors.text3, marginTop: 3, letterSpacing: "0.08em", textTransform: "uppercase" }}>shipped</div>
+        </div>
+        <div style={{ width: 1, height: 36, background: colors.border }} />
+        <div style={{ textAlign: "center" }}>
+          <div style={{ fontSize: 28, fontWeight: 500, color: colors.text3, lineHeight: 1, fontFamily: "'JetBrains Mono', monospace" }}>{total}</div>
+          <div style={{ fontSize: 10.5, color: colors.text3, marginTop: 3, letterSpacing: "0.08em", textTransform: "uppercase" }}>total</div>
+        </div>
+      </div>
+      <div style={{ fontSize: 11, color: colors.text3, fontFamily: "'JetBrains Mono', monospace", marginTop: 10, letterSpacing: "0.04em" }}>
+        {currentPhase[2]}
+      </div>
+
+      <style>{`
+        @keyframes rocketFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+        @keyframes starPulse { 0%,100%{opacity:.2} 50%{opacity:.7} }
+        @keyframes flameOuter { 0%,100%{transform:scaleY(1) scaleX(1)} 30%{transform:scaleY(.85) scaleX(1.1)} 65%{transform:scaleY(1.06) scaleX(.94)} }
+        @keyframes flameInner { 0%,100%{transform:scaleY(.9)} 40%{transform:scaleY(1.12) scaleX(.88)} 70%{transform:scaleY(.74)} }
+        @keyframes orbitTag  { from{transform:rotate(0deg)   translateX(${orbitR}px) rotate(0deg)}   to{transform:rotate(360deg)  translateX(${orbitR}px) rotate(-360deg)} }
+        @keyframes orbitTagR { from{transform:rotate(0deg)   translateX(${orbitR}px) rotate(0deg)}   to{transform:rotate(-360deg) translateX(${orbitR}px) rotate(360deg)} }
+      `}</style>
+    </div>
+  );
+}
+
 // ─── MAIN ──────────────────────────────────────────────────────────────────────
 
 export default function Home() {
@@ -724,14 +905,15 @@ export default function Home() {
         {/* ── TICKER ── */}
         <div style={{
           overflow: "hidden",
-          background: dark ? "rgba(139,124,246,0.04)" : "rgba(90,76,200,0.025)",
+          background: dark ? "rgba(139,124,246,0.06)" : "rgba(79,60,210,0.04)",
           borderBottom: `1px solid ${colors.border}`,
-          padding: "9px 0",
+          borderTop: `1px solid ${colors.border}`,
+          padding: "10px 0",
         }}>
           <div style={{ display: "flex", whiteSpace: "nowrap", animation: "ticker 52s linear infinite" }}>
             {[...allProjects, ...allProjects].map((p, i) => (
-              <span key={i} style={{ fontSize: 11.5, color: dark ? "rgba(238,234,248,0.42)" : colors.text4, padding: "0 20px", letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 500 }}>
-                {p.name}<span style={{ marginLeft: 20, color: dark ? "rgba(139,124,246,0.5)" : colors.text4 }}>·</span>
+              <span key={i} style={{ fontSize: 11.5, color: dark ? "rgba(238,234,248,0.65)" : "#6b6880", padding: "0 20px", letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 500 }}>
+                {p.name}<span style={{ marginLeft: 20, color: dark ? "rgba(139,124,246,0.7)" : "#a78bfa" }}>·</span>
               </span>
             ))}
           </div>
@@ -769,54 +951,64 @@ export default function Home() {
             background: dark ? "rgba(16,185,129,0.07)" : "rgba(10,122,86,0.06)",
             border: `1px solid ${dark ? "rgba(16,185,129,0.18)" : "rgba(10,122,86,0.14)"}`,
           }}>
-            22 projects · 4 phases · 1 developer
+            React → Next.js → Full Stack → Production · 22 apps
           </div>
 
           <h1 style={{
-            fontSize: "clamp(52px,9.5vw,96px)",
-            letterSpacing: "-0.035em", lineHeight: 1.0, marginBottom: 26,
-            fontFamily: "'Playfair Display', Georgia, serif",
-            display: "flex", alignItems: "baseline", justifyContent: "center", gap: "0.18em",
-            flexWrap: "wrap",
+            fontSize: "clamp(60px,11vw,112px)",
+            letterSpacing: "-0.02em", lineHeight: 0.95, marginBottom: 28,
+            fontFamily: "'Cormorant Garamond', Georgia, serif",
+            display: "flex", alignItems: "baseline", justifyContent: "center",
+            gap: "0.14em", flexWrap: "wrap",
           }}>
             {dark ? (
               <>
                 <span style={{
-                  fontWeight: 400, fontStyle: "italic",
-                  background: "linear-gradient(120deg, #c4b5fd 0%, #a78bfa 50%, #8B7CF6 100%)",
+                  fontWeight: 300, fontStyle: "italic",
+                  background: "linear-gradient(125deg, #e0d9ff 0%, #a78bfa 55%, #8B7CF6 100%)",
                   backgroundSize: "200% 100%",
                   WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
                   backgroundClip: "text",
-                  animation: "shimmerLeft 4s ease-in-out infinite alternate",
+                  animation: "shimmerLeft 5s ease-in-out infinite alternate",
+                  letterSpacing: "0.01em",
                 }}>Mehran</span>
                 <span style={{
                   fontWeight: 700, fontStyle: "normal",
-                  background: "linear-gradient(120deg, #ffffff 0%, #e0d9ff 40%, #10B981 100%)",
+                  background: "linear-gradient(125deg, #ffffff 0%, #f0ecff 50%, #c4b5fd 100%)",
                   backgroundSize: "200% 100%",
                   WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
                   backgroundClip: "text",
-                  animation: "shimmerRight 4s ease-in-out infinite alternate",
+                  animation: "shimmerRight 5s ease-in-out infinite alternate",
+                  letterSpacing: "-0.04em",
                 }}>Khan</span>
               </>
             ) : (
               <>
-                <span style={{ fontWeight: 400, fontStyle: "italic", color: "#3730a3" }}>Mehran</span>
-                <span style={{ fontWeight: 700, fontStyle: "normal", color: "#0f0e1a" }}>Khan</span>
+                <span style={{
+                  fontWeight: 300, fontStyle: "italic",
+                  color: "#4338ca", letterSpacing: "0.01em",
+                }}>Mehran</span>
+                <span style={{
+                  fontWeight: 700, fontStyle: "normal",
+                  color: "#0a0918", letterSpacing: "-0.04em",
+                }}>Khan</span>
               </>
             )}
           </h1>
 
           <p style={{
             fontSize: "clamp(16px,2.1vw,20px)", color: colors.text2,
-            lineHeight: 1.72, maxWidth: 580, margin: "0 auto 14px", letterSpacing: "-0.01em",
+            lineHeight: 1.72, maxWidth: 590, margin: "0 auto 14px", letterSpacing: "-0.01em",
           }}>
-            I set myself a challenge: build{" "}
-            <strong style={{ color: colors.text, fontWeight: 600 }}>22 fully working apps</strong>
-            {" "}— from a simple to-do list to a product with real paying users.
-            Each one shipped. Each one taught me something the last one couldn&apos;t.
+            Most developers spend years learning without shipping.
+            I gave myself a different brief:{" "}
+            <strong style={{ color: colors.text, fontWeight: 600 }}>22 apps, fully built and deployed</strong>
+            {" "}— each one harder than the last, each one something
+            a real user could open in a browser right now.
           </p>
-          <p style={{ fontSize: 15, color: colors.text3, lineHeight: 1.8, maxWidth: 500, margin: "0 auto 28px" }}>
-            This page tracks it in real time. Every tile that lights up is something that&apos;s live in the world.
+          <p style={{ fontSize: 15, color: colors.text3, lineHeight: 1.8, maxWidth: 520, margin: "0 auto 28px" }}>
+            Starting with React fundamentals. Ending with auth, payments, and a product I intend to charge for.
+            Every tile on this page is a shipped, working app.
           </p>
 
           {/* GitHub last commit banner */}
@@ -840,6 +1032,9 @@ export default function Home() {
             </div>
           </div>
         </div>
+
+        {/* ── ROCKET ── */}
+        <RocketVisual done={DONE} total={TOTAL} dark={dark} colors={colors} mounted={mounted} />
 
         {/* ── QUOTE ── */}
         <div style={{ padding: "0 32px", maxWidth: 1100, margin: "0 auto 8px" }}>
@@ -924,6 +1119,7 @@ export default function Home() {
                           isLocked={isLocked}
                           artIdx={i}
                           colors={colors}
+                          dark={dark}
                           onClick={(e) => handleTileClick(p, phase, isDone, e)}
                           tooltipText={
                             isDone ? `View ${p.name} →`
@@ -959,19 +1155,20 @@ export default function Home() {
               }}>MK</div>
               <div>
                 <p style={{ fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase", color: colors.acc1, fontWeight: 600, marginBottom: 10 }}>
-                  The reasoning
+                  Why 22 apps
                 </p>
                 <p style={{ fontSize: 17, fontWeight: 600, color: colors.text, marginBottom: 14, lineHeight: 1.45, letterSpacing: "-0.025em" }}>
-                  Tutorials teach you syntax. Building things teaches you to think.
+                  The gap between knowing React and being able to build production software is enormous. I wanted to close it deliberately.
                 </p>
                 <p style={{ fontSize: 14.5, color: colors.text2, lineHeight: 1.82, marginBottom: 12 }}>
-                  I mapped out 22 projects in deliberate sequence — each one introducing a concept the previous couldn&apos;t.
-                  Starting with React fundamentals and ending with a full production product: real auth, real payments, real users.
-                  No skipping steps. No half-finished repos collecting dust.
+                  Each project in this sequence was chosen to force a specific skill — state management, API design,
+                  database modelling, authentication, real-time data, billing, testing, performance.
+                  Not as isolated exercises, but as complete products a user can actually open.
                 </p>
                 <p style={{ fontSize: 14.5, color: colors.text2, lineHeight: 1.82 }}>
-                  This page is the public record of that commitment. If you want to follow along or
-                  leave a thought, the button&apos;s at the top.
+                  When all 22 are done, I&apos;ll have built the same stack a funded startup would use —
+                  and I&apos;ll have built it myself, from scratch, without shortcuts.
+                  This page is the record of that.
                 </p>
               </div>
             </div>
@@ -984,9 +1181,8 @@ export default function Home() {
           gap: 12, padding: "24px 32px 56px", maxWidth: 1100, margin: "0 auto",
         }}>
           {[
-            { n: DONE,  label: "apps shipped",  sub: `${TOTAL - DONE} remaining`,   color: colors.acc1 },
-            { n: days,  label: "days in",        sub: "and still building",           color: colors.acc2 },
-            { n: TOTAL, label: "apps planned",   sub: "from scratch",                 color: colors.text },
+            { n: DONE,  label: "apps shipped",   sub: `${TOTAL - DONE} remaining`,      color: colors.acc1 },
+            { n: TOTAL, label: "apps planned",    sub: "full-stack to production",       color: colors.text },
           ].map(s => (
             <div key={s.label} style={{
               background: colors.card, border: `1px solid ${colors.border}`,
@@ -1028,7 +1224,7 @@ export default function Home() {
       )}
 
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600;1,700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap');
         @keyframes gradShift { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
         @keyframes shimmerLeft { 0%{background-position:0% 50%} 100%{background-position:100% 50%} }
         @keyframes shimmerRight { 0%{background-position:100% 50%} 100%{background-position:0% 50%} }
@@ -1062,11 +1258,12 @@ export default function Home() {
 // ─── TILE CARD (extracted for cleanliness) ────────────────────────────────────
 
 function TileCard({
-  project, phase, isDone, isNext, isLocked, artIdx, colors, onClick, tooltipText,
+  project, phase, isDone, isNext, isLocked, artIdx, colors, dark, onClick, tooltipText,
 }: {
   project: Project; phase: Phase;
   isDone: boolean; isNext: boolean; isLocked: boolean;
   artIdx: number; colors: ReturnType<typeof buildColors>;
+  dark: boolean;
   onClick: (e: React.MouseEvent) => void;
   tooltipText: string;
 }) {
@@ -1198,10 +1395,18 @@ function TileCard({
         {/* Lock icon */}
         {isLocked && (
           <span style={{
-            position: "absolute", bottom: 12, right: 13,
-            color: colors.lockedText, opacity: hov ? 0.5 : 0.22, transition: "opacity 0.2s",
+            position: "absolute", bottom: 11, right: 12,
+            color: dark ? "rgba(238,234,248,0.45)" : "#9490a8",
+            opacity: hov ? 0.8 : 1,
+            transition: "opacity 0.2s",
+            display: "flex",
           }}>
-            {Icons.lock}
+            <svg width="13" height="15" viewBox="0 0 13 15" fill="none">
+              <rect x="1" y="6.5" width="11" height="8" rx="2" fill="currentColor" opacity="0.25"/>
+              <rect x="1" y="6.5" width="11" height="8" rx="2" stroke="currentColor" strokeWidth="1.4"/>
+              <path d="M4 6.5V4a2.5 2.5 0 0 1 5 0v2.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
+              <circle cx="6.5" cy="10.5" r="1.2" fill="currentColor"/>
+            </svg>
           </span>
         )}
       </div>
