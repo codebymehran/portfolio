@@ -1812,7 +1812,7 @@ const [lines, setLines] = useState<{ text: string; type: string; visible: string
                 <span style={{ color: "#8B7CF6", flexShrink: 0 }}>❯</span>
               )}
               <span style={{ color: typeColors[line.type] ?? typeColors.dim }}>
-                {line.text}
+                {line.visible}
               </span>
             </div>
           ))}
