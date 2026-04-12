@@ -1240,7 +1240,8 @@ export default function Home() {
 
         {/* ── ROCKET ── */}
         <RocketVisual done={DONE} total={TOTAL} dark={dark} colors={colors} mounted={mounted} />
-
+{/* ── TERMINAL ── */}
+<HackerTerminal colors={colors} dark={dark} />
        <div style={{ padding: "0 32px 8px", maxWidth: 560, margin: "0 auto", width: "100%" }}>
           <div style={{
             position: "relative", borderRadius: 24, overflow: "hidden",
@@ -1253,7 +1254,7 @@ export default function Home() {
             <img
               src="/profile_mehran.jpg"
               alt="Mehran Khan"
-              style={{ width: "100%", height: 280, objectFit: "cover", objectPosition: "center 95%", display: "block" }}
+              style={{ width: "100%", height: 280, objectFit: "cover", objectPosition: "center 85%", display: "block" }}
             />
           </div>
         </div>
@@ -1628,7 +1629,178 @@ export default function Home() {
     </main>
   );
 }
+// ─── HACKER TERMINAL ─────────────────────────────────────────────────────────
 
+function HackerTerminal({ colors, dark }: { colors: ReturnType<typeof buildColors>; dark: boolean }) {
+  const termRef = useRef<HTMLDivElement>(null);
+  const [lines, setLines] = useState<{ text: string; type: string }[]>([]);
+  const lineIdx = useRef(0);
+  const timeouts = useRef<ReturnType<typeof setTimeout>[]>([]);
+
+  const hackerLines = [
+    { type: "prompt", text: "ssh root@192.168.1.1" },
+    { type: "success", text: "Connected to 192.168.1.1 — welcome back." },
+    { type: "prompt", text: "nmap -sV --open 10.0.0.0/24" },
+    { type: "info", text: "Starting Nmap 7.94 ( https://nmap.org )" },
+    { type: "info", text: "Scanning 256 hosts [1000 ports each]..." },
+    { type: "warn", text: "Open  10.0.0.4:22   OpenSSH 9.2" },
+    { type: "warn", text: "Open  10.0.0.7:80   nginx 1.25.3" },
+    { type: "warn", text: "Open  10.0.0.12:443 Apache 2.4.58" },
+    { type: "success", text: "Nmap done — 14 hosts up in 3.21s" },
+    { type: "prompt", text: "cat /etc/shadow | grep root" },
+    { type: "danger", text: "root:$6$xyz$k8mN2qP...::0:99999:7:::" },
+    { type: "prompt", text: "python3 exploit.py --target 10.0.0.7" },
+    { type: "info", text: "[*] Injecting payload into header..." },
+    { type: "info", text: "[*] Bypassing WAF rules..." },
+    { type: "success", text: "[+] Shell obtained. uid=0(root) gid=0(root)" },
+    { type: "prompt", text: "whoami" },
+    { type: "success", text: "root" },
+    { type: "prompt", text: "ls -la /var/www/html" },
+    { type: "dim", text: "drwxr-xr-x  mehran  staff   4096 Apr 10 03:14 ." },
+    { type: "dim", text: "-rw-r--r--  mehran  staff  18432 Apr 10 03:14 index.html" },
+    { type: "dim", text: "-rw-r--r--  mehran  staff   2048 Apr 10 03:14 .env" },
+    { type: "prompt", text: "cat .env" },
+    { type: "danger", text: "DATABASE_URL=postgres://admin:••••••@db.prod:5432" },
+    { type: "danger", text: "STRIPE_SECRET=sk_live_••••••••••••••••••" },
+    { type: "prompt", text: "curl -s ifconfig.me" },
+    { type: "info", text: "203.0.113.42" },
+    { type: "prompt", text: "ping -c 4 mehrankhan.net" },
+    { type: "success", text: "64 bytes from 76.76.21.21: icmp_seq=1 ttl=55 time=11.2ms" },
+    { type: "success", text: "64 bytes from 76.76.21.21: icmp_seq=2 ttl=55 time=10.8ms" },
+    { type: "prompt", text: "traceroute mehrankhan.net" },
+    { type: "dim", text: " 1  192.168.1.1    0.4ms" },
+    { type: "dim", text: " 4  ae-3.r01.lax01  8.1ms" },
+    { type: "dim", text: "12  76.76.21.21    11.3ms" },
+    { type: "prompt", text: "hashcat -m 1800 hash.txt rockyou.txt" },
+    { type: "warn", text: "Session........: hashcat" },
+    { type: "warn", text: "Speed.#1.......: 4231.2 MH/s" },
+    { type: "success", text: "Cracked: toor123  [status: Cracked]" },
+    { type: "prompt", text: "rm -rf /var/log/*" },
+    { type: "warn", text: "// tracks covered." },
+    { type: "prompt", text: "exit" },
+    { type: "dim", text: "Connection to 192.168.1.1 closed." },
+  ];
+
+  const clearTimeouts = () => {
+    timeouts.current.forEach(clearTimeout);
+    timeouts.current = [];
+  };
+
+  const addTimeout = (fn: () => void, delay: number) => {
+    const t = setTimeout(fn, delay);
+    timeouts.current.push(t);
+    return t;
+  };
+
+  const runLoop = useCallback(() => {
+    if (lineIdx.current >= hackerLines.length) {
+      lineIdx.current = 0;
+      addTimeout(() => {
+        setLines([]);
+        addTimeout(runLoop, 400);
+      }, 2500);
+      return;
+    }
+
+    const line = hackerLines[lineIdx.current++];
+    setLines(prev => [...prev, line]);
+
+    const delay = line.type === "prompt" ? 320 + Math.random() * 200
+      : line.type === "danger" ? 80
+      : 60 + Math.random() * 80;
+
+    addTimeout(runLoop, delay);
+  }, []);
+
+  useEffect(() => {
+    addTimeout(runLoop, 500);
+    return () => clearTimeouts();
+  }, [runLoop]);
+
+  useEffect(() => {
+    if (termRef.current) {
+      termRef.current.scrollTop = termRef.current.scrollHeight;
+    }
+  }, [lines]);
+
+  const typeColors: Record<string, string> = {
+    prompt:  "#8B7CF6",
+    success: "#10B981",
+    info:    "#38BDF8",
+    warn:    "#F59E0B",
+    danger:  "#EF4444",
+    dim:     "rgba(238,234,248,0.35)",
+  };
+
+  return (
+    <div style={{ padding: "0 32px 0", maxWidth: 680, margin: "0 auto", width: "100%" }}>
+      <div style={{
+        background: "#0a0a10",
+        borderRadius: 16,
+        border: `1px solid ${dark ? "rgba(139,124,246,0.2)" : "rgba(79,60,210,0.15)"}`,
+        overflow: "hidden",
+        boxShadow: dark ? "0 8px 40px rgba(0,0,0,0.5)" : "0 8px 32px rgba(0,0,0,0.12)",
+      }}>
+        {/* Title bar */}
+        <div style={{
+          background: "#13131d",
+          padding: "10px 14px",
+          display: "flex", alignItems: "center", gap: 7,
+          borderBottom: "1px solid rgba(255,255,255,0.05)",
+        }}>
+          {["#ff5f57","#febc2e","#28c840"].map(c => (
+            <div key={c} style={{ width: 10, height: 10, borderRadius: "50%", background: c }} />
+          ))}
+          <span style={{
+            marginLeft: 8, fontSize: 11,
+            color: "rgba(238,234,248,0.35)",
+            fontFamily: "'JetBrains Mono', monospace",
+            letterSpacing: "0.04em",
+          }}>root@mehran ~ zsh</span>
+          <div style={{ flex: 1 }} />
+          <span style={{
+            fontSize: 10, color: "rgba(238,234,248,0.2)",
+            fontFamily: "'JetBrains Mono', monospace",
+          }}>● live</span>
+        </div>
+
+        {/* Body */}
+        <div
+          ref={termRef}
+          style={{
+            padding: "16px 18px",
+            height: 220,
+            overflowY: "auto",
+            fontFamily: "'JetBrains Mono', 'Courier New', monospace",
+            fontSize: 12,
+            lineHeight: 1.8,
+            scrollbarWidth: "none",
+          }}
+        >
+          {lines.map((line, i) => (
+            <div key={i} style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
+              {line.type === "prompt" && (
+                <span style={{ color: "#8B7CF6", flexShrink: 0 }}>❯</span>
+              )}
+              <span style={{ color: typeColors[line.type] ?? typeColors.dim }}>
+                {line.text}
+              </span>
+            </div>
+          ))}
+          <span style={{
+            display: "inline-block", width: 7, height: 13,
+            background: "#8B7CF6", verticalAlign: "middle",
+            animation: "termCursor 1s step-end infinite",
+          }} />
+        </div>
+      </div>
+      <style>{`
+        @keyframes termCursor { 0%,100%{opacity:1} 50%{opacity:0} }
+        div::-webkit-scrollbar { display: none; }
+      `}</style>
+    </div>
+  );
+}
 // ─── TILE CARD (extracted for cleanliness) ────────────────────────────────────
 
 function TileCard({
