@@ -880,17 +880,26 @@ export default function Home() {
               onClick={() => setFeedbackOpen(true)}
               style={{
                 padding: "7px 16px", borderRadius: 20,
-                background: `linear-gradient(135deg, ${colors.acc1}, ${colors.acc2})`,
+                background: "linear-gradient(135deg, #f43f5e, #fb923c)",
                 border: "none",
                 color: "#fff", fontSize: 12, fontWeight: 600,
                 cursor: "pointer", fontFamily: "inherit",
                 letterSpacing: "-0.01em",
-                boxShadow: `0 2px 12px ${colors.acc1}44`,
-                transition: "opacity 0.2s, transform 0.2s",
+                boxShadow: "0 2px 14px rgba(244,63,94,0.4)",
+                transition: "opacity 0.2s, transform 0.2s, box-shadow 0.2s",
                 display: "flex", alignItems: "center", gap: 6,
+                flexShrink: 0,
               }}
-              onMouseEnter={e => { e.currentTarget.style.opacity = "0.88"; e.currentTarget.style.transform = "translateY(-1px)"; }}
-              onMouseLeave={e => { e.currentTarget.style.opacity = "1"; e.currentTarget.style.transform = "none"; }}
+              onMouseEnter={e => {
+                e.currentTarget.style.opacity = "0.9";
+                e.currentTarget.style.transform = "translateY(-1px)";
+                e.currentTarget.style.boxShadow = "0 4px 20px rgba(244,63,94,0.55)";
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.opacity = "1";
+                e.currentTarget.style.transform = "none";
+                e.currentTarget.style.boxShadow = "0 2px 14px rgba(244,63,94,0.4)";
+              }}
             >
               <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
                 <path d="M8.5 1.5a1.5 1.5 0 0 1 2 2L4 10H2v-2L8.5 1.5z" stroke="white" strokeWidth="1.3" strokeLinejoin="round" fill="none"/>
@@ -940,7 +949,7 @@ export default function Home() {
 
           {/* Row 1 — forward */}
           <div style={{ display: "flex", whiteSpace: "nowrap", animation: "ticker var(--ticker-speed, 10s) linear infinite", padding: "9px 0 5px" }}>
-            {[...phases, ...phases].flatMap((phase, pi) =>
+            {[...phases, ...phases, ...phases, ...phases].flatMap((phase, pi) =>
               phase.projects.map((p, i) => (
                 <span key={`${pi}-${i}`} style={{ display: "inline-flex", alignItems: "center", gap: 0 }}>
                   <span style={{
@@ -970,7 +979,7 @@ export default function Home() {
 
           {/* Row 2 — reverse, different speed */}
           <div style={{ display: "flex", whiteSpace: "nowrap", animation: "tickerReverse var(--ticker-speed-r, 14s) linear infinite", padding: "5px 0 9px" }}>
-            {[...phases, ...phases].flatMap((phase, pi) =>
+            {[...phases, ...phases, ...phases, ...phases].flatMap((phase, pi) =>
               phase.projects.slice().reverse().map((p, i) => (
                 <span key={`r${pi}-${i}`} style={{ display: "inline-flex", alignItems: "center", gap: 0 }}>
                   <span style={{
@@ -1326,8 +1335,8 @@ export default function Home() {
           60%  { box-shadow: 0 0 0 7px rgba(249,115,22,0); }
           100% { box-shadow: 0 0 0 0 rgba(249,115,22,0); }
         }
-        @keyframes ticker { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
-        @keyframes tickerReverse { 0%{transform:translateX(-50%)} 100%{transform:translateX(0)} }
+        @keyframes ticker { 0%{transform:translateX(0)} 100%{transform:translateX(-25%)} }
+        @keyframes tickerReverse { 0%{transform:translateX(-25%)} 100%{transform:translateX(0)} }
         @keyframes spinDiamond { 0%{transform:rotate(0deg) scale(1)} 50%{transform:rotate(180deg) scale(1.4)} 100%{transform:rotate(360deg) scale(1)} }
         @keyframes pulseGlow { 0%,100%{opacity:.5;transform:scale(1)} 50%{opacity:1;transform:scale(1.3)} }
         @keyframes fadeIn { from{opacity:0} to{opacity:1} }
