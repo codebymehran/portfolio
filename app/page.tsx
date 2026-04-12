@@ -78,6 +78,17 @@ const COMING_SOON = [
   "Almost its turn.",
 ];
 
+// ─── STACK FILTER DATA ────────────────────────────────────────────────────────
+
+const filterTags = ["All", "React", "Next.js", "Full Stack", "Production"];
+
+const stackMatch: Record<string, string[]> = {
+  "React":       ["01","02","02.5","03","04","05","05.5","05C"],
+  "Next.js":     ["06","07","07.5","08","09","09C"],
+  "Full Stack":  ["10","10.5","11","12","12C"],
+  "Production":  ["13","13.5","14"],
+};
+
 // ─── ICONS ────────────────────────────────────────────────────────────────────
 
 const Icons = {
@@ -273,10 +284,7 @@ function ProjectModal({
           animation: "slideUp 0.22s cubic-bezier(.4,0,.2,1)",
         }}
       >
-        {/* Top accent bar */}
         <div style={{ height: 3, background: `linear-gradient(90deg, ${phase.color}, ${phase.color}44)` }} />
-
-        {/* Header */}
         <div style={{ padding: "28px 28px 0" }}>
           <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 20 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
@@ -309,13 +317,10 @@ function ProjectModal({
               {Icons.close}
             </button>
           </div>
-
           <p style={{ fontSize: 14.5, color: colors.text2, lineHeight: 1.7, marginBottom: 24 }}>
             {project.desc}
           </p>
         </div>
-
-        {/* Tech stack */}
         <div style={{ padding: "0 28px 22px" }}>
           <div style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: colors.text3, fontWeight: 600, marginBottom: 10 }}>
             Tech stack
@@ -331,8 +336,6 @@ function ProjectModal({
             ))}
           </div>
         </div>
-
-        {/* What I learned */}
         {project.learned && (
           <div style={{
             margin: "0 28px 28px",
@@ -349,8 +352,6 @@ function ProjectModal({
             </p>
           </div>
         )}
-
-        {/* Live link */}
         {project.live ? (
           <div style={{ padding: "0 28px 28px" }}>
             <a
@@ -421,13 +422,11 @@ function FeedbackModal({
         setState("sent");
         setTimeout(() => { setState("idle"); setMsg(""); onClose(); }, 2200);
       } else {
-        console.error("Web3Forms error:", json);
         setErrorMsg(json.message || "Submission failed.");
         setState("error");
         setTimeout(() => { setState("idle"); setErrorMsg(""); }, 4000);
       }
     } catch (err) {
-      console.error("Submit failed:", err);
       setErrorMsg("Network error — check your connection.");
       setState("error");
       setTimeout(() => { setState("idle"); setErrorMsg(""); }, 4000);
@@ -689,7 +688,6 @@ function AnimatedCycler({ dark, colors }: { dark: boolean; colors: ReturnType<ty
         position: "relative",
       }}>
         {item.text}
-        {/* Animated underline */}
         <span style={{
           position: "absolute", bottom: -3, left: 0, right: 0, height: 2,
           background: `linear-gradient(90deg, transparent, ${item.color}, transparent)`,
@@ -739,10 +737,7 @@ function RocketVisual({
       padding: "32px 0 24px",
       opacity: mounted ? 1 : 0, transition: "opacity 0.8s ease 0.3s",
     }}>
-      {/* Scene */}
       <div style={{ position: "relative", width: 320, height: 320, display: "flex", alignItems: "center", justifyContent: "center" }}>
-
-        {/* Orbit ring 1 */}
         <div style={{
           position: "absolute",
           width: orbitR1 * 2, height: orbitR1 * 2,
@@ -750,7 +745,6 @@ function RocketVisual({
           border: `1px solid ${dark ? "rgba(139,124,246,0.12)" : "rgba(79,60,210,0.08)"}`,
           pointerEvents: "none",
         }}/>
-        {/* Orbit ring 2 */}
         <div style={{
           position: "absolute",
           width: orbitR2 * 2, height: orbitR2 * 2,
@@ -758,8 +752,6 @@ function RocketVisual({
           border: `1px dashed ${dark ? "rgba(139,124,246,0.07)" : "rgba(79,60,210,0.05)"}`,
           pointerEvents: "none",
         }}/>
-
-        {/* Stars */}
         {Array.from({ length: 30 }).map((_, i) => {
           const seed = i * 137.5;
           const size = (seed % 1.8) + 0.8;
@@ -777,9 +769,7 @@ function RocketVisual({
             }} />
           );
         })}
-
-        {/* Orbiting tech tags */}
-        {techTags.map((tech, i) => {
+        {techTags.map((tech) => {
           const ring = tech.ring === 1 ? orbitR1 : orbitR2;
           const totalInRing = techTags.filter(t => t.ring === tech.ring).length;
           const idxInRing = techTags.filter(t => t.ring === tech.ring).findIndex(t => t.name === tech.name);
@@ -811,8 +801,6 @@ function RocketVisual({
             </span>
           );
         })}
-
-        {/* Rocket SVG */}
         <svg
           width="110" height="200" viewBox="0 0 110 200" fill="none"
           style={{ position: "relative", zIndex: 2, animation: "rocketFloat 3.2s ease-in-out infinite" }}
@@ -841,15 +829,9 @@ function RocketVisual({
               <path d="M38 50 Q55 10 72 50 L72 142 Q55 150 38 142 Z"/>
             </clipPath>
           </defs>
-
-          {/* Wings */}
           <polygon points="16,142 38,108 38,150" fill="#3c3489" opacity="0.9"/>
           <polygon points="94,142 72,108 72,150" fill="#3c3489" opacity="0.9"/>
-
-          {/* Body */}
           <path d="M38 50 Q55 10 72 50 L72 142 Q55 150 38 142 Z" fill="url(#rBodyGrad)"/>
-
-          {/* Fuel fill — grows from bottom */}
           {done > 0 && (
             <rect
               x="38" y={50 + 92 * (1 - pct / 100)} width="34"
@@ -859,28 +841,18 @@ function RocketVisual({
               style={{ transition: "y 1.8s cubic-bezier(.4,0,.2,1), height 1.8s cubic-bezier(.4,0,.2,1)" }}
             />
           )}
-
-          {/* Body outline */}
           <path d="M38 50 Q55 10 72 50 L72 142 Q55 150 38 142 Z" fill="none" stroke="#a78bfa" strokeWidth="1" opacity="0.4"/>
-
-          {/* Porthole */}
           <circle cx="55" cy="88" r="14" fill={dark ? "#0d0d1c" : "#e8e4ff"} opacity="0.95"/>
           <circle cx="55" cy="88" r="14" fill="none" stroke="#a78bfa" strokeWidth="1.5" opacity="0.7"/>
           <circle cx="55" cy="88" r="6" fill="#8b7cf6" opacity="0.9"/>
           <circle cx="55" cy="88" r="2.5" fill="#c4b5fd"/>
-
-          {/* Stripe */}
           <line x1="38" y1="108" x2="72" y2="108" stroke="#a78bfa" strokeWidth="0.5" opacity="0.25"/>
-
-          {/* Pct label inside porthole — only when done > 0 */}
           {done > 0 && (
             <text x="55" y="92" textAnchor="middle"
               fontFamily="JetBrains Mono, monospace" fontSize="9" fontWeight="500"
               fill={dark ? "#c4b5fd" : "#4338ca"} opacity="0.9"
             >{pct}%</text>
           )}
-
-          {/* Flames */}
           <g style={{ animation: "flameOuter .18s ease-in-out infinite", transformOrigin: "55px 150px" }}>
             <path d="M43 150 Q46 172 51 178 Q55 184 59 178 Q64 172 67 150 Z" fill="url(#rFlame1)" opacity="0.9"/>
           </g>
@@ -889,8 +861,6 @@ function RocketVisual({
           </g>
         </svg>
       </div>
-
-      {/* Labels */}
       <div style={{ display: "flex", alignItems: "center", gap: 20, marginTop: 4 }}>
         <div style={{ textAlign: "center" }}>
           <div style={{ fontSize: 28, fontWeight: 500, color: colors.acc1, lineHeight: 1, fontFamily: "'JetBrains Mono', monospace" }}>{done}</div>
@@ -905,7 +875,6 @@ function RocketVisual({
       <div style={{ fontSize: 11, color: colors.text3, fontFamily: "'JetBrains Mono', monospace", marginTop: 10, letterSpacing: "0.04em" }}>
         {currentPhase[2]}
       </div>
-
       <style>{`
         @keyframes rocketFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
         @keyframes starPulse { 0%,100%{opacity:.2} 50%{opacity:.7} }
@@ -913,6 +882,198 @@ function RocketVisual({
         @keyframes flameInner { 0%,100%{transform:scaleY(.9)} 40%{transform:scaleY(1.12) scaleX(.88)} 70%{transform:scaleY(.74)} }
         @keyframes orbitTag105  { from{transform:rotate(0deg)   translateX(105px) rotate(0deg)}   to{transform:rotate(360deg)  translateX(105px) rotate(-360deg)} }
         @keyframes orbitTagR132 { from{transform:rotate(0deg)   translateX(132px) rotate(0deg)}   to{transform:rotate(-360deg) translateX(132px) rotate(360deg)} }
+      `}</style>
+    </div>
+  );
+}
+
+// ─── HACKER TERMINAL ─────────────────────────────────────────────────────────
+
+function HackerTerminal({ colors, dark }: { colors: ReturnType<typeof buildColors>; dark: boolean }) {
+  const termRef = useRef<HTMLDivElement>(null);
+  const lineIdx = useRef(0);
+  const timeouts = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const [lines, setLines] = useState<{ text: string; type: string; visible: string }[]>([]);
+
+  const hackerLines = [
+    { type: "prompt", text: "ssh root@192.168.1.1" },
+    { type: "success", text: "Connected to 192.168.1.1 — welcome back." },
+    { type: "prompt", text: "nmap -sV --open 10.0.0.0/24" },
+    { type: "info", text: "Starting Nmap 7.94 ( https://nmap.org )" },
+    { type: "info", text: "Scanning 256 hosts [1000 ports each]..." },
+    { type: "warn", text: "Open  10.0.0.4:22   OpenSSH 9.2" },
+    { type: "warn", text: "Open  10.0.0.7:80   nginx 1.25.3" },
+    { type: "warn", text: "Open  10.0.0.12:443 Apache 2.4.58" },
+    { type: "success", text: "Nmap done — 14 hosts up in 3.21s" },
+    { type: "prompt", text: "cat /etc/shadow | grep root" },
+    { type: "danger", text: "root:$6$xyz$k8mN2qP...::0:99999:7:::" },
+    { type: "prompt", text: "python3 exploit.py --target 10.0.0.7" },
+    { type: "info", text: "[*] Injecting payload into header..." },
+    { type: "info", text: "[*] Bypassing WAF rules..." },
+    { type: "success", text: "[+] Shell obtained. uid=0(root) gid=0(root)" },
+    { type: "prompt", text: "whoami" },
+    { type: "success", text: "root" },
+    { type: "prompt", text: "ls -la /var/www/html" },
+    { type: "dim", text: "drwxr-xr-x  mehran  staff   4096 Apr 10 03:14 ." },
+    { type: "dim", text: "-rw-r--r--  mehran  staff  18432 Apr 10 03:14 index.html" },
+    { type: "dim", text: "-rw-r--r--  mehran  staff   2048 Apr 10 03:14 .env" },
+    { type: "prompt", text: "cat .env" },
+    { type: "danger", text: "DATABASE_URL=postgres://admin:••••••@db.prod:5432" },
+    { type: "danger", text: "STRIPE_SECRET=sk_live_••••••••••••••••••" },
+    { type: "prompt", text: "curl -s ifconfig.me" },
+    { type: "info", text: "203.0.113.42" },
+    { type: "prompt", text: "ping -c 4 mehrankhan.net" },
+    { type: "success", text: "64 bytes from 76.76.21.21: icmp_seq=1 ttl=55 time=11.2ms" },
+    { type: "success", text: "64 bytes from 76.76.21.21: icmp_seq=2 ttl=55 time=10.8ms" },
+    { type: "prompt", text: "traceroute mehrankhan.net" },
+    { type: "dim", text: " 1  192.168.1.1    0.4ms" },
+    { type: "dim", text: " 4  ae-3.r01.lax01  8.1ms" },
+    { type: "dim", text: "12  76.76.21.21    11.3ms" },
+    { type: "prompt", text: "hashcat -m 1800 hash.txt rockyou.txt" },
+    { type: "warn", text: "Session........: hashcat" },
+    { type: "warn", text: "Speed.#1.......: 4231.2 MH/s" },
+    { type: "success", text: "Cracked: toor123  [status: Cracked]" },
+    { type: "prompt", text: "rm -rf /var/log/*" },
+    { type: "warn", text: "// tracks covered." },
+    { type: "prompt", text: "exit" },
+    { type: "dim", text: "Connection to 192.168.1.1 closed." },
+  ];
+
+  const clearTimeouts = () => {
+    timeouts.current.forEach(clearTimeout);
+    timeouts.current = [];
+  };
+
+  const addTimeout = (fn: () => void, delay: number) => {
+    const t = setTimeout(fn, delay);
+    timeouts.current.push(t);
+    return t;
+  };
+
+  const runLoop = useCallback(() => {
+    if (lineIdx.current >= hackerLines.length) {
+      lineIdx.current = 0;
+      addTimeout(() => {
+        setLines([]);
+        addTimeout(runLoop, 3000);
+      }, 3000);
+      return;
+    }
+
+    const line = hackerLines[lineIdx.current++];
+    const isPrompt = line.type === "prompt";
+    const thinkDelay = isPrompt ? 800 + Math.random() * 600 : 120;
+
+    addTimeout(() => {
+      setLines(prev => [...prev, { ...line, visible: "" }]);
+      let charIdx = 0;
+      const charSpeed = isPrompt ? 85 : 18;
+
+      const typeChar = () => {
+        if (charIdx <= line.text.length) {
+          const captured = charIdx;
+          setLines(prev => {
+            const updated = [...prev];
+            updated[updated.length - 1] = {
+              ...updated[updated.length - 1],
+              visible: line.text.slice(0, captured),
+            };
+            return updated;
+          });
+          charIdx++;
+          addTimeout(typeChar, charSpeed + Math.random() * (isPrompt ? 60 : 10));
+        } else {
+          const nextDelay = isPrompt ? 200 : line.type === "danger" ? 400 : 80;
+          addTimeout(runLoop, nextDelay);
+        }
+      };
+
+      typeChar();
+    }, thinkDelay);
+  }, []);
+
+  useEffect(() => {
+    addTimeout(runLoop, 500);
+    return () => clearTimeouts();
+  }, [runLoop]);
+
+  useEffect(() => {
+    if (termRef.current) {
+      termRef.current.scrollTop = termRef.current.scrollHeight;
+    }
+  }, [lines]);
+
+  const typeColors: Record<string, string> = {
+    prompt:  "#8B7CF6",
+    success: "#10B981",
+    info:    "#38BDF8",
+    warn:    "#F59E0B",
+    danger:  "#EF4444",
+    dim:     "rgba(238,234,248,0.35)",
+  };
+
+  return (
+    <div style={{ padding: "24px 32px 0", maxWidth: 680, margin: "0 auto", width: "100%" }}>
+      <div style={{
+        background: "#0a0a10",
+        borderRadius: 16,
+        border: `1px solid ${dark ? "rgba(139,124,246,0.2)" : "rgba(79,60,210,0.15)"}`,
+        overflow: "hidden",
+        boxShadow: dark ? "0 8px 40px rgba(0,0,0,0.5)" : "0 8px 32px rgba(0,0,0,0.12)",
+      }}>
+        <div style={{
+          background: "#13131d",
+          padding: "10px 14px",
+          display: "flex", alignItems: "center", gap: 7,
+          borderBottom: "1px solid rgba(255,255,255,0.05)",
+        }}>
+          {["#ff5f57","#febc2e","#28c840"].map(c => (
+            <div key={c} style={{ width: 10, height: 10, borderRadius: "50%", background: c }} />
+          ))}
+          <span style={{
+            marginLeft: 8, fontSize: 11,
+            color: "rgba(238,234,248,0.35)",
+            fontFamily: "'JetBrains Mono', monospace",
+            letterSpacing: "0.04em",
+          }}>root@mehran ~ zsh</span>
+          <div style={{ flex: 1 }} />
+          <span style={{
+            fontSize: 10, color: "rgba(238,234,248,0.2)",
+            fontFamily: "'JetBrains Mono', monospace",
+          }}>● live</span>
+        </div>
+        <div
+          ref={termRef}
+          style={{
+            padding: "16px 18px",
+            height: 220,
+            overflowY: "auto",
+            fontFamily: "'JetBrains Mono', 'Courier New', monospace",
+            fontSize: 12,
+            lineHeight: 1.8,
+            scrollbarWidth: "none",
+          }}
+        >
+          {lines.map((line, i) => (
+            <div key={i} style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
+              {line.type === "prompt" && (
+                <span style={{ color: "#8B7CF6", flexShrink: 0 }}>❯</span>
+              )}
+              <span style={{ color: typeColors[line.type] ?? typeColors.dim }}>
+                {line.visible}
+              </span>
+            </div>
+          ))}
+          <span style={{
+            display: "inline-block", width: 7, height: 13,
+            background: "#8B7CF6", verticalAlign: "middle",
+            animation: "termCursor 1s step-end infinite",
+          }} />
+        </div>
+      </div>
+      <style>{`
+        @keyframes termCursor { 0%,100%{opacity:1} 50%{opacity:0} }
+        div::-webkit-scrollbar { display: none; }
       `}</style>
     </div>
   );
@@ -929,15 +1090,59 @@ export default function Home() {
   const [confetti, setConfetti] = useState<{ x: number; y: number; color: string; id: number } | null>(null);
   const confettiId = useRef(0);
 
+  // ── Feature 1: Scroll progress bar ──
+  const [scrollPct, setScrollPct] = useState(0);
+
+  // ── Feature 3: Page view counter ──
+  const [views, setViews] = useState<number | null>(null);
+
+  // ── Feature 4: Stack filter ──
+  const [activeFilter, setActiveFilter] = useState<string | null>(null);
+
   useEffect(() => {
     setMounted(true);
     setDays(Math.max(1, Math.floor((Date.now() - START_DATE.getTime()) / 86400000)));
+
+    // ── Feature 2: Animated favicon ──
+    const faviconFrames = [
+      { bg: "%238B7CF6" },
+      { bg: "%2310B981" },
+      { bg: "%23F59E0B" },
+      { bg: "%238B7CF6" },
+    ];
+    let f = 0;
     const link: HTMLLinkElement =
       document.querySelector("link[rel='icon']") ?? document.createElement("link");
     link.rel = "icon";
-    link.href = `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%238B7CF6'/><text x='16' y='22' font-size='14' font-family='system-ui' font-weight='700' fill='white' text-anchor='middle'>MK</text></svg>`;
     document.head.appendChild(link);
+
+    const faviconInterval = setInterval(() => {
+      const { bg } = faviconFrames[f % faviconFrames.length];
+      link.href = `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='${bg}'/><text x='16' y='22' font-size='14' font-family='system-ui' font-weight='700' fill='white' text-anchor='middle'>MK</text></svg>`;
+      f++;
+    }, 1200);
+
     document.title = "Mehran Khan — Building 22 Apps";
+    return () => clearInterval(faviconInterval);
+  }, []);
+
+  // ── Feature 1: Scroll listener ──
+  useEffect(() => {
+    const onScroll = () => {
+      const el = document.documentElement;
+      const pct = (el.scrollTop / (el.scrollHeight - el.clientHeight)) * 100;
+      setScrollPct(Math.min(100, pct));
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // ── Feature 3: Page view counter ──
+  useEffect(() => {
+    fetch("https://api.countapi.xyz/hit/mehrankhan.net/visits")
+      .then(r => r.json())
+      .then(d => setViews(d.value))
+      .catch(() => {});
   }, []);
 
   const colors = useMemo(() => buildColors(dark), [dark]);
@@ -945,7 +1150,6 @@ export default function Home() {
 
   const handleTileClick = useCallback((project: Project, phase: Phase, isDone: boolean, e: React.MouseEvent) => {
     if (isDone) {
-      // Fire confetti at click position
       confettiId.current += 1;
       setConfetti({ x: e.clientX, y: e.clientY, color: phase.color, id: confettiId.current });
     }
@@ -960,6 +1164,17 @@ export default function Home() {
       fontFamily: "'Instrument Sans', system-ui, sans-serif",
       color: colors.text, transition: "background 0.3s, color 0.3s", overflowX: "hidden",
     }}>
+
+      {/* ── Feature 1: Scroll progress bar ── */}
+      <div style={{
+        position: "fixed", top: 0, left: 0, zIndex: 999,
+        height: 3,
+        background: `linear-gradient(90deg, ${colors.acc1}, ${colors.acc2})`,
+        width: `${scrollPct}%`,
+        transition: "width 0.1s linear",
+        boxShadow: `0 0 8px ${colors.acc1}88`,
+        pointerEvents: "none",
+      }} />
 
       {/* Ambient glows */}
       <div style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0, overflow: "hidden" }}>
@@ -1043,22 +1258,10 @@ export default function Home() {
           borderTop: `1px solid ${colors.border}`,
           padding: "0",
           position: "relative",
-          background: dark
-            ? "rgba(17,17,24,0.8)"
-            : "rgba(247,246,242,0.9)",
+          background: dark ? "rgba(17,17,24,0.8)" : "rgba(247,246,242,0.9)",
         }}>
-          {/* Left fade */}
-          <div style={{
-            position: "absolute", left: 0, top: 0, bottom: 0, width: 60, zIndex: 2, pointerEvents: "none",
-            background: `linear-gradient(90deg, ${colors.bg}, transparent)`,
-          }}/>
-          {/* Right fade */}
-          <div style={{
-            position: "absolute", right: 0, top: 0, bottom: 0, width: 60, zIndex: 2, pointerEvents: "none",
-            background: `linear-gradient(270deg, ${colors.bg}, transparent)`,
-          }}/>
-
-          {/* Row 1 — forward: THREE copies, scroll one-third */}
+          <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 60, zIndex: 2, pointerEvents: "none", background: `linear-gradient(90deg, ${colors.bg}, transparent)` }}/>
+          <div style={{ position: "absolute", right: 0, top: 0, bottom: 0, width: 60, zIndex: 2, pointerEvents: "none", background: `linear-gradient(270deg, ${colors.bg}, transparent)` }}/>
           <div style={{ display: "flex", whiteSpace: "nowrap", animation: "marquee var(--ticker-speed, 18s) linear infinite", padding: "9px 0 5px", willChange: "transform", minWidth: "max-content" }}>
             {[0, 1, 2].map(copy =>
               <span key={copy} style={{ display: "inline-flex", flexShrink: 0, minWidth: "max-content" }}>
@@ -1066,21 +1269,13 @@ export default function Home() {
                   phase.projects.map((p, i) => (
                     <span key={`${copy}-${pi}-${i}`} style={{ display: "inline-flex", alignItems: "center" }}>
                       <span style={{
-                        fontSize: 10.5, fontWeight: 600,
-                        color: phase.color,
-                        background: phase.colorBg,
-                        border: `1px solid ${phase.colorBorder}`,
-                        borderRadius: 20,
-                        padding: "2px 9px",
-                        letterSpacing: "0.05em",
-                        textTransform: "uppercase",
-                        marginRight: 6,
-                        whiteSpace: "nowrap",
-                        flexShrink: 0,
+                        fontSize: 10.5, fontWeight: 600, color: phase.color,
+                        background: phase.colorBg, border: `1px solid ${phase.colorBorder}`,
+                        borderRadius: 20, padding: "2px 9px", letterSpacing: "0.05em",
+                        textTransform: "uppercase", marginRight: 6, whiteSpace: "nowrap", flexShrink: 0,
                       }}>{p.name}</span>
                       <span style={{
-                        marginRight: 6, fontSize: 6,
-                        color: phase.color, opacity: 0.5,
+                        marginRight: 6, fontSize: 6, color: phase.color, opacity: 0.5,
                         display: "inline-block",
                         animation: `spinDiamond ${2.5 + (pi + i) % 2}s linear infinite`,
                         animationDelay: `${(pi * 4 + i) * 0.12}s`,
@@ -1091,8 +1286,6 @@ export default function Home() {
               </span>
             )}
           </div>
-
-          {/* Row 2 — reverse: THREE copies, scroll one-third */}
           <div style={{ display: "flex", whiteSpace: "nowrap", animation: "marqueeReverse var(--ticker-speed-r, 24s) linear infinite", padding: "5px 0 9px", willChange: "transform", minWidth: "max-content" }}>
             {[0, 1, 2].map(copy =>
               <span key={copy} style={{ display: "inline-flex", flexShrink: 0, minWidth: "max-content" }}>
@@ -1102,18 +1295,10 @@ export default function Home() {
                       <span style={{
                         fontSize: 10.5, fontWeight: 500,
                         color: dark ? "rgba(238,234,248,0.45)" : colors.text3,
-                        letterSpacing: "0.1em",
-                        textTransform: "uppercase",
-                        marginRight: 6,
-                        whiteSpace: "nowrap",
-                        fontFamily: "'JetBrains Mono', monospace",
-                        flexShrink: 0,
+                        letterSpacing: "0.1em", textTransform: "uppercase", marginRight: 6,
+                        whiteSpace: "nowrap", fontFamily: "'JetBrains Mono', monospace", flexShrink: 0,
                       }}>{p.name}</span>
-                      <span style={{
-                        marginRight: 6, fontSize: 6,
-                        color: phase.color, opacity: 0.45,
-                        flexShrink: 0,
-                      }}>●</span>
+                      <span style={{ marginRight: 6, fontSize: 6, color: phase.color, opacity: 0.45, flexShrink: 0 }}>●</span>
                     </span>
                   ))
                 )}
@@ -1187,14 +1372,8 @@ export default function Home() {
               </>
             ) : (
               <>
-                <span style={{
-                  fontWeight: 300, fontStyle: "italic",
-                  color: "#4338ca", letterSpacing: "0.01em",
-                }}>Mehran</span>
-                <span style={{
-                  fontWeight: 700, fontStyle: "normal",
-                  color: "#0a0918", letterSpacing: "-0.04em",
-                }}>Khan</span>
+                <span style={{ fontWeight: 300, fontStyle: "italic", color: "#4338ca", letterSpacing: "0.01em" }}>Mehran</span>
+                <span style={{ fontWeight: 700, fontStyle: "normal", color: "#0a0918", letterSpacing: "-0.04em" }}>Khan</span>
               </>
             )}
           </h1>
@@ -1205,15 +1384,13 @@ export default function Home() {
           }}>
             Not learning to code.{" "}
             <strong style={{ color: colors.text, fontWeight: 600 }}>Actually building.</strong>
-            {" "}22 real apps — each one
-            designed from scratch, shipped to the internet, and hard enough to keep me honest.
+            {" "}22 real apps — each one designed from scratch, shipped to the internet, and hard enough to keep me honest.
           </p>
           <p style={{ fontSize: 15, color: colors.text3, lineHeight: 1.8, maxWidth: 520, margin: "0 auto 20px" }}>
             Task managers and kanban boards all the way to auth, payments,
             and a product I intend to charge real money for. Every tile on this page is live.
           </p>
 
-          {/* Animated word cycler */}
           <div style={{ marginBottom: 32 }}>
             <AnimatedCycler dark={dark} colors={colors} />
           </div>
@@ -1232,6 +1409,27 @@ export default function Home() {
                 boxShadow: `0 0 10px ${colors.acc1}55`,
               }} />
             </div>
+
+            {/* ── Feature 3: Page view counter ── */}
+            {views !== null && (
+              <div style={{
+                display: "inline-flex", alignItems: "center", gap: 7,
+                fontSize: 12, color: colors.text3,
+                margin: "12px auto 0",
+                padding: "5px 14px", borderRadius: 20,
+                background: dark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.04)",
+                border: `1px solid ${colors.border}`,
+              }}>
+                <span style={{
+                  width: 6, height: 6, borderRadius: "50%",
+                  background: colors.acc2,
+                  boxShadow: `0 0 6px ${colors.acc2}`,
+                  flexShrink: 0,
+                }} />
+                {views.toLocaleString()} visits
+              </div>
+            )}
+
             <div style={{ display: "flex", justifyContent: "center", marginTop: 20 }}>
               <GitHubBanner colors={colors} dark={dark} />
             </div>
@@ -1240,9 +1438,12 @@ export default function Home() {
 
         {/* ── ROCKET ── */}
         <RocketVisual done={DONE} total={TOTAL} dark={dark} colors={colors} mounted={mounted} />
-{/* ── TERMINAL ── */}
-<HackerTerminal colors={colors} dark={dark} />
-       <div style={{ padding: "0 32px 8px", maxWidth: 560, margin: "0 auto", width: "100%" }}>
+
+        {/* ── TERMINAL ── */}
+        <HackerTerminal colors={colors} dark={dark} />
+
+        {/* ── PHOTO ── */}
+        <div style={{ padding: "24px 32px 8px", maxWidth: 560, margin: "0 auto", width: "100%" }}>
           <div style={{
             position: "relative", borderRadius: 24, overflow: "hidden",
             border: `1px solid ${dark ? "rgba(139,124,246,0.25)" : "rgba(79,60,210,0.15)"}`,
@@ -1263,51 +1464,69 @@ export default function Home() {
         <div style={{ padding: "0 32px", maxWidth: 1100, margin: "0 auto 8px" }}>
           <div style={{
             borderRadius: 20,
-            background: dark
-              ? "rgba(139,124,246,0.04)"
-              : "rgba(79,60,210,0.035)",
+            background: dark ? "rgba(139,124,246,0.04)" : "rgba(79,60,210,0.035)",
             border: `1px solid ${dark ? "rgba(139,124,246,0.11)" : "rgba(79,60,210,0.09)"}`,
             padding: "36px 44px 32px", textAlign: "center", position: "relative", overflow: "hidden",
           }}>
-            {/* Decorative large quote mark */}
             <div style={{
               position: "absolute", top: 8, left: 28,
               fontSize: 120, lineHeight: 1,
-              fontFamily: "'Playfair Display', Georgia, serif",
-              fontWeight: 700,
+              fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700,
               color: dark ? "rgba(139,124,246,0.12)" : "rgba(79,60,210,0.08)",
               userSelect: "none", pointerEvents: "none",
             }}>&ldquo;</div>
             <p style={{
               fontSize: "clamp(18px,2.8vw,26px)",
               fontFamily: "'Instrument Serif', 'Georgia', serif",
-              fontStyle: "italic",
-              color: colors.text,
-              lineHeight: 1.5,
-              letterSpacing: "0.005em",
-              position: "relative",
-              maxWidth: 680,
-              margin: "0 auto",
+              fontStyle: "italic", color: colors.text,
+              lineHeight: 1.5, letterSpacing: "0.005em",
+              position: "relative", maxWidth: 680, margin: "0 auto",
             }}>
               Took a sledgehammer to my comfort zone.&ensp;Currently homeless.
             </p>
             <p style={{
               fontSize: 12, color: colors.text3, marginTop: 14,
               letterSpacing: "0.1em", textTransform: "uppercase",
-              fontFamily: "'Instrument Sans', system-ui, sans-serif",
-              fontWeight: 500,
+              fontFamily: "'Instrument Sans', system-ui, sans-serif", fontWeight: 500,
             }}>— Mehran Khan</p>
           </div>
         </div>
 
         {/* ── PHASES + TILES ── */}
         <div style={{ padding: "0 32px", maxWidth: 1100, margin: "0 auto" }}>
+
+          {/* ── Feature 4: Stack filter pills ── */}
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8, margin: "32px 0 8px" }}>
+            {filterTags.map(tag => {
+              const isActive = activeFilter === tag || (tag === "All" && !activeFilter);
+              return (
+                <button
+                  key={tag}
+                  onClick={() => setActiveFilter(tag === "All" ? null : tag)}
+                  style={{
+                    padding: "7px 16px", borderRadius: 20, fontSize: 12, fontWeight: 600,
+                    fontFamily: "inherit", cursor: "pointer", letterSpacing: "-0.01em",
+                    border: `1px solid ${isActive ? colors.acc1 : colors.border}`,
+                    background: isActive
+                      ? `linear-gradient(135deg, ${colors.acc1}22, ${colors.acc2}11)`
+                      : "transparent",
+                    color: isActive ? colors.acc1 : colors.text3,
+                    transition: "all 0.18s ease",
+                  }}
+                  onMouseEnter={e => { if (!isActive) e.currentTarget.style.borderColor = colors.acc1; }}
+                  onMouseLeave={e => { if (!isActive) e.currentTarget.style.borderColor = colors.border; }}
+                >
+                  {tag}
+                </button>
+              );
+            })}
+          </div>
+
           {phases.map((phase, phaseIdx) => {
             const phaseStart = globalIdx;
             globalIdx += phase.projects.length;
             return (
               <div key={phase.label} style={{ marginBottom: 8 }}>
-                {/* Phase header */}
                 <div style={{
                   display: "flex", alignItems: "center", gap: 12, margin: "40px 0 18px",
                   opacity: mounted ? 1 : 0, transform: mounted ? "none" : "translateY(8px)",
@@ -1324,32 +1543,41 @@ export default function Home() {
                   <div style={{ flex: 1, height: 1, background: colors.border }} />
                 </div>
 
-                {/* Tiles grid */}
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(158px, 1fr))", gap: 12 }}>
                   {phase.projects.map((p, pi) => {
                     const i = phaseStart + pi;
                     const isDone = i < DONE;
                     const isNext = i === DONE;
                     const isLocked = !isDone && !isNext;
+                    const isFiltered = activeFilter && stackMatch[activeFilter]
+                      ? !stackMatch[activeFilter].includes(p.id)
+                      : false;
 
                     return (
                       <RevealTile key={p.id} delay={pi * 45}>
-                        <TileCard
-                          project={p}
-                          phase={phase}
-                          isDone={isDone}
-                          isNext={isNext}
-                          isLocked={isLocked}
-                          artIdx={i}
-                          colors={colors}
-                          dark={dark}
-                          onClick={(e) => handleTileClick(p, phase, isDone, e)}
-                          tooltipText={
-                            isDone ? `View ${p.name} →`
-                            : isNext ? "Building this now…"
-                            : COMING_SOON[i % COMING_SOON.length]
-                          }
-                        />
+                        <div style={{
+                          opacity: isFiltered ? 0.15 : 1,
+                          transform: isFiltered ? "scale(0.97)" : "none",
+                          transition: "opacity 0.25s ease, transform 0.25s ease",
+                          pointerEvents: isFiltered ? "none" : "auto",
+                        }}>
+                          <TileCard
+                            project={p}
+                            phase={phase}
+                            isDone={isDone}
+                            isNext={isNext}
+                            isLocked={isLocked}
+                            artIdx={i}
+                            colors={colors}
+                            dark={dark}
+                            onClick={(e) => handleTileClick(p, phase, isDone, e)}
+                            tooltipText={
+                              isDone ? `View ${p.name} →`
+                              : isNext ? "Building this now…"
+                              : COMING_SOON[i % COMING_SOON.length]
+                            }
+                          />
+                        </div>
                       </RevealTile>
                     );
                   })}
@@ -1382,15 +1610,9 @@ export default function Home() {
                   color: colors.acc1, fontWeight: 600, marginBottom: 12,
                   display: "flex", alignItems: "center", gap: 8,
                 }}>
-                  <span style={{
-                    display: "inline-block", width: 20, height: 1.5,
-                    background: colors.acc1, borderRadius: 2,
-                  }}/>
+                  <span style={{ display: "inline-block", width: 20, height: 1.5, background: colors.acc1, borderRadius: 2 }}/>
                   Why 22 apps
-                  <span style={{
-                    display: "inline-block", width: 20, height: 1.5,
-                    background: colors.acc1, borderRadius: 2, opacity: 0.4,
-                  }}/>
+                  <span style={{ display: "inline-block", width: 20, height: 1.5, background: colors.acc1, borderRadius: 2, opacity: 0.4 }}/>
                 </p>
                 <p style={{
                   fontSize: "clamp(18px, 2.4vw, 22px)", fontWeight: 700,
@@ -1422,8 +1644,8 @@ export default function Home() {
           gap: 12, padding: "24px 32px 56px", maxWidth: 1100, margin: "0 auto",
         }}>
           {[
-            { n: DONE,  label: "apps shipped",   sub: `${TOTAL - DONE} remaining`,      color: colors.acc1 },
-            { n: TOTAL, label: "apps planned",    sub: "full-stack to production",       color: colors.text },
+            { n: DONE,  label: "apps shipped",   sub: `${TOTAL - DONE} remaining`,  color: colors.acc1 },
+            { n: TOTAL, label: "apps planned",    sub: "full-stack to production",   color: colors.text },
           ].map(s => (
             <div key={s.label} style={{
               background: colors.card, border: `1px solid ${colors.border}`,
@@ -1436,26 +1658,18 @@ export default function Home() {
           ))}
         </div>
 
-        <footer style={{
-          borderTop: `1px solid ${colors.border}`,
-          padding: "48px 32px 36px",
-          marginTop: 8,
-        }}>
+        <footer style={{ borderTop: `1px solid ${colors.border}`, padding: "48px 32px 36px", marginTop: 8 }}>
           <div style={{ maxWidth: 1100, margin: "0 auto" }}>
-
-            {/* Top — tagline + status */}
             <div style={{
               display: "flex", alignItems: "flex-start",
-              justifyContent: "space-between", flexWrap: "wrap", gap: 28,
-              marginBottom: 40,
+              justifyContent: "space-between", flexWrap: "wrap", gap: 28, marginBottom: 40,
             }}>
               <div style={{ maxWidth: 340 }}>
                 <p style={{
                   fontSize: "clamp(22px,3.5vw,32px)",
                   fontFamily: "'Cormorant Garamond', Georgia, serif",
                   fontWeight: 600, color: colors.text,
-                  lineHeight: 1.3, letterSpacing: "-0.02em",
-                  marginBottom: 12,
+                  lineHeight: 1.3, letterSpacing: "-0.02em", marginBottom: 12,
                 }}>
                   Building in public.<br/>
                   <em style={{ fontStyle: "italic", color: colors.acc1 }}>Watch it happen.</em>
@@ -1466,8 +1680,7 @@ export default function Home() {
                     fontSize: 13, color: colors.text3,
                     display: "inline-flex", alignItems: "center", gap: 6,
                     transition: "color 0.2s",
-                    fontFamily: "'JetBrains Mono', monospace",
-                    letterSpacing: "0.01em",
+                    fontFamily: "'JetBrains Mono', monospace", letterSpacing: "0.01em",
                   }}
                   onMouseEnter={e => e.currentTarget.style.color = colors.acc1}
                   onMouseLeave={e => e.currentTarget.style.color = colors.text3}
@@ -1479,8 +1692,6 @@ export default function Home() {
                   mehran@mehrankhan.net
                 </a>
               </div>
-
-              {/* Status pill */}
               <div style={{
                 display: "inline-flex", alignItems: "center", gap: 8,
                 padding: "8px 16px", borderRadius: 20,
@@ -1489,26 +1700,17 @@ export default function Home() {
                 alignSelf: "flex-start",
               }}>
                 <span style={{
-                  width: 7, height: 7, borderRadius: "50%",
-                  background: "#10b981",
+                  width: 7, height: 7, borderRadius: "50%", background: "#10b981",
                   boxShadow: "0 0 0 0 rgba(16,185,129,0.7)",
-                  animation: "pingDot 2s cubic-bezier(0.4,0,0.6,1) infinite",
-                  flexShrink: 0,
+                  animation: "pingDot 2s cubic-bezier(0.4,0,0.6,1) infinite", flexShrink: 0,
                 }}/>
                 <span style={{ fontSize: 12, fontWeight: 500, color: colors.acc2, letterSpacing: "-0.01em" }}>
                   Currently building — Phase 1
                 </span>
               </div>
             </div>
-
-            {/* Divider */}
             <div style={{ height: 1, background: colors.border, marginBottom: 20 }}/>
-
-            {/* Bottom row */}
-            <div style={{
-              display: "flex", alignItems: "center",
-              justifyContent: "space-between", flexWrap: "wrap", gap: 12,
-            }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
               <span style={{ fontSize: 12, color: colors.text4, letterSpacing: "0.02em" }}>
                 © {new Date().getFullYear()} Mehran Khan · mehrankhan.net
               </span>
@@ -1516,11 +1718,7 @@ export default function Home() {
                 <a
                   href={`https://github.com/${GITHUB_USER}`}
                   target="_blank" rel="noreferrer"
-                  style={{
-                    fontSize: 12, color: colors.text3,
-                    display: "flex", alignItems: "center", gap: 5,
-                    transition: "color 0.2s",
-                  }}
+                  style={{ fontSize: 12, color: colors.text3, display: "flex", alignItems: "center", gap: 5, transition: "color 0.2s" }}
                   onMouseEnter={e => e.currentTarget.style.color = colors.acc1}
                   onMouseLeave={e => e.currentTarget.style.color = colors.text3}
                 >
@@ -1530,10 +1728,7 @@ export default function Home() {
                 <span style={{ width: 1, height: 12, background: colors.border }}/>
                 <a
                   href="mailto:mehran@mehrankhan.net"
-                  style={{
-                    fontSize: 12, color: colors.text3,
-                    transition: "color 0.2s",
-                  }}
+                  style={{ fontSize: 12, color: colors.text3, transition: "color 0.2s" }}
                   onMouseEnter={e => e.currentTarget.style.color = colors.acc1}
                   onMouseLeave={e => e.currentTarget.style.color = colors.text3}
                 >
@@ -1570,7 +1765,6 @@ export default function Home() {
       )}
       <FeedbackModal open={feedbackOpen} onClose={() => setFeedbackOpen(false)} colors={colors} dark={dark} />
 
-      {/* Confetti */}
       {confetti && (
         <Confetti
           key={confetti.id}
@@ -1586,11 +1780,7 @@ export default function Home() {
         @keyframes gradShift { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
         @keyframes shimmerLeft { 0%{background-position:0% 50%} 100%{background-position:100% 50%} }
         @keyframes shimmerRight { 0%{background-position:100% 50%} 100%{background-position:0% 50%} }
-        @keyframes pingDot {
-          0%   { box-shadow: 0 0 0 0 rgba(249,115,22,0.7); }
-          60%  { box-shadow: 0 0 0 7px rgba(249,115,22,0); }
-          100% { box-shadow: 0 0 0 0 rgba(249,115,22,0); }
-        }
+        @keyframes pingDot { 0%{box-shadow:0 0 0 0 rgba(249,115,22,0.7)} 60%{box-shadow:0 0 0 7px rgba(249,115,22,0)} 100%{box-shadow:0 0 0 0 rgba(249,115,22,0)} }
         @keyframes marquee { 0%{transform:translateX(0)} 100%{transform:translateX(-33.333%)} }
         @keyframes marqueeReverse { 0%{transform:translateX(-33.333%)} 100%{transform:translateX(0)} }
         @keyframes spinDiamond { 0%{transform:rotate(0deg) scale(1)} 50%{transform:rotate(180deg) scale(1.5)} 100%{transform:rotate(360deg) scale(1)} }
@@ -1598,11 +1788,6 @@ export default function Home() {
           0%,100% { box-shadow: 0 0 0 1px rgba(139,124,246,0.1), 0 8px 40px rgba(139,124,246,0.12), 0 24px 60px rgba(0,0,0,0.35); }
           50%      { box-shadow: 0 0 0 1px rgba(139,124,246,0.22), 0 8px 40px rgba(139,124,246,0.28), 0 24px 60px rgba(0,0,0,0.45); }
         }
-        @keyframes avatarPulse {
-          0%,100% { box-shadow: 0 0 0 4px rgba(139,124,246,0.2), 0 0 20px rgba(139,124,246,0.3); }
-          50%      { box-shadow: 0 0 0 8px rgba(139,124,246,0.1), 0 0 40px rgba(139,124,246,0.5); }
-        }
-        @keyframes gridDrift { 0%{background-position:0 0} 100%{background-position:32px 32px} }
         @keyframes pulseGlow { 0%,100%{opacity:.5;transform:scale(1)} 50%{opacity:1;transform:scale(1.3)} }
         @keyframes fadeIn { from{opacity:0} to{opacity:1} }
         @keyframes slideUp { from{opacity:0;transform:translateY(16px) scale(0.98)} to{opacity:1;transform:none} }
@@ -1629,208 +1814,8 @@ export default function Home() {
     </main>
   );
 }
-// ─── HACKER TERMINAL ─────────────────────────────────────────────────────────
 
-function HackerTerminal({ colors, dark }: { colors: ReturnType<typeof buildColors>; dark: boolean }) {
-  const termRef = useRef<HTMLDivElement>(null);
-  
-  const lineIdx = useRef(0);
-  const timeouts = useRef<ReturnType<typeof setTimeout>[]>([]);
-
-  const hackerLines = [
-    { type: "prompt", text: "ssh root@192.168.1.1" },
-    { type: "success", text: "Connected to 192.168.1.1 — welcome back." },
-    { type: "prompt", text: "nmap -sV --open 10.0.0.0/24" },
-    { type: "info", text: "Starting Nmap 7.94 ( https://nmap.org )" },
-    { type: "info", text: "Scanning 256 hosts [1000 ports each]..." },
-    { type: "warn", text: "Open  10.0.0.4:22   OpenSSH 9.2" },
-    { type: "warn", text: "Open  10.0.0.7:80   nginx 1.25.3" },
-    { type: "warn", text: "Open  10.0.0.12:443 Apache 2.4.58" },
-    { type: "success", text: "Nmap done — 14 hosts up in 3.21s" },
-    { type: "prompt", text: "cat /etc/shadow | grep root" },
-    { type: "danger", text: "root:$6$xyz$k8mN2qP...::0:99999:7:::" },
-    { type: "prompt", text: "python3 exploit.py --target 10.0.0.7" },
-    { type: "info", text: "[*] Injecting payload into header..." },
-    { type: "info", text: "[*] Bypassing WAF rules..." },
-    { type: "success", text: "[+] Shell obtained. uid=0(root) gid=0(root)" },
-    { type: "prompt", text: "whoami" },
-    { type: "success", text: "root" },
-    { type: "prompt", text: "ls -la /var/www/html" },
-    { type: "dim", text: "drwxr-xr-x  mehran  staff   4096 Apr 10 03:14 ." },
-    { type: "dim", text: "-rw-r--r--  mehran  staff  18432 Apr 10 03:14 index.html" },
-    { type: "dim", text: "-rw-r--r--  mehran  staff   2048 Apr 10 03:14 .env" },
-    { type: "prompt", text: "cat .env" },
-    { type: "danger", text: "DATABASE_URL=postgres://admin:••••••@db.prod:5432" },
-    { type: "danger", text: "STRIPE_SECRET=sk_live_••••••••••••••••••" },
-    { type: "prompt", text: "curl -s ifconfig.me" },
-    { type: "info", text: "203.0.113.42" },
-    { type: "prompt", text: "ping -c 4 mehrankhan.net" },
-    { type: "success", text: "64 bytes from 76.76.21.21: icmp_seq=1 ttl=55 time=11.2ms" },
-    { type: "success", text: "64 bytes from 76.76.21.21: icmp_seq=2 ttl=55 time=10.8ms" },
-    { type: "prompt", text: "traceroute mehrankhan.net" },
-    { type: "dim", text: " 1  192.168.1.1    0.4ms" },
-    { type: "dim", text: " 4  ae-3.r01.lax01  8.1ms" },
-    { type: "dim", text: "12  76.76.21.21    11.3ms" },
-    { type: "prompt", text: "hashcat -m 1800 hash.txt rockyou.txt" },
-    { type: "warn", text: "Session........: hashcat" },
-    { type: "warn", text: "Speed.#1.......: 4231.2 MH/s" },
-    { type: "success", text: "Cracked: toor123  [status: Cracked]" },
-    { type: "prompt", text: "rm -rf /var/log/*" },
-    { type: "warn", text: "// tracks covered." },
-    { type: "prompt", text: "exit" },
-    { type: "dim", text: "Connection to 192.168.1.1 closed." },
-  ];
-
-  const clearTimeouts = () => {
-    timeouts.current.forEach(clearTimeout);
-    timeouts.current = [];
-  };
-
-  const addTimeout = (fn: () => void, delay: number) => {
-    const t = setTimeout(fn, delay);
-    timeouts.current.push(t);
-    return t;
-  };
-
-const [lines, setLines] = useState<{ text: string; type: string; visible: string }[]>([]);
-
-  const runLoop = useCallback(() => {
-    if (lineIdx.current >= hackerLines.length) {
-      lineIdx.current = 0;
-      addTimeout(() => {
-        setLines([]);
-        addTimeout(runLoop, 3000);
-      }, 3000);
-      return;
-    }
-
-    const line = hackerLines[lineIdx.current++];
-    const isPrompt = line.type === "prompt";
-
-    // pause before prompt lines like someone is thinking
-    const thinkDelay = isPrompt ? 800 + Math.random() * 600 : 120;
-
-    addTimeout(() => {
-      // add the line with empty visible text first
-      setLines(prev => [...prev, { ...line, visible: "" }]);
-
-      let charIdx = 0;
-      const charSpeed = isPrompt ? 85 : 18;
-
-      const typeChar = () => {
-        if (charIdx <= line.text.length) {
-          const captured = charIdx;
-          setLines(prev => {
-            const updated = [...prev];
-            updated[updated.length - 1] = {
-              ...updated[updated.length - 1],
-              visible: line.text.slice(0, captured),
-            };
-            return updated;
-          });
-          charIdx++;
-          addTimeout(typeChar, charSpeed + Math.random() * (isPrompt ? 60 : 10));
-        } else {
-          // line done — move to next after a pause
-          const nextDelay = isPrompt ? 200 : line.type === "danger" ? 400 : 80;
-          addTimeout(runLoop, nextDelay);
-        }
-      };
-
-      typeChar();
-    }, thinkDelay);
-  }, []);
-
-  useEffect(() => {
-    addTimeout(runLoop, 500);
-    return () => clearTimeouts();
-  }, [runLoop]);
-
-  useEffect(() => {
-    if (termRef.current) {
-      termRef.current.scrollTop = termRef.current.scrollHeight;
-    }
-  }, [lines]);
-
-  const typeColors: Record<string, string> = {
-    prompt:  "#8B7CF6",
-    success: "#10B981",
-    info:    "#38BDF8",
-    warn:    "#F59E0B",
-    danger:  "#EF4444",
-    dim:     "rgba(238,234,248,0.35)",
-  };
-
-  return (
-    <div style={{ padding: "0 32px 0", maxWidth: 680, margin: "0 auto", width: "100%" }}>
-      <div style={{
-        background: "#0a0a10",
-        borderRadius: 16,
-        border: `1px solid ${dark ? "rgba(139,124,246,0.2)" : "rgba(79,60,210,0.15)"}`,
-        overflow: "hidden",
-        boxShadow: dark ? "0 8px 40px rgba(0,0,0,0.5)" : "0 8px 32px rgba(0,0,0,0.12)",
-      }}>
-        {/* Title bar */}
-        <div style={{
-          background: "#13131d",
-          padding: "10px 14px",
-          display: "flex", alignItems: "center", gap: 7,
-          borderBottom: "1px solid rgba(255,255,255,0.05)",
-        }}>
-          {["#ff5f57","#febc2e","#28c840"].map(c => (
-            <div key={c} style={{ width: 10, height: 10, borderRadius: "50%", background: c }} />
-          ))}
-          <span style={{
-            marginLeft: 8, fontSize: 11,
-            color: "rgba(238,234,248,0.35)",
-            fontFamily: "'JetBrains Mono', monospace",
-            letterSpacing: "0.04em",
-          }}>root@mehran ~ zsh</span>
-          <div style={{ flex: 1 }} />
-          <span style={{
-            fontSize: 10, color: "rgba(238,234,248,0.2)",
-            fontFamily: "'JetBrains Mono', monospace",
-          }}>● live</span>
-        </div>
-
-        {/* Body */}
-        <div
-          ref={termRef}
-          style={{
-            padding: "16px 18px",
-            height: 220,
-            overflowY: "auto",
-            fontFamily: "'JetBrains Mono', 'Courier New', monospace",
-            fontSize: 12,
-            lineHeight: 1.8,
-            scrollbarWidth: "none",
-          }}
-        >
-          {lines.map((line, i) => (
-            <div key={i} style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
-              {line.type === "prompt" && (
-                <span style={{ color: "#8B7CF6", flexShrink: 0 }}>❯</span>
-              )}
-              <span style={{ color: typeColors[line.type] ?? typeColors.dim }}>
-                {line.visible}
-              </span>
-            </div>
-          ))}
-          <span style={{
-            display: "inline-block", width: 7, height: 13,
-            background: "#8B7CF6", verticalAlign: "middle",
-            animation: "termCursor 1s step-end infinite",
-          }} />
-        </div>
-      </div>
-      <style>{`
-        @keyframes termCursor { 0%,100%{opacity:1} 50%{opacity:0} }
-        div::-webkit-scrollbar { display: none; }
-      `}</style>
-    </div>
-  );
-}
-// ─── TILE CARD (extracted for cleanliness) ────────────────────────────────────
+// ─── TILE CARD ────────────────────────────────────────────────────────────────
 
 function TileCard({
   project, phase, isDone, isNext, isLocked, artIdx, colors, dark, onClick, tooltipText,
@@ -1858,7 +1843,6 @@ function TileCard({
 
   return (
     <div style={{ position: "relative" }}>
-      {/* Tooltip */}
       <div style={{
         position: "absolute",
         bottom: "calc(100% + 10px)",
@@ -1898,11 +1882,7 @@ function TileCard({
         aria-label={`${project.name}${isLocked ? " — coming soon" : isDone ? " — view details" : " — building next"}`}
         style={{
           borderRadius: 18,
-          border: `1px solid ${
-            isLocked ? colors.lockedBorder
-            : hov ? phase.colorBorder
-            : phase.colorBorder
-          }`,
+          border: `1px solid ${isLocked ? colors.lockedBorder : phase.colorBorder}`,
           padding: "18px 16px 38px",
           background: isLocked
             ? colors.lockedBg
@@ -1919,7 +1899,6 @@ function TileCard({
           outline: "none",
         }}
       >
-        {/* Top shimmer on active tiles */}
         {(isDone || isNext) && (
           <div style={{
             position: "absolute", top: 0, left: "20%", right: "20%", height: 2,
@@ -1927,11 +1906,9 @@ function TileCard({
             borderRadius: "0 0 2px 2px",
           }} />
         )}
-
         <div style={{ marginBottom: 14, opacity: isLocked ? 0.3 : 1, transition: "opacity 0.2s" }}>
           {tileArts(phase.color)[artIdx % 22]}
         </div>
-
         <div style={{ fontSize: 9.5, color: isLocked ? colors.lockedText : colors.text4, fontFamily: "'JetBrains Mono', monospace", marginBottom: 6, letterSpacing: "0.06em" }}>
           {project.id}
         </div>
@@ -1941,39 +1918,30 @@ function TileCard({
         <div style={{ fontSize: 11, color: isLocked ? colors.lockedText : colors.text3, lineHeight: 1.55 }}>
           {project.desc}
         </div>
-
-        {/* Done tick */}
         {isDone && (
           <div style={{
             position: "absolute", top: 14, right: 14,
             width: 20, height: 20, borderRadius: "50%",
             background: phase.colorBg, border: `1px solid ${phase.colorBorder}`,
             display: "flex", alignItems: "center", justifyContent: "center",
-            color: phase.color, opacity: hov ? 1 : 0.7,
-            transition: "opacity 0.2s",
+            color: phase.color, opacity: hov ? 1 : 0.7, transition: "opacity 0.2s",
           }}>
             {Icons.check}
           </div>
         )}
-
-        {/* Next badge */}
         {isNext && (
           <span style={{
             position: "absolute", bottom: 11, right: 11,
             fontSize: 9, fontWeight: 600, padding: "3px 8px", borderRadius: 20,
-            background: `${colors.acc1}22`,
-            color: colors.acc1, letterSpacing: "0.04em", textTransform: "uppercase",
+            background: `${colors.acc1}22`, color: colors.acc1,
+            letterSpacing: "0.04em", textTransform: "uppercase",
             animation: "pulseGlow 2.6s ease-in-out infinite",
           }}>building</span>
         )}
-
-        {/* Lock icon */}
         {isLocked && (
           <span style={{
             position: "absolute", bottom: 11, right: 12,
-            display: "flex",
-            opacity: hov ? 1 : 0.75,
-            transition: "opacity 0.2s",
+            display: "flex", opacity: hov ? 1 : 0.75, transition: "opacity 0.2s",
           }}>
             <svg width="13" height="15" viewBox="0 0 13 15" fill="none">
               <rect x="1" y="6.5" width="11" height="8" rx="2" fill="#f59e0b" opacity="0.18"/>
