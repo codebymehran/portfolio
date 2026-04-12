@@ -1254,7 +1254,7 @@ export default function Home() {
             <img
               src="/profile_mehran.jpg"
               alt="Mehran Khan"
-              style={{ width: "100%", height: 280, objectFit: "cover", objectPosition: "center 70%", display: "block" }}
+              style={{ width: "100%", height: 280, objectFit: "cover", objectPosition: "center 60%", display: "block" }}
             />
           </div>
         </div>
@@ -1705,9 +1705,9 @@ function HackerTerminal({ colors, dark }: { colors: ReturnType<typeof buildColor
     const line = hackerLines[lineIdx.current++];
     setLines(prev => [...prev, line]);
 
-    const delay = line.type === "prompt" ? 320 + Math.random() * 200
-      : line.type === "danger" ? 80
-      : 60 + Math.random() * 80;
+    const delay = line.type === "prompt" ? 900 + Math.random() * 400
+      : line.type === "danger" ? 300
+      : 220 + Math.random() * 180;
 
     addTimeout(runLoop, delay);
   }, []);
