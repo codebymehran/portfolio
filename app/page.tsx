@@ -7,8 +7,8 @@ import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 const TOTAL = 22;
 const DONE = 0;
 const START_DATE = new Date("2026-04-10");
-const GITHUB_USER = "mehrankhan"; // ← update to real username
-const GITHUB_REPO = "22apps";     // ← update to real repo name
+const GITHUB_USER = "codebymehran";
+const GITHUB_REPO = "portfolio";
 
 // ─── DATA ─────────────────────────────────────────────────────────────────────
 
@@ -162,13 +162,13 @@ const tileArts = (color: string) => [
 
 function buildColors(dark: boolean) {
   return dark ? {
-    bg: "#07070f", bg2: "#0d0d1a", bg3: "#13132b",
-    card: "#0d0d1c",
-    border: "rgba(255,255,255,0.06)", borderH: "rgba(139,124,246,0.3)",
-    text: "#eeeaf8", text2: "rgba(238,234,248,0.72)", text3: "rgba(238,234,248,0.44)", text4: "rgba(238,234,248,0.2)",
+    bg: "#111118", bg2: "#17171f", bg3: "#1e1e28",
+    card: "#16161e",
+    border: "rgba(255,255,255,0.08)", borderH: "rgba(139,124,246,0.35)",
+    text: "#eeeaf8", text2: "rgba(238,234,248,0.75)", text3: "rgba(238,234,248,0.48)", text4: "rgba(238,234,248,0.24)",
     acc1: "#8B7CF6", acc2: "#10B981",
-    navBg: "rgba(7,7,15,0.88)",
-    lockedBg: "rgba(255,255,255,0.016)", lockedBorder: "rgba(255,255,255,0.048)", lockedText: "rgba(238,234,248,0.26)",
+    navBg: "rgba(17,17,24,0.9)",
+    lockedBg: "rgba(255,255,255,0.022)", lockedBorder: "rgba(255,255,255,0.06)", lockedText: "rgba(238,234,248,0.28)",
   } : {
     bg: "#f7f6f2", bg2: "#ffffff", bg3: "#ebe9e2",
     card: "#ffffff",
@@ -404,13 +404,18 @@ function FeedbackModal({
     if (!msg.trim() || state === "sending") return;
     setState("sending");
     try {
-      const res = await fetch("https://formspree.io/f/xpwdgjzv", {
-        // ↑ Replace with your own Formspree endpoint: https://formspree.io
+      const res = await fetch("https://api.web3forms.com/submit", {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify({ message: msg, _subject: "Note from mehrankhan.net" }),
+        body: JSON.stringify({
+          access_key: "821b5a66-e7e4-4d4e-a046-506c051daf4a", // get free key at web3forms.com — takes 30s, no account needed
+          subject: "Note from mehrankhan.net",
+          message: msg,
+          from_name: "Site visitor",
+        }),
       });
-      if (res.ok) {
+      const json = await res.json();
+      if (json.success) {
         setState("sent");
         setTimeout(() => { setState("idle"); setMsg(""); onClose(); }, 2200);
       } else {
@@ -855,18 +860,14 @@ export default function Home() {
           background: colors.navBg, backdropFilter: "blur(20px)",
           position: "sticky", top: 0, zIndex: 100,
         }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <div style={{
-              width: 32, height: 32, borderRadius: 9,
+              width: 28, height: 28, borderRadius: 7,
               background: `linear-gradient(135deg, ${colors.acc1}, ${colors.acc2})`,
               display: "flex", alignItems: "center", justifyContent: "center",
-              fontSize: 12, fontWeight: 700, color: "#fff",
+              fontSize: 11, fontWeight: 700, color: "#fff", flexShrink: 0,
             }}>MK</div>
-            <span style={{ fontSize: 14, fontWeight: 500, letterSpacing: "-0.01em" }}>mehrankhan.net</span>
-            {/* Live GitHub status in nav */}
-            <div style={{ display: "none" }} className="github-nav">
-              <GitHubBanner colors={colors} dark={dark} />
-            </div>
+            <span style={{ fontSize: 13, fontWeight: 500, letterSpacing: "-0.01em", display: "none" }} className="nav-domain">mehrankhan.net</span>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
             <button
@@ -905,17 +906,78 @@ export default function Home() {
         {/* ── TICKER ── */}
         <div style={{
           overflow: "hidden",
-          background: dark ? "rgba(139,124,246,0.06)" : "rgba(79,60,210,0.04)",
+          background: dark
+            ? "linear-gradient(180deg, rgba(139,124,246,0.07) 0%, rgba(16,185,129,0.04) 100%)"
+            : "linear-gradient(180deg, rgba(79,60,210,0.05) 0%, rgba(10,122,86,0.025) 100%)",
           borderBottom: `1px solid ${colors.border}`,
           borderTop: `1px solid ${colors.border}`,
-          padding: "10px 0",
+          padding: "0",
+          position: "relative",
         }}>
-          <div style={{ display: "flex", whiteSpace: "nowrap", animation: "ticker 52s linear infinite" }}>
-            {[...allProjects, ...allProjects].map((p, i) => (
-              <span key={i} style={{ fontSize: 11.5, color: dark ? "rgba(238,234,248,0.65)" : "#6b6880", padding: "0 20px", letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 500 }}>
-                {p.name}<span style={{ marginLeft: 20, color: dark ? "rgba(139,124,246,0.7)" : "#a78bfa" }}>·</span>
-              </span>
-            ))}
+          {/* Left fade */}
+          <div style={{
+            position: "absolute", left: 0, top: 0, bottom: 0, width: 80, zIndex: 2, pointerEvents: "none",
+            background: `linear-gradient(90deg, ${colors.bg} 0%, transparent 100%)`,
+          }}/>
+          {/* Right fade */}
+          <div style={{
+            position: "absolute", right: 0, top: 0, bottom: 0, width: 80, zIndex: 2, pointerEvents: "none",
+            background: `linear-gradient(270deg, ${colors.bg} 0%, transparent 100%)`,
+          }}/>
+
+          {/* Row 1 — forward */}
+          <div style={{ display: "flex", whiteSpace: "nowrap", animation: "ticker 10s linear infinite", padding: "9px 0 5px" }}>
+            {[...phases, ...phases].flatMap((phase, pi) =>
+              phase.projects.map((p, i) => (
+                <span key={`${pi}-${i}`} style={{ display: "inline-flex", alignItems: "center", gap: 0 }}>
+                  <span style={{
+                    fontSize: 11, fontWeight: 600,
+                    color: phase.color,
+                    background: phase.colorBg,
+                    border: `1px solid ${phase.colorBorder}`,
+                    borderRadius: 20,
+                    padding: "3px 11px",
+                    letterSpacing: "0.07em",
+                    textTransform: "uppercase",
+                    marginRight: 10,
+                    whiteSpace: "nowrap",
+                  }}>{p.name}</span>
+                  <span style={{
+                    marginRight: 10,
+                    color: dark ? "rgba(139,124,246,0.5)" : "rgba(79,60,210,0.3)",
+                    fontSize: 8,
+                    animation: "spinDiamond 3s linear infinite",
+                    display: "inline-block",
+                    animationDelay: `${(pi * 4 + i) * 0.15}s`,
+                  }}>◆</span>
+                </span>
+              ))
+            )}
+          </div>
+
+          {/* Row 2 — reverse, different speed */}
+          <div style={{ display: "flex", whiteSpace: "nowrap", animation: "tickerReverse 14s linear infinite", padding: "5px 0 9px" }}>
+            {[...phases, ...phases].flatMap((phase, pi) =>
+              phase.projects.slice().reverse().map((p, i) => (
+                <span key={`r${pi}-${i}`} style={{ display: "inline-flex", alignItems: "center", gap: 0 }}>
+                  <span style={{
+                    fontSize: 10.5, fontWeight: 500,
+                    color: dark ? "rgba(238,234,248,0.38)" : colors.text3,
+                    letterSpacing: "0.1em",
+                    textTransform: "uppercase",
+                    marginRight: 10,
+                    whiteSpace: "nowrap",
+                    fontFamily: "'JetBrains Mono', monospace",
+                  }}>{p.name}</span>
+                  <span style={{
+                    marginRight: 10,
+                    color: phase.color,
+                    opacity: 0.35,
+                    fontSize: 7,
+                  }}>●</span>
+                </span>
+              ))
+            )}
           </div>
         </div>
 
@@ -1147,18 +1209,36 @@ export default function Home() {
             padding: "40px 36px", position: "relative", overflow: "hidden",
           }}>
             <div style={{ display: "flex", gap: 24, alignItems: "flex-start" }}>
-              <div style={{
+              <div className="mission-avatar" style={{
                 width: 58, height: 58, minWidth: 58, borderRadius: "50%",
                 background: `linear-gradient(135deg, ${colors.acc1}, ${colors.acc2})`,
                 display: "flex", alignItems: "center", justifyContent: "center",
                 fontSize: 17, fontWeight: 700, color: "#fff", flexShrink: 0,
               }}>MK</div>
-              <div>
-                <p style={{ fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase", color: colors.acc1, fontWeight: 600, marginBottom: 10 }}>
+              <div style={{ flex: 1 }}>
+                <p style={{
+                  fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase",
+                  color: colors.acc1, fontWeight: 600, marginBottom: 12,
+                  display: "flex", alignItems: "center", gap: 8,
+                }}>
+                  <span style={{
+                    display: "inline-block", width: 20, height: 1.5,
+                    background: colors.acc1, borderRadius: 2,
+                  }}/>
                   Why 22 apps
+                  <span style={{
+                    display: "inline-block", width: 20, height: 1.5,
+                    background: colors.acc1, borderRadius: 2, opacity: 0.4,
+                  }}/>
                 </p>
-                <p style={{ fontSize: 17, fontWeight: 600, color: colors.text, marginBottom: 14, lineHeight: 1.45, letterSpacing: "-0.025em" }}>
-                  The gap between knowing React and being able to build production software is enormous. I wanted to close it deliberately.
+                <p style={{
+                  fontSize: "clamp(18px, 2.4vw, 22px)", fontWeight: 700,
+                  fontFamily: "'Cormorant Garamond', Georgia, serif",
+                  color: colors.text, marginBottom: 16,
+                  lineHeight: 1.35, letterSpacing: "-0.01em",
+                }}>
+                  The gap between knowing React and being able to build production software is enormous.
+                  {" "}<em style={{ fontStyle: "italic", color: colors.acc1 }}>I wanted to close it deliberately.</em>
                 </p>
                 <p style={{ fontSize: 14.5, color: colors.text2, lineHeight: 1.82, marginBottom: 12 }}>
                   Each project in this sequence was chosen to force a specific skill — state management, API design,
@@ -1234,6 +1314,8 @@ export default function Home() {
           100% { box-shadow: 0 0 0 0 rgba(249,115,22,0); }
         }
         @keyframes ticker { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+        @keyframes tickerReverse { 0%{transform:translateX(-50%)} 100%{transform:translateX(0)} }
+        @keyframes spinDiamond { 0%{transform:rotate(0deg) scale(1)} 50%{transform:rotate(180deg) scale(1.4)} 100%{transform:rotate(360deg) scale(1)} }
         @keyframes pulseGlow { 0%,100%{opacity:.5;transform:scale(1)} 50%{opacity:1;transform:scale(1.3)} }
         @keyframes fadeIn { from{opacity:0} to{opacity:1} }
         @keyframes slideUp { from{opacity:0;transform:translateY(16px) scale(0.98)} to{opacity:1;transform:none} }
@@ -1243,6 +1325,8 @@ export default function Home() {
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         html, body { overscroll-behavior: none; overscroll-behavior-y: none; }
+        @media (min-width: 480px) { .nav-domain { display: inline !important; } }
+        @media (max-width: 600px) { .mission-avatar { display: none !important; } }
         a { text-decoration: none; color: inherit; }
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
@@ -1396,16 +1480,15 @@ function TileCard({
         {isLocked && (
           <span style={{
             position: "absolute", bottom: 11, right: 12,
-            color: dark ? "rgba(238,234,248,0.45)" : "#9490a8",
-            opacity: hov ? 0.8 : 1,
-            transition: "opacity 0.2s",
             display: "flex",
+            opacity: hov ? 1 : 0.75,
+            transition: "opacity 0.2s",
           }}>
             <svg width="13" height="15" viewBox="0 0 13 15" fill="none">
-              <rect x="1" y="6.5" width="11" height="8" rx="2" fill="currentColor" opacity="0.25"/>
-              <rect x="1" y="6.5" width="11" height="8" rx="2" stroke="currentColor" strokeWidth="1.4"/>
-              <path d="M4 6.5V4a2.5 2.5 0 0 1 5 0v2.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
-              <circle cx="6.5" cy="10.5" r="1.2" fill="currentColor"/>
+              <rect x="1" y="6.5" width="11" height="8" rx="2" fill="#f59e0b" opacity="0.18"/>
+              <rect x="1" y="6.5" width="11" height="8" rx="2" stroke="#f59e0b" strokeWidth="1.4"/>
+              <path d="M4 6.5V4a2.5 2.5 0 0 1 5 0v2.5" stroke="#f59e0b" strokeWidth="1.4" strokeLinecap="round"/>
+              <circle cx="6.5" cy="10.5" r="1.2" fill="#fbbf24"/>
             </svg>
           </span>
         )}
