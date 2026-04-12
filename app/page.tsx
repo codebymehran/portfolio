@@ -129,11 +129,6 @@ const Icons = {
       <path d="M6.5 4v3l2 1.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
     </svg>
   ),
-  star: (
-    <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
-      <path d="M6.5 1l1.5 3.2 3.5.5-2.5 2.4.6 3.4-3.1-1.6-3.1 1.6.6-3.4L2 4.7l3.5-.5L6.5 1z" stroke="currentColor" strokeWidth="1.1" strokeLinejoin="round"/>
-    </svg>
-  ),
   commit: (
     <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
       <circle cx="6.5" cy="6.5" r="2.5" stroke="currentColor" strokeWidth="1.2"/>
@@ -230,11 +225,8 @@ function Confetti({ x, y, color, onDone }: { x: number; y: number; color: string
     <div style={{ position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh", pointerEvents: "none", zIndex: 300 }}>
       {particles.map(p => (
         <div key={p.id} style={{
-          position: "absolute",
-          left: x, top: y,
-          width: p.size, height: p.size,
-          borderRadius: "50%",
-          background: p.color,
+          position: "absolute", left: x, top: y,
+          width: p.size, height: p.size, borderRadius: "50%", background: p.color,
           animation: `confettiPop 0.9s cubic-bezier(.22,.68,0,1.2) forwards`,
           animationDelay: `${p.id * 20}ms`,
           "--vx": `${Math.cos(p.angle) * p.speed}px`,
@@ -250,9 +242,7 @@ function Confetti({ x, y, color, onDone }: { x: number; y: number; color: string
 type Project = typeof phases[0]["projects"][0];
 type Phase = typeof phases[0];
 
-function ProjectModal({
-  project, phase, onClose, colors, dark,
-}: {
+function ProjectModal({ project, phase, onClose, colors, dark }: {
   project: Project; phase: Phase; onClose: () => void; colors: ReturnType<typeof buildColors>; dark: boolean;
 }) {
   useEffect(() => {
@@ -263,27 +253,19 @@ function ProjectModal({
   }, [onClose]);
 
   return (
-    <div
-      onClick={onClose}
-      style={{
-        position: "fixed", inset: 0, zIndex: 200,
-        background: "rgba(0,0,0,0.65)", backdropFilter: "blur(12px)",
-        display: "flex", alignItems: "center", justifyContent: "center", padding: "24px 16px",
-        animation: "fadeIn 0.18s ease",
-      }}
-    >
-      <div
-        onClick={e => e.stopPropagation()}
-        style={{
-          background: colors.card,
-          border: `1px solid ${phase.colorBorder}`,
-          borderRadius: 28,
-          width: "100%", maxWidth: 480,
-          boxShadow: `0 32px 80px ${phase.color}22, 0 8px 24px rgba(0,0,0,0.3)`,
-          position: "relative", overflow: "hidden",
-          animation: "slideUp 0.22s cubic-bezier(.4,0,.2,1)",
-        }}
-      >
+    <div onClick={onClose} style={{
+      position: "fixed", inset: 0, zIndex: 200,
+      background: "rgba(0,0,0,0.65)", backdropFilter: "blur(12px)",
+      display: "flex", alignItems: "center", justifyContent: "center", padding: "24px 16px",
+      animation: "fadeIn 0.18s ease",
+    }}>
+      <div onClick={e => e.stopPropagation()} style={{
+        background: colors.card, border: `1px solid ${phase.colorBorder}`,
+        borderRadius: 28, width: "100%", maxWidth: 480,
+        boxShadow: `0 32px 80px ${phase.color}22, 0 8px 24px rgba(0,0,0,0.3)`,
+        position: "relative", overflow: "hidden",
+        animation: "slideUp 0.22s cubic-bezier(.4,0,.2,1)",
+      }}>
         <div style={{ height: 3, background: `linear-gradient(90deg, ${phase.color}, ${phase.color}44)` }} />
         <div style={{ padding: "28px 28px 0" }}>
           <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 20 }}>
@@ -304,27 +286,18 @@ function ProjectModal({
                 </div>
               </div>
             </div>
-            <button
-              onClick={onClose}
-              style={{
-                width: 32, height: 32, borderRadius: "50%",
-                background: colors.bg3, border: `1px solid ${colors.border}`,
-                color: colors.text3, cursor: "pointer",
-                display: "flex", alignItems: "center", justifyContent: "center",
-                fontFamily: "inherit", flexShrink: 0, marginTop: 2,
-              }}
-            >
-              {Icons.close}
-            </button>
+            <button onClick={onClose} style={{
+              width: 32, height: 32, borderRadius: "50%",
+              background: colors.bg3, border: `1px solid ${colors.border}`,
+              color: colors.text3, cursor: "pointer",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              fontFamily: "inherit", flexShrink: 0, marginTop: 2,
+            }}>{Icons.close}</button>
           </div>
-          <p style={{ fontSize: 14.5, color: colors.text2, lineHeight: 1.7, marginBottom: 24 }}>
-            {project.desc}
-          </p>
+          <p style={{ fontSize: 14.5, color: colors.text2, lineHeight: 1.7, marginBottom: 24 }}>{project.desc}</p>
         </div>
         <div style={{ padding: "0 28px 22px" }}>
-          <div style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: colors.text3, fontWeight: 600, marginBottom: 10 }}>
-            Tech stack
-          </div>
+          <div style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: colors.text3, fontWeight: 600, marginBottom: 10 }}>Tech stack</div>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 7 }}>
             {project.stack.map(s => (
               <span key={s} style={{
@@ -338,39 +311,28 @@ function ProjectModal({
         </div>
         {project.learned && (
           <div style={{
-            margin: "0 28px 28px",
-            padding: "16px 18px",
+            margin: "0 28px 28px", padding: "16px 18px",
             background: dark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.025)",
             borderRadius: 14, border: `1px solid ${colors.border}`,
             borderLeft: `3px solid ${phase.color}`,
           }}>
-            <div style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: colors.text3, fontWeight: 600, marginBottom: 7 }}>
-              What I learned
-            </div>
-            <p style={{ fontSize: 13.5, color: colors.text2, lineHeight: 1.65, margin: 0 }}>
-              {project.learned}
-            </p>
+            <div style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: colors.text3, fontWeight: 600, marginBottom: 7 }}>What I learned</div>
+            <p style={{ fontSize: 13.5, color: colors.text2, lineHeight: 1.65, margin: 0 }}>{project.learned}</p>
           </div>
         )}
         {project.live ? (
           <div style={{ padding: "0 28px 28px" }}>
-            <a
-              href={project.live}
-              target="_blank"
-              rel="noreferrer"
-              style={{
-                display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-                padding: "12px", borderRadius: 14,
-                background: `linear-gradient(135deg, ${phase.color}, ${phase.color}cc)`,
-                color: "#fff", fontWeight: 600, fontSize: 14,
-                textDecoration: "none", letterSpacing: "-0.01em",
-                transition: "opacity 0.2s",
-              }}
+            <a href={project.live} target="_blank" rel="noreferrer" style={{
+              display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+              padding: "12px", borderRadius: 14,
+              background: `linear-gradient(135deg, ${phase.color}, ${phase.color}cc)`,
+              color: "#fff", fontWeight: 600, fontSize: 14,
+              textDecoration: "none", letterSpacing: "-0.01em", transition: "opacity 0.2s",
+            }}
               onMouseEnter={e => (e.currentTarget.style.opacity = "0.88")}
               onMouseLeave={e => (e.currentTarget.style.opacity = "1")}
             >
-              {Icons.external}
-              View live project
+              {Icons.external} View live project
             </a>
           </div>
         ) : (
@@ -381,8 +343,7 @@ function ProjectModal({
               background: colors.lockedBg, border: `1px solid ${colors.lockedBorder}`,
               color: colors.lockedText, fontSize: 13, fontWeight: 500,
             }}>
-              {Icons.lock}
-              Not shipped yet — check back soon
+              {Icons.lock} Not shipped yet — check back soon
             </div>
           </div>
         )}
@@ -393,9 +354,7 @@ function ProjectModal({
 
 // ─── FEEDBACK MODAL ───────────────────────────────────────────────────────────
 
-function FeedbackModal({
-  open, onClose, colors, dark,
-}: {
+function FeedbackModal({ open, onClose, colors, dark }: {
   open: boolean; onClose: () => void; colors: ReturnType<typeof buildColors>; dark: boolean;
 }) {
   const [msg, setMsg] = useState("");
@@ -412,9 +371,7 @@ function FeedbackModal({
         body: JSON.stringify({
           access_key: "821b5a66-e7e4-4d4e-a046-506c051daf4a",
           subject: "Note from mehrankhan.net",
-          message: msg,
-          from_name: "Site visitor",
-          botcheck: "",
+          message: msg, from_name: "Site visitor", botcheck: "",
         }),
       });
       const json = await res.json();
@@ -426,7 +383,7 @@ function FeedbackModal({
         setState("error");
         setTimeout(() => { setState("idle"); setErrorMsg(""); }, 4000);
       }
-    } catch (err) {
+    } catch {
       setErrorMsg("Network error — check your connection.");
       setState("error");
       setTimeout(() => { setState("idle"); setErrorMsg(""); }, 4000);
@@ -436,36 +393,25 @@ function FeedbackModal({
   if (!open) return null;
 
   return (
-    <div
-      onClick={onClose}
-      style={{
-        position: "fixed", inset: 0, zIndex: 200,
-        background: "rgba(0,0,0,0.6)", backdropFilter: "blur(10px)",
-        display: "flex", alignItems: "center", justifyContent: "center", padding: 24,
-        animation: "fadeIn 0.15s ease",
-      }}
-    >
-      <div
-        onClick={e => e.stopPropagation()}
-        style={{
-          background: colors.card, border: `1px solid ${colors.border}`,
-          borderRadius: 24, padding: "36px 32px", width: "100%", maxWidth: 420,
-          boxShadow: "0 24px 80px rgba(0,0,0,0.4)", position: "relative",
-          animation: "slideUp 0.2s cubic-bezier(.4,0,.2,1)",
-        }}
-      >
-        <button
-          onClick={onClose}
-          style={{
-            position: "absolute", top: 14, right: 14,
-            width: 30, height: 30, borderRadius: "50%",
-            background: colors.bg3, border: `1px solid ${colors.border}`,
-            color: colors.text3, cursor: "pointer",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            fontFamily: "inherit",
-          }}
-        >{Icons.close}</button>
-
+    <div onClick={onClose} style={{
+      position: "fixed", inset: 0, zIndex: 200,
+      background: "rgba(0,0,0,0.6)", backdropFilter: "blur(10px)",
+      display: "flex", alignItems: "center", justifyContent: "center", padding: 24,
+      animation: "fadeIn 0.15s ease",
+    }}>
+      <div onClick={e => e.stopPropagation()} style={{
+        background: colors.card, border: `1px solid ${colors.border}`,
+        borderRadius: 24, padding: "36px 32px", width: "100%", maxWidth: 420,
+        boxShadow: "0 24px 80px rgba(0,0,0,0.4)", position: "relative",
+        animation: "slideUp 0.2s cubic-bezier(.4,0,.2,1)",
+      }}>
+        <button onClick={onClose} style={{
+          position: "absolute", top: 14, right: 14,
+          width: 30, height: 30, borderRadius: "50%",
+          background: colors.bg3, border: `1px solid ${colors.border}`,
+          color: colors.text3, cursor: "pointer",
+          display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "inherit",
+        }}>{Icons.close}</button>
         {state === "sent" ? (
           <div style={{ textAlign: "center", padding: "12px 0" }}>
             <div style={{
@@ -479,21 +425,15 @@ function FeedbackModal({
           </div>
         ) : (
           <>
-            <p style={{ fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase", color: colors.acc1, fontWeight: 600, marginBottom: 10 }}>
-              Leave a note
-            </p>
-            <p style={{ fontSize: 18, fontWeight: 600, color: colors.text, marginBottom: 7, letterSpacing: "-0.025em", fontFamily: "'Playfair Display', Georgia, serif" }}>
-              What do you think?
-            </p>
+            <p style={{ fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase", color: colors.acc1, fontWeight: 600, marginBottom: 10 }}>Leave a note</p>
+            <p style={{ fontSize: 18, fontWeight: 600, color: colors.text, marginBottom: 7, letterSpacing: "-0.025em", fontFamily: "'Playfair Display', Georgia, serif" }}>What do you think?</p>
             <p style={{ fontSize: 13.5, color: colors.text2, marginBottom: 22, lineHeight: 1.65 }}>
               Encouragement, a question, or a critique — Mehran reads every message.
             </p>
             <textarea
-              value={msg}
-              onChange={e => setMsg(e.target.value)}
+              value={msg} onChange={e => setMsg(e.target.value)}
               onKeyDown={e => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) handleSend(); }}
-              placeholder="Type something..."
-              rows={4}
+              placeholder="Type something..." rows={4}
               style={{
                 width: "100%", background: colors.bg,
                 border: `1px solid ${msg ? colors.borderH : colors.border}`,
@@ -503,26 +443,16 @@ function FeedbackModal({
                 display: "block", transition: "border-color 0.2s",
               }}
             />
-            {state === "error" && (
-              <p style={{ fontSize: 12, color: "#EF4444", marginBottom: 10 }}>
-                {errorMsg || "Something went wrong. Try again?"}
-              </p>
-            )}
-            <button
-              onClick={handleSend}
-              disabled={!msg.trim() || state === "sending"}
-              style={{
-                width: "100%", padding: "13px",
-                borderRadius: 12,
-                background: msg.trim() ? `linear-gradient(135deg, ${colors.acc1}, ${colors.acc2})` : colors.bg3,
-                border: "none", color: msg.trim() ? "#fff" : colors.text3,
-                fontSize: 14, fontWeight: 600,
-                cursor: msg.trim() ? "pointer" : "not-allowed",
-                letterSpacing: "-0.01em", transition: "all 0.2s",
-                fontFamily: "inherit",
-                display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-              }}
-            >
+            {state === "error" && <p style={{ fontSize: 12, color: "#EF4444", marginBottom: 10 }}>{errorMsg || "Something went wrong. Try again?"}</p>}
+            <button onClick={handleSend} disabled={!msg.trim() || state === "sending"} style={{
+              width: "100%", padding: "13px", borderRadius: 12,
+              background: msg.trim() ? `linear-gradient(135deg, ${colors.acc1}, ${colors.acc2})` : colors.bg3,
+              border: "none", color: msg.trim() ? "#fff" : colors.text3,
+              fontSize: 14, fontWeight: 600,
+              cursor: msg.trim() ? "pointer" : "not-allowed",
+              letterSpacing: "-0.01em", transition: "all 0.2s", fontFamily: "inherit",
+              display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+            }}>
               {Icons.send}
               {state === "sending" ? "Sending…" : "Send message"}
               <span style={{ fontSize: 11, opacity: 0.6 }}>⌘↵</span>
@@ -547,11 +477,7 @@ function GitHubBanner({ colors, dark }: { colors: ReturnType<typeof buildColors>
         const c = commits[0];
         const rawDate = c.commit?.author?.date ?? "";
         const ago = rawDate ? timeAgo(new Date(rawDate)) : "";
-        setData({
-          message: c.commit?.message?.split("\n")[0] ?? "",
-          sha: c.sha?.slice(0, 7) ?? "",
-          date: ago,
-        });
+        setData({ message: c.commit?.message?.split("\n")[0] ?? "", sha: c.sha?.slice(0, 7) ?? "", date: ago });
       })
       .catch(() => {});
   }, []);
@@ -567,28 +493,19 @@ function GitHubBanner({ colors, dark }: { colors: ReturnType<typeof buildColors>
   if (!data) return null;
 
   return (
-    <a
-      href={`https://github.com/${GITHUB_USER}/${GITHUB_REPO}`}
-      target="_blank"
-      rel="noreferrer"
-      style={{
-        display: "flex", alignItems: "center", gap: 10,
-        padding: "8px 14px",
-        background: dark ? "rgba(139,124,246,0.07)" : "rgba(90,76,200,0.055)",
-        border: `1px solid ${dark ? "rgba(139,124,246,0.18)" : "rgba(90,76,200,0.13)"}`,
-        borderRadius: 10,
-        textDecoration: "none",
-        transition: "background 0.2s",
-      }}
+    <a href={`https://github.com/${GITHUB_USER}/${GITHUB_REPO}`} target="_blank" rel="noreferrer" style={{
+      display: "flex", alignItems: "center", gap: 10, padding: "8px 14px",
+      background: dark ? "rgba(139,124,246,0.07)" : "rgba(90,76,200,0.055)",
+      border: `1px solid ${dark ? "rgba(139,124,246,0.18)" : "rgba(90,76,200,0.13)"}`,
+      borderRadius: 10, textDecoration: "none", transition: "background 0.2s",
+    }}
       onMouseEnter={e => (e.currentTarget.style.background = dark ? "rgba(139,124,246,0.13)" : "rgba(90,76,200,0.1)")}
       onMouseLeave={e => (e.currentTarget.style.background = dark ? "rgba(139,124,246,0.07)" : "rgba(90,76,200,0.055)")}
     >
       <span style={{ color: colors.acc1 }}>{Icons.commit}</span>
       <span style={{ fontSize: 12, color: colors.text3 }}>{Icons.clock}</span>
       <span style={{ fontSize: 12, color: colors.text3 }}>{data.date}</span>
-      <span style={{ fontSize: 12, color: colors.text2, maxWidth: 200, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-        {data.message}
-      </span>
+      <span style={{ fontSize: 12, color: colors.text2, maxWidth: 200, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{data.message}</span>
       <span style={{
         fontSize: 10, fontFamily: "'JetBrains Mono', monospace",
         color: colors.acc1, background: dark ? "rgba(139,124,246,0.12)" : "rgba(90,76,200,0.08)",
@@ -603,14 +520,11 @@ function GitHubBanner({ colors, dark }: { colors: ReturnType<typeof buildColors>
 function RevealTile({ children, delay }: { children: React.ReactNode; delay: number }) {
   const { ref, visible } = useScrollReveal();
   return (
-    <div
-      ref={ref}
-      style={{
-        opacity: visible ? 1 : 0,
-        transform: visible ? "none" : "translateY(18px)",
-        transition: `opacity 0.5s ease ${delay}ms, transform 0.5s ease ${delay}ms`,
-      }}
-    >
+    <div ref={ref} style={{
+      opacity: visible ? 1 : 0,
+      transform: visible ? "none" : "translateY(18px)",
+      transition: `opacity 0.5s ease ${delay}ms, transform 0.5s ease ${delay}ms`,
+    }}>
       {children}
     </div>
   );
@@ -628,20 +542,20 @@ function PhaseIcon({ color, phase }: { color: string; phase: number }) {
 // ─── ANIMATED CYCLER ─────────────────────────────────────────────────────────
 
 const cyclerItems = [
-  { text: "a task manager",        color: "#8B7CF6" },
-  { text: "an expense tracker",    color: "#10B981" },
-  { text: "a weather widget",      color: "#38BDF8" },
-  { text: "a quiz app",            color: "#F59E0B" },
-  { text: "a recipe book",         color: "#8B7CF6" },
-  { text: "a kanban board",        color: "#10B981" },
-  { text: "a habit tracker",       color: "#F59E0B" },
-  { text: "a portfolio site",      color: "#38BDF8" },
-  { text: "a movie browser",       color: "#8B7CF6" },
-  { text: "a dashboard",           color: "#10B981" },
-  { text: "an e-commerce store",   color: "#F59E0B" },
-  { text: "a blog + CMS",          color: "#38BDF8" },
-  { text: "a real-time chat app",  color: "#8B7CF6" },
-  { text: "a SaaS product",        color: "#10B981" },
+  { text: "a task manager",           color: "#8B7CF6" },
+  { text: "an expense tracker",       color: "#10B981" },
+  { text: "a weather widget",         color: "#38BDF8" },
+  { text: "a quiz app",               color: "#F59E0B" },
+  { text: "a recipe book",            color: "#8B7CF6" },
+  { text: "a kanban board",           color: "#10B981" },
+  { text: "a habit tracker",          color: "#F59E0B" },
+  { text: "a portfolio site",         color: "#38BDF8" },
+  { text: "a movie browser",          color: "#8B7CF6" },
+  { text: "a dashboard",              color: "#10B981" },
+  { text: "an e-commerce store",      color: "#F59E0B" },
+  { text: "a blog + CMS",             color: "#38BDF8" },
+  { text: "a real-time chat app",     color: "#8B7CF6" },
+  { text: "a SaaS product",           color: "#10B981" },
   { text: "something people pay for", color: "#EF4444" },
 ];
 
@@ -663,7 +577,7 @@ function AnimatedCycler({ dark, colors }: { dark: boolean; colors: ReturnType<ty
 
   return (
     <div style={{
-      display: "inline-flex", flexDirection: "column", alignItems: "center", gap: 0,
+      display: "inline-flex", flexDirection: "column", alignItems: "center",
       padding: "12px 28px 14px",
       background: dark ? "rgba(255,255,255,0.025)" : "rgba(0,0,0,0.03)",
       border: `1px solid ${dark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.07)"}`,
@@ -675,37 +589,47 @@ function AnimatedCycler({ dark, colors }: { dark: boolean; colors: ReturnType<ty
       <div style={{
         fontSize: "clamp(18px,3vw,26px)",
         fontFamily: "'Cormorant Garamond', Georgia, serif",
-        fontWeight: 600,
-        letterSpacing: "-0.01em",
-        color: item.color,
+        fontWeight: 600, letterSpacing: "-0.01em", color: item.color,
         opacity: phase === "in" ? 1 : phase === "out" ? 0 : 1,
         transform: phase === "in" ? "translateY(0)" : phase === "out" ? "translateY(-8px)" : "translateY(0)",
         transition: phase === "in"
           ? "opacity 0.4s ease, transform 0.4s cubic-bezier(.22,.68,0,1.2)"
           : "opacity 0.3s ease, transform 0.3s ease",
         textShadow: `0 0 24px ${item.color}55`,
-        whiteSpace: "nowrap",
-        position: "relative",
+        whiteSpace: "nowrap", position: "relative",
       }}>
         {item.text}
         <span style={{
           position: "absolute", bottom: -3, left: 0, right: 0, height: 2,
           background: `linear-gradient(90deg, transparent, ${item.color}, transparent)`,
-          borderRadius: 2,
-          opacity: phase === "hold" ? 1 : 0,
-          transition: "opacity 0.3s ease",
-          boxShadow: `0 0 8px ${item.color}88`,
+          borderRadius: 2, opacity: phase === "hold" ? 1 : 0,
+          transition: "opacity 0.3s ease", boxShadow: `0 0 8px ${item.color}88`,
         }}/>
       </div>
     </div>
   );
 }
 
+// ─── SQUIGGLY UNDERLINE ───────────────────────────────────────────────────────
+
+function SquigglyUnderline({ color }: { color: string }) {
+  return (
+    <svg
+      viewBox="0 0 200 10" preserveAspectRatio="none"
+      style={{ position: "absolute", bottom: -6, left: 0, right: 0, width: "100%", height: 10, pointerEvents: "none" }}
+    >
+      <path
+        d="M0 6 Q10 1 20 6 Q30 11 40 6 Q50 1 60 6 Q70 11 80 6 Q90 1 100 6 Q110 11 120 6 Q130 1 140 6 Q150 11 160 6 Q170 1 180 6 Q190 11 200 6"
+        fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round"
+        style={{ animation: "squiggleShift 2s linear infinite" }}
+      />
+    </svg>
+  );
+}
+
 // ─── ROCKET VISUAL ────────────────────────────────────────────────────────────
 
-function RocketVisual({
-  done, total, dark, colors, mounted,
-}: {
+function RocketVisual({ done, total, dark, colors, mounted }: {
   done: number; total: number; dark: boolean;
   colors: ReturnType<typeof buildColors>; mounted: boolean;
 }) {
@@ -738,20 +662,8 @@ function RocketVisual({
       opacity: mounted ? 1 : 0, transition: "opacity 0.8s ease 0.3s",
     }}>
       <div style={{ position: "relative", width: 320, height: 320, display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <div style={{
-          position: "absolute",
-          width: orbitR1 * 2, height: orbitR1 * 2,
-          borderRadius: "50%",
-          border: `1px solid ${dark ? "rgba(139,124,246,0.12)" : "rgba(79,60,210,0.08)"}`,
-          pointerEvents: "none",
-        }}/>
-        <div style={{
-          position: "absolute",
-          width: orbitR2 * 2, height: orbitR2 * 2,
-          borderRadius: "50%",
-          border: `1px dashed ${dark ? "rgba(139,124,246,0.07)" : "rgba(79,60,210,0.05)"}`,
-          pointerEvents: "none",
-        }}/>
+        <div style={{ position: "absolute", width: orbitR1 * 2, height: orbitR1 * 2, borderRadius: "50%", border: `1px solid ${dark ? "rgba(139,124,246,0.12)" : "rgba(79,60,210,0.08)"}`, pointerEvents: "none" }}/>
+        <div style={{ position: "absolute", width: orbitR2 * 2, height: orbitR2 * 2, borderRadius: "50%", border: `1px dashed ${dark ? "rgba(139,124,246,0.07)" : "rgba(79,60,210,0.05)"}`, pointerEvents: "none" }}/>
         {Array.from({ length: 30 }).map((_, i) => {
           const seed = i * 137.5;
           const size = (seed % 1.8) + 0.8;
@@ -759,15 +671,7 @@ function RocketVisual({
           const left = (seed * 7.3) % 100;
           const dur = 1.4 + (seed % 2.8);
           const delay = -(seed % 3.5);
-          return (
-            <span key={i} style={{
-              position: "absolute", borderRadius: "50%",
-              width: size, height: size,
-              top: `${top}%`, left: `${left}%`,
-              background: dark ? `rgba(196,181,253,${0.1 + (i % 4) * 0.08})` : `rgba(79,60,210,${0.06 + (i % 3) * 0.05})`,
-              animation: `starPulse ${dur}s ease-in-out ${delay}s infinite`,
-            }} />
-          );
+          return <span key={i} style={{ position: "absolute", borderRadius: "50%", width: size, height: size, top: `${top}%`, left: `${left}%`, background: dark ? `rgba(196,181,253,${0.1 + (i % 4) * 0.08})` : `rgba(79,60,210,${0.06 + (i % 3) * 0.05})`, animation: `starPulse ${dur}s ease-in-out ${delay}s infinite` }} />;
         })}
         {techTags.map((tech) => {
           const ring = tech.ring === 1 ? orbitR1 : orbitR2;
@@ -779,80 +683,47 @@ function RocketVisual({
           const delay = -(baseAngle / 360) * dur;
           return (
             <span key={tech.name} style={{
-              position: "absolute",
-              left: "50%", top: "50%",
-              fontSize: 10.5,
-              fontFamily: "'JetBrains Mono', monospace",
-              color: tech.color,
-              background: dark ? `${tech.color}15` : `${tech.color}18`,
-              border: `1px solid ${tech.color}55`,
-              borderRadius: 20,
-              padding: "3px 9px",
-              whiteSpace: "nowrap",
-              boxShadow: `0 0 10px ${tech.glow}, inset 0 0 6px ${tech.color}10`,
+              position: "absolute", left: "50%", top: "50%",
+              fontSize: 10.5, fontFamily: "'JetBrains Mono', monospace",
+              color: tech.color, background: dark ? `${tech.color}15` : `${tech.color}18`,
+              border: `1px solid ${tech.color}55`, borderRadius: 20, padding: "3px 9px",
+              whiteSpace: "nowrap", boxShadow: `0 0 10px ${tech.glow}, inset 0 0 6px ${tech.color}10`,
               animation: `${isReverse ? "orbitTagR" : "orbitTag"}${ring} ${dur}s linear ${delay}s infinite`,
               transformOrigin: `calc(-${ring}px + 50%) 50%`,
-              fontWeight: 600,
-              letterSpacing: "0.02em",
-              zIndex: 3,
+              fontWeight: 600, letterSpacing: "0.02em", zIndex: 3,
             }}>
               <span style={{ marginRight: 4, fontSize: 9 }}>{tech.icon}</span>
               {tech.name}
             </span>
           );
         })}
-        <svg
-          width="110" height="200" viewBox="0 0 110 200" fill="none"
-          style={{ position: "relative", zIndex: 2, animation: "rocketFloat 3.2s ease-in-out infinite" }}
-        >
+        <svg width="110" height="200" viewBox="0 0 110 200" fill="none" style={{ position: "relative", zIndex: 2, animation: "rocketFloat 3.2s ease-in-out infinite" }}>
           <defs>
             <linearGradient id="rBodyGrad" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0%" stopColor="#5b4fbe"/>
-              <stop offset="50%" stopColor="#8b7cf6"/>
-              <stop offset="100%" stopColor="#5b4fbe"/>
+              <stop offset="0%" stopColor="#5b4fbe"/><stop offset="50%" stopColor="#8b7cf6"/><stop offset="100%" stopColor="#5b4fbe"/>
             </linearGradient>
             <linearGradient id="rFuelGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#10b981"/>
-              <stop offset="100%" stopColor="#059669" stopOpacity="0.7"/>
+              <stop offset="0%" stopColor="#10b981"/><stop offset="100%" stopColor="#059669" stopOpacity="0.7"/>
             </linearGradient>
             <linearGradient id="rFlame1" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#fbbf24"/>
-              <stop offset="55%" stopColor="#f97316"/>
-              <stop offset="100%" stopColor="#ef4444" stopOpacity="0"/>
+              <stop offset="0%" stopColor="#fbbf24"/><stop offset="55%" stopColor="#f97316"/><stop offset="100%" stopColor="#ef4444" stopOpacity="0"/>
             </linearGradient>
             <linearGradient id="rFlame2" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#fef9c3"/>
-              <stop offset="60%" stopColor="#fbbf24"/>
-              <stop offset="100%" stopColor="#f97316" stopOpacity="0"/>
+              <stop offset="0%" stopColor="#fef9c3"/><stop offset="60%" stopColor="#fbbf24"/><stop offset="100%" stopColor="#f97316" stopOpacity="0"/>
             </linearGradient>
-            <clipPath id="rBodyClip">
-              <path d="M38 50 Q55 10 72 50 L72 142 Q55 150 38 142 Z"/>
-            </clipPath>
+            <clipPath id="rBodyClip"><path d="M38 50 Q55 10 72 50 L72 142 Q55 150 38 142 Z"/></clipPath>
           </defs>
           <polygon points="16,142 38,108 38,150" fill="#3c3489" opacity="0.9"/>
           <polygon points="94,142 72,108 72,150" fill="#3c3489" opacity="0.9"/>
           <path d="M38 50 Q55 10 72 50 L72 142 Q55 150 38 142 Z" fill="url(#rBodyGrad)"/>
-          {done > 0 && (
-            <rect
-              x="38" y={50 + 92 * (1 - pct / 100)} width="34"
-              height={92 * (pct / 100)}
-              fill="url(#rFuelGrad)" opacity="0.45"
-              clipPath="url(#rBodyClip)"
-              style={{ transition: "y 1.8s cubic-bezier(.4,0,.2,1), height 1.8s cubic-bezier(.4,0,.2,1)" }}
-            />
-          )}
+          {done > 0 && <rect x="38" y={50 + 92 * (1 - pct / 100)} width="34" height={92 * (pct / 100)} fill="url(#rFuelGrad)" opacity="0.45" clipPath="url(#rBodyClip)" style={{ transition: "y 1.8s cubic-bezier(.4,0,.2,1), height 1.8s cubic-bezier(.4,0,.2,1)" }}/>}
           <path d="M38 50 Q55 10 72 50 L72 142 Q55 150 38 142 Z" fill="none" stroke="#a78bfa" strokeWidth="1" opacity="0.4"/>
           <circle cx="55" cy="88" r="14" fill={dark ? "#0d0d1c" : "#e8e4ff"} opacity="0.95"/>
           <circle cx="55" cy="88" r="14" fill="none" stroke="#a78bfa" strokeWidth="1.5" opacity="0.7"/>
           <circle cx="55" cy="88" r="6" fill="#8b7cf6" opacity="0.9"/>
           <circle cx="55" cy="88" r="2.5" fill="#c4b5fd"/>
           <line x1="38" y1="108" x2="72" y2="108" stroke="#a78bfa" strokeWidth="0.5" opacity="0.25"/>
-          {done > 0 && (
-            <text x="55" y="92" textAnchor="middle"
-              fontFamily="JetBrains Mono, monospace" fontSize="9" fontWeight="500"
-              fill={dark ? "#c4b5fd" : "#4338ca"} opacity="0.9"
-            >{pct}%</text>
-          )}
+          {done > 0 && <text x="55" y="92" textAnchor="middle" fontFamily="JetBrains Mono, monospace" fontSize="9" fontWeight="500" fill={dark ? "#c4b5fd" : "#4338ca"} opacity="0.9">{pct}%</text>}
           <g style={{ animation: "flameOuter .18s ease-in-out infinite", transformOrigin: "55px 150px" }}>
             <path d="M43 150 Q46 172 51 178 Q55 184 59 178 Q64 172 67 150 Z" fill="url(#rFlame1)" opacity="0.9"/>
           </g>
@@ -880,8 +751,8 @@ function RocketVisual({
         @keyframes starPulse { 0%,100%{opacity:.2} 50%{opacity:.7} }
         @keyframes flameOuter { 0%,100%{transform:scaleY(1) scaleX(1)} 30%{transform:scaleY(.85) scaleX(1.1)} 65%{transform:scaleY(1.06) scaleX(.94)} }
         @keyframes flameInner { 0%,100%{transform:scaleY(.9)} 40%{transform:scaleY(1.12) scaleX(.88)} 70%{transform:scaleY(.74)} }
-        @keyframes orbitTag105  { from{transform:rotate(0deg)   translateX(105px) rotate(0deg)}   to{transform:rotate(360deg)  translateX(105px) rotate(-360deg)} }
-        @keyframes orbitTagR132 { from{transform:rotate(0deg)   translateX(132px) rotate(0deg)}   to{transform:rotate(-360deg) translateX(132px) rotate(360deg)} }
+        @keyframes orbitTag105  { from{transform:rotate(0deg) translateX(105px) rotate(0deg)} to{transform:rotate(360deg) translateX(105px) rotate(-360deg)} }
+        @keyframes orbitTagR132 { from{transform:rotate(0deg) translateX(132px) rotate(0deg)} to{transform:rotate(-360deg) translateX(132px) rotate(360deg)} }
       `}</style>
     </div>
   );
@@ -896,185 +767,109 @@ function HackerTerminal({ colors, dark }: { colors: ReturnType<typeof buildColor
   const [lines, setLines] = useState<{ text: string; type: string; visible: string }[]>([]);
 
   const hackerLines = [
-    { type: "prompt", text: "ssh root@192.168.1.1" },
+    { type: "prompt",  text: "ssh root@192.168.1.1" },
     { type: "success", text: "Connected to 192.168.1.1 — welcome back." },
-    { type: "prompt", text: "nmap -sV --open 10.0.0.0/24" },
-    { type: "info", text: "Starting Nmap 7.94 ( https://nmap.org )" },
-    { type: "info", text: "Scanning 256 hosts [1000 ports each]..." },
-    { type: "warn", text: "Open  10.0.0.4:22   OpenSSH 9.2" },
-    { type: "warn", text: "Open  10.0.0.7:80   nginx 1.25.3" },
-    { type: "warn", text: "Open  10.0.0.12:443 Apache 2.4.58" },
+    { type: "prompt",  text: "nmap -sV --open 10.0.0.0/24" },
+    { type: "info",    text: "Starting Nmap 7.94 ( https://nmap.org )" },
+    { type: "info",    text: "Scanning 256 hosts [1000 ports each]..." },
+    { type: "warn",    text: "Open  10.0.0.4:22   OpenSSH 9.2" },
+    { type: "warn",    text: "Open  10.0.0.7:80   nginx 1.25.3" },
+    { type: "warn",    text: "Open  10.0.0.12:443 Apache 2.4.58" },
     { type: "success", text: "Nmap done — 14 hosts up in 3.21s" },
-    { type: "prompt", text: "cat /etc/shadow | grep root" },
-    { type: "danger", text: "root:$6$xyz$k8mN2qP...::0:99999:7:::" },
-    { type: "prompt", text: "python3 exploit.py --target 10.0.0.7" },
-    { type: "info", text: "[*] Injecting payload into header..." },
-    { type: "info", text: "[*] Bypassing WAF rules..." },
+    { type: "prompt",  text: "cat /etc/shadow | grep root" },
+    { type: "danger",  text: "root:$6$xyz$k8mN2qP...::0:99999:7:::" },
+    { type: "prompt",  text: "python3 exploit.py --target 10.0.0.7" },
+    { type: "info",    text: "[*] Injecting payload into header..." },
+    { type: "info",    text: "[*] Bypassing WAF rules..." },
     { type: "success", text: "[+] Shell obtained. uid=0(root) gid=0(root)" },
-    { type: "prompt", text: "whoami" },
+    { type: "prompt",  text: "whoami" },
     { type: "success", text: "root" },
-    { type: "prompt", text: "ls -la /var/www/html" },
-    { type: "dim", text: "drwxr-xr-x  mehran  staff   4096 Apr 10 03:14 ." },
-    { type: "dim", text: "-rw-r--r--  mehran  staff  18432 Apr 10 03:14 index.html" },
-    { type: "dim", text: "-rw-r--r--  mehran  staff   2048 Apr 10 03:14 .env" },
-    { type: "prompt", text: "cat .env" },
-    { type: "danger", text: "DATABASE_URL=postgres://admin:••••••@db.prod:5432" },
-    { type: "danger", text: "STRIPE_SECRET=sk_live_••••••••••••••••••" },
-    { type: "prompt", text: "curl -s ifconfig.me" },
-    { type: "info", text: "203.0.113.42" },
-    { type: "prompt", text: "ping -c 4 mehrankhan.net" },
+    { type: "prompt",  text: "ls -la /var/www/html" },
+    { type: "dim",     text: "drwxr-xr-x  mehran  staff   4096 Apr 10 03:14 ." },
+    { type: "dim",     text: "-rw-r--r--  mehran  staff  18432 Apr 10 03:14 index.html" },
+    { type: "dim",     text: "-rw-r--r--  mehran  staff   2048 Apr 10 03:14 .env" },
+    { type: "prompt",  text: "cat .env" },
+    { type: "danger",  text: "DATABASE_URL=postgres://admin:••••••@db.prod:5432" },
+    { type: "danger",  text: "STRIPE_SECRET=sk_live_••••••••••••••••••" },
+    { type: "prompt",  text: "ping -c 4 mehrankhan.net" },
     { type: "success", text: "64 bytes from 76.76.21.21: icmp_seq=1 ttl=55 time=11.2ms" },
     { type: "success", text: "64 bytes from 76.76.21.21: icmp_seq=2 ttl=55 time=10.8ms" },
-    { type: "prompt", text: "traceroute mehrankhan.net" },
-    { type: "dim", text: " 1  192.168.1.1    0.4ms" },
-    { type: "dim", text: " 4  ae-3.r01.lax01  8.1ms" },
-    { type: "dim", text: "12  76.76.21.21    11.3ms" },
-    { type: "prompt", text: "hashcat -m 1800 hash.txt rockyou.txt" },
-    { type: "warn", text: "Session........: hashcat" },
-    { type: "warn", text: "Speed.#1.......: 4231.2 MH/s" },
+    { type: "prompt",  text: "hashcat -m 1800 hash.txt rockyou.txt" },
+    { type: "warn",    text: "Speed.#1.......: 4231.2 MH/s" },
     { type: "success", text: "Cracked: toor123  [status: Cracked]" },
-    { type: "prompt", text: "rm -rf /var/log/*" },
-    { type: "warn", text: "// tracks covered." },
-    { type: "prompt", text: "exit" },
-    { type: "dim", text: "Connection to 192.168.1.1 closed." },
+    { type: "prompt",  text: "rm -rf /var/log/*" },
+    { type: "warn",    text: "// tracks covered." },
+    { type: "prompt",  text: "exit" },
+    { type: "dim",     text: "Connection to 192.168.1.1 closed." },
   ];
 
-  const clearTimeouts = () => {
-    timeouts.current.forEach(clearTimeout);
-    timeouts.current = [];
-  };
-
-  const addTimeout = (fn: () => void, delay: number) => {
-    const t = setTimeout(fn, delay);
-    timeouts.current.push(t);
-    return t;
-  };
+  const clearTimeouts = () => { timeouts.current.forEach(clearTimeout); timeouts.current = []; };
+  const addTimeout = (fn: () => void, delay: number) => { const t = setTimeout(fn, delay); timeouts.current.push(t); return t; };
 
   const runLoop = useCallback(() => {
     if (lineIdx.current >= hackerLines.length) {
       lineIdx.current = 0;
-      addTimeout(() => {
-        setLines([]);
-        addTimeout(runLoop, 3000);
-      }, 3000);
+      addTimeout(() => { setLines([]); addTimeout(runLoop, 3000); }, 3000);
       return;
     }
-
     const line = hackerLines[lineIdx.current++];
     const isPrompt = line.type === "prompt";
     const thinkDelay = isPrompt ? 800 + Math.random() * 600 : 120;
-
     addTimeout(() => {
       setLines(prev => [...prev, { ...line, visible: "" }]);
       let charIdx = 0;
       const charSpeed = isPrompt ? 85 : 18;
-
       const typeChar = () => {
         if (charIdx <= line.text.length) {
           const captured = charIdx;
           setLines(prev => {
             const updated = [...prev];
-            updated[updated.length - 1] = {
-              ...updated[updated.length - 1],
-              visible: line.text.slice(0, captured),
-            };
+            updated[updated.length - 1] = { ...updated[updated.length - 1], visible: line.text.slice(0, captured) };
             return updated;
           });
           charIdx++;
           addTimeout(typeChar, charSpeed + Math.random() * (isPrompt ? 60 : 10));
         } else {
-          const nextDelay = isPrompt ? 200 : line.type === "danger" ? 400 : 80;
-          addTimeout(runLoop, nextDelay);
+          addTimeout(runLoop, isPrompt ? 200 : line.type === "danger" ? 400 : 80);
         }
       };
-
       typeChar();
     }, thinkDelay);
   }, []);
 
-  useEffect(() => {
-    addTimeout(runLoop, 500);
-    return () => clearTimeouts();
-  }, [runLoop]);
-
-  useEffect(() => {
-    if (termRef.current) {
-      termRef.current.scrollTop = termRef.current.scrollHeight;
-    }
-  }, [lines]);
+  useEffect(() => { addTimeout(runLoop, 500); return () => clearTimeouts(); }, [runLoop]);
+  useEffect(() => { if (termRef.current) termRef.current.scrollTop = termRef.current.scrollHeight; }, [lines]);
 
   const typeColors: Record<string, string> = {
-    prompt:  "#8B7CF6",
-    success: "#10B981",
-    info:    "#38BDF8",
-    warn:    "#F59E0B",
-    danger:  "#EF4444",
-    dim:     "rgba(238,234,248,0.35)",
+    prompt: "#8B7CF6", success: "#10B981", info: "#38BDF8",
+    warn: "#F59E0B", danger: "#EF4444", dim: "rgba(238,234,248,0.35)",
   };
 
   return (
     <div style={{ padding: "24px 32px 0", maxWidth: 680, margin: "0 auto", width: "100%" }}>
       <div style={{
-        background: "#0a0a10",
-        borderRadius: 16,
+        background: "#0a0a10", borderRadius: 16,
         border: `1px solid ${dark ? "rgba(139,124,246,0.2)" : "rgba(79,60,210,0.15)"}`,
         overflow: "hidden",
         boxShadow: dark ? "0 8px 40px rgba(0,0,0,0.5)" : "0 8px 32px rgba(0,0,0,0.12)",
       }}>
-        <div style={{
-          background: "#13131d",
-          padding: "10px 14px",
-          display: "flex", alignItems: "center", gap: 7,
-          borderBottom: "1px solid rgba(255,255,255,0.05)",
-        }}>
-          {["#ff5f57","#febc2e","#28c840"].map(c => (
-            <div key={c} style={{ width: 10, height: 10, borderRadius: "50%", background: c }} />
-          ))}
-          <span style={{
-            marginLeft: 8, fontSize: 11,
-            color: "rgba(238,234,248,0.35)",
-            fontFamily: "'JetBrains Mono', monospace",
-            letterSpacing: "0.04em",
-          }}>root@mehran ~ zsh</span>
+        <div style={{ background: "#13131d", padding: "10px 14px", display: "flex", alignItems: "center", gap: 7, borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+          {["#ff5f57","#febc2e","#28c840"].map(c => <div key={c} style={{ width: 10, height: 10, borderRadius: "50%", background: c }} />)}
+          <span style={{ marginLeft: 8, fontSize: 11, color: "rgba(238,234,248,0.35)", fontFamily: "'JetBrains Mono', monospace", letterSpacing: "0.04em" }}>root@mehran ~ zsh</span>
           <div style={{ flex: 1 }} />
-          <span style={{
-            fontSize: 10, color: "rgba(238,234,248,0.2)",
-            fontFamily: "'JetBrains Mono', monospace",
-          }}>● live</span>
+          <span style={{ fontSize: 10, color: "rgba(238,234,248,0.2)", fontFamily: "'JetBrains Mono', monospace" }}>● live</span>
         </div>
-        <div
-          ref={termRef}
-          style={{
-            padding: "16px 18px",
-            height: 220,
-            overflowY: "auto",
-            fontFamily: "'JetBrains Mono', 'Courier New', monospace",
-            fontSize: 12,
-            lineHeight: 1.8,
-            scrollbarWidth: "none",
-          }}
-        >
+        <div ref={termRef} style={{ padding: "16px 18px", height: 220, overflowY: "auto", fontFamily: "'JetBrains Mono', 'Courier New', monospace", fontSize: 12, lineHeight: 1.8, scrollbarWidth: "none" }}>
           {lines.map((line, i) => (
             <div key={i} style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
-              {line.type === "prompt" && (
-                <span style={{ color: "#8B7CF6", flexShrink: 0 }}>❯</span>
-              )}
-              <span style={{ color: typeColors[line.type] ?? typeColors.dim }}>
-                {line.visible}
-              </span>
+              {line.type === "prompt" && <span style={{ color: "#8B7CF6", flexShrink: 0 }}>❯</span>}
+              <span style={{ color: typeColors[line.type] ?? typeColors.dim }}>{line.visible}</span>
             </div>
           ))}
-          <span style={{
-            display: "inline-block", width: 7, height: 13,
-            background: "#8B7CF6", verticalAlign: "middle",
-            animation: "termCursor 1s step-end infinite",
-          }} />
+          <span style={{ display: "inline-block", width: 7, height: 13, background: "#8B7CF6", verticalAlign: "middle", animation: "termCursor 1s step-end infinite" }} />
         </div>
       </div>
-      <style>{`
-        @keyframes termCursor { 0%,100%{opacity:1} 50%{opacity:0} }
-        div::-webkit-scrollbar { display: none; }
-      `}</style>
+      <style>{`@keyframes termCursor { 0%,100%{opacity:1} 50%{opacity:0} } div::-webkit-scrollbar { display: none; }`}</style>
     </div>
   );
 }
@@ -1089,35 +884,22 @@ export default function Home() {
   const [activeProject, setActiveProject] = useState<{ project: Project; phase: Phase } | null>(null);
   const [confetti, setConfetti] = useState<{ x: number; y: number; color: string; id: number } | null>(null);
   const confettiId = useRef(0);
-
-  // ── Feature 1: Scroll progress bar ──
   const [scrollPct, setScrollPct] = useState(0);
-
-  // ── Feature 3: Page view counter ──
   const [views, setViews] = useState<number | null>(null);
-
-  // ── Feature 4: Stack filter ──
   const [activeFilter, setActiveFilter] = useState<string | null>(null);
 
   useEffect(() => {
     setMounted(true);
     setDays(Math.max(1, Math.floor((Date.now() - START_DATE.getTime()) / 86400000)));
 
-    // ── Feature 2: Animated favicon ──
-    const faviconFrames = [
-      { bg: "%238B7CF6" },
-      { bg: "%2310B981" },
-      { bg: "%23F59E0B" },
-      { bg: "%238B7CF6" },
-    ];
+    // Animated favicon
+    const faviconFrames = ["%238B7CF6", "%2310B981", "%23F59E0B", "%23EF4444"];
     let f = 0;
-    const link: HTMLLinkElement =
-      document.querySelector("link[rel='icon']") ?? document.createElement("link");
+    const link: HTMLLinkElement = document.querySelector("link[rel='icon']") ?? document.createElement("link");
     link.rel = "icon";
     document.head.appendChild(link);
-
     const faviconInterval = setInterval(() => {
-      const { bg } = faviconFrames[f % faviconFrames.length];
+      const bg = faviconFrames[f % faviconFrames.length];
       link.href = `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='${bg}'/><text x='16' y='22' font-size='14' font-family='system-ui' font-weight='700' fill='white' text-anchor='middle'>MK</text></svg>`;
       f++;
     }, 1200);
@@ -1126,22 +908,21 @@ export default function Home() {
     return () => clearInterval(faviconInterval);
   }, []);
 
-  // ── Feature 1: Scroll listener ──
+  // Scroll progress
   useEffect(() => {
     const onScroll = () => {
       const el = document.documentElement;
-      const pct = (el.scrollTop / (el.scrollHeight - el.clientHeight)) * 100;
-      setScrollPct(Math.min(100, pct));
+      setScrollPct(Math.min(100, (el.scrollTop / (el.scrollHeight - el.clientHeight)) * 100));
     };
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // ── Feature 3: Page view counter ──
+  // Page view counter
   useEffect(() => {
-    fetch("https://api.countapi.xyz/hit/mehrankhan.net/visits")
+    fetch("https://api.countapi.xyz/hit/mehrankhan-portfolio/pageviews")
       .then(r => r.json())
-      .then(d => setViews(d.value))
+      .then(d => { if (d?.value) setViews(d.value); })
       .catch(() => {});
   }, []);
 
@@ -1149,10 +930,7 @@ export default function Home() {
   const pct = Math.round((DONE / TOTAL) * 100);
 
   const handleTileClick = useCallback((project: Project, phase: Phase, isDone: boolean, e: React.MouseEvent) => {
-    if (isDone) {
-      confettiId.current += 1;
-      setConfetti({ x: e.clientX, y: e.clientY, color: phase.color, id: confettiId.current });
-    }
+    if (isDone) { confettiId.current += 1; setConfetti({ x: e.clientX, y: e.clientY, color: phase.color, id: confettiId.current }); }
     setActiveProject({ project, phase });
   }, []);
 
@@ -1165,14 +943,15 @@ export default function Home() {
       color: colors.text, transition: "background 0.3s, color 0.3s", overflowX: "hidden",
     }}>
 
-      {/* ── Feature 1: Scroll progress bar ── */}
+      {/* ── FIRE SCROLL PROGRESS BAR ── */}
       <div style={{
         position: "fixed", top: 0, left: 0, zIndex: 999,
-        height: 3,
-        background: `linear-gradient(90deg, ${colors.acc1}, ${colors.acc2})`,
-        width: `${scrollPct}%`,
-        transition: "width 0.1s linear",
-        boxShadow: `0 0 8px ${colors.acc1}88`,
+        height: 4, width: `${scrollPct}%`,
+        background: "linear-gradient(90deg, #8B7CF6, #f97316, #fbbf24, #ef4444)",
+        backgroundSize: "200% 100%",
+        animation: "fireShift 1.5s linear infinite",
+        boxShadow: "0 0 12px #f97316, 0 0 24px #ef444466",
+        transition: "width 0.08s linear",
         pointerEvents: "none",
       }} />
 
@@ -1202,45 +981,44 @@ export default function Home() {
             <span style={{ fontSize: 13, fontWeight: 500, letterSpacing: "-0.01em", display: "none" }} className="nav-domain">mehrankhan.net</span>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+
+            {/* ── IMPROVED LEAVE A NOTE BUTTON ── */}
             <button
               onClick={() => setFeedbackOpen(true)}
               style={{
-                padding: "7px 16px", borderRadius: 20,
-                background: "linear-gradient(135deg, #f43f5e, #fb923c)",
-                border: "none",
-                color: "#fff", fontSize: 12, fontWeight: 600,
+                padding: "7px 18px", borderRadius: 20,
+                background: "transparent",
+                border: `1.5px solid ${dark ? "rgba(139,124,246,0.6)" : "rgba(79,60,210,0.5)"}`,
+                color: dark ? "#c4b5fd" : "#4f3cd2",
+                fontSize: 12, fontWeight: 600,
                 cursor: "pointer", fontFamily: "inherit",
                 letterSpacing: "-0.01em",
-                boxShadow: "0 2px 14px rgba(244,63,94,0.4)",
-                transition: "opacity 0.2s, transform 0.2s, box-shadow 0.2s",
+                transition: "all 0.2s",
                 display: "flex", alignItems: "center", gap: 6,
                 flexShrink: 0,
               }}
               onMouseEnter={e => {
-                e.currentTarget.style.opacity = "0.9";
+                e.currentTarget.style.background = dark ? "rgba(139,124,246,0.15)" : "rgba(79,60,210,0.08)";
+                e.currentTarget.style.borderColor = dark ? "rgba(139,124,246,0.9)" : "rgba(79,60,210,0.8)";
                 e.currentTarget.style.transform = "translateY(-1px)";
-                e.currentTarget.style.boxShadow = "0 4px 20px rgba(244,63,94,0.55)";
               }}
               onMouseLeave={e => {
-                e.currentTarget.style.opacity = "1";
+                e.currentTarget.style.background = "transparent";
+                e.currentTarget.style.borderColor = dark ? "rgba(139,124,246,0.6)" : "rgba(79,60,210,0.5)";
                 e.currentTarget.style.transform = "none";
-                e.currentTarget.style.boxShadow = "0 2px 14px rgba(244,63,94,0.4)";
               }}
             >
               <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
-                <path d="M8.5 1.5a1.5 1.5 0 0 1 2 2L4 10H2v-2L8.5 1.5z" stroke="white" strokeWidth="1.3" strokeLinejoin="round" fill="none"/>
+                <path d="M8.5 1.5a1.5 1.5 0 0 1 2 2L4 10H2v-2L8.5 1.5z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round" fill="none"/>
               </svg>
               Leave a note
             </button>
-            <button
-              onClick={() => setDark(!dark)}
-              aria-label="Toggle theme"
-              style={{
-                width: 44, height: 26, borderRadius: 13,
-                background: colors.bg3, border: `1px solid ${colors.border}`,
-                cursor: "pointer", position: "relative", transition: "background 0.3s", flexShrink: 0,
-              }}
-            >
+
+            <button onClick={() => setDark(!dark)} aria-label="Toggle theme" style={{
+              width: 44, height: 26, borderRadius: 13,
+              background: colors.bg3, border: `1px solid ${colors.border}`,
+              cursor: "pointer", position: "relative", transition: "background 0.3s", flexShrink: 0,
+            }}>
               <span style={{
                 position: "absolute", top: 4, left: dark ? 4 : 20,
                 width: 16, height: 16, borderRadius: "50%",
@@ -1253,11 +1031,8 @@ export default function Home() {
 
         {/* ── TICKER ── */}
         <div style={{
-          overflow: "hidden",
-          borderBottom: `1px solid ${colors.border}`,
-          borderTop: `1px solid ${colors.border}`,
-          padding: "0",
-          position: "relative",
+          overflow: "hidden", borderBottom: `1px solid ${colors.border}`, borderTop: `1px solid ${colors.border}`,
+          padding: "0", position: "relative",
           background: dark ? "rgba(17,17,24,0.8)" : "rgba(247,246,242,0.9)",
         }}>
           <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 60, zIndex: 2, pointerEvents: "none", background: `linear-gradient(90deg, ${colors.bg}, transparent)` }}/>
@@ -1268,18 +1043,8 @@ export default function Home() {
                 {phases.flatMap((phase, pi) =>
                   phase.projects.map((p, i) => (
                     <span key={`${copy}-${pi}-${i}`} style={{ display: "inline-flex", alignItems: "center" }}>
-                      <span style={{
-                        fontSize: 10.5, fontWeight: 600, color: phase.color,
-                        background: phase.colorBg, border: `1px solid ${phase.colorBorder}`,
-                        borderRadius: 20, padding: "2px 9px", letterSpacing: "0.05em",
-                        textTransform: "uppercase", marginRight: 6, whiteSpace: "nowrap", flexShrink: 0,
-                      }}>{p.name}</span>
-                      <span style={{
-                        marginRight: 6, fontSize: 6, color: phase.color, opacity: 0.5,
-                        display: "inline-block",
-                        animation: `spinDiamond ${2.5 + (pi + i) % 2}s linear infinite`,
-                        animationDelay: `${(pi * 4 + i) * 0.12}s`,
-                      }}>◆</span>
+                      <span style={{ fontSize: 10.5, fontWeight: 600, color: phase.color, background: phase.colorBg, border: `1px solid ${phase.colorBorder}`, borderRadius: 20, padding: "2px 9px", letterSpacing: "0.05em", textTransform: "uppercase", marginRight: 6, whiteSpace: "nowrap", flexShrink: 0 }}>{p.name}</span>
+                      <span style={{ marginRight: 6, fontSize: 6, color: phase.color, opacity: 0.5, display: "inline-block", animation: `spinDiamond ${2.5 + (pi + i) % 2}s linear infinite`, animationDelay: `${(pi * 4 + i) * 0.12}s` }}>◆</span>
                     </span>
                   ))
                 )}
@@ -1292,12 +1057,7 @@ export default function Home() {
                 {phases.flatMap((phase, pi) =>
                   phase.projects.slice().reverse().map((p, i) => (
                     <span key={`r${copy}-${pi}-${i}`} style={{ display: "inline-flex", alignItems: "center" }}>
-                      <span style={{
-                        fontSize: 10.5, fontWeight: 500,
-                        color: dark ? "rgba(238,234,248,0.45)" : colors.text3,
-                        letterSpacing: "0.1em", textTransform: "uppercase", marginRight: 6,
-                        whiteSpace: "nowrap", fontFamily: "'JetBrains Mono', monospace", flexShrink: 0,
-                      }}>{p.name}</span>
+                      <span style={{ fontSize: 10.5, fontWeight: 500, color: dark ? "rgba(238,234,248,0.45)" : colors.text3, letterSpacing: "0.1em", textTransform: "uppercase", marginRight: 6, whiteSpace: "nowrap", fontFamily: "'JetBrains Mono', monospace", flexShrink: 0 }}>{p.name}</span>
                       <span style={{ marginRight: 6, fontSize: 6, color: phase.color, opacity: 0.45, flexShrink: 0 }}>●</span>
                     </span>
                   ))
@@ -1351,24 +1111,8 @@ export default function Home() {
           }}>
             {dark ? (
               <>
-                <span style={{
-                  fontWeight: 300, fontStyle: "italic",
-                  background: "linear-gradient(125deg, #e0d9ff 0%, #a78bfa 55%, #8B7CF6 100%)",
-                  backgroundSize: "200% 100%",
-                  WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
-                  backgroundClip: "text",
-                  animation: "shimmerLeft 5s ease-in-out infinite alternate",
-                  letterSpacing: "0.01em",
-                }}>Mehran</span>
-                <span style={{
-                  fontWeight: 700, fontStyle: "normal",
-                  background: "linear-gradient(125deg, #ffffff 0%, #f0ecff 50%, #c4b5fd 100%)",
-                  backgroundSize: "200% 100%",
-                  WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
-                  backgroundClip: "text",
-                  animation: "shimmerRight 5s ease-in-out infinite alternate",
-                  letterSpacing: "-0.04em",
-                }}>Khan</span>
+                <span style={{ fontWeight: 300, fontStyle: "italic", background: "linear-gradient(125deg, #e0d9ff 0%, #a78bfa 55%, #8B7CF6 100%)", backgroundSize: "200% 100%", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text", animation: "shimmerLeft 5s ease-in-out infinite alternate", letterSpacing: "0.01em" }}>Mehran</span>
+                <span style={{ fontWeight: 700, fontStyle: "normal", background: "linear-gradient(125deg, #ffffff 0%, #f0ecff 50%, #c4b5fd 100%)", backgroundSize: "200% 100%", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text", animation: "shimmerRight 5s ease-in-out infinite alternate", letterSpacing: "-0.04em" }}>Khan</span>
               </>
             ) : (
               <>
@@ -1378,20 +1122,39 @@ export default function Home() {
             )}
           </h1>
 
+          {/* ── UPDATED HERO COPY ── */}
           <p style={{
             fontSize: "clamp(16px,2.1vw,20px)", color: colors.text2,
             lineHeight: 1.72, maxWidth: 600, margin: "0 auto 14px", letterSpacing: "-0.01em",
           }}>
-            Not learning to code.{" "}
-            <strong style={{ color: colors.text, fontWeight: 600 }}>Actually building.</strong>
-            {" "}22 real apps — each one designed from scratch, shipped to the internet, and hard enough to keep me honest.
+            22 real apps — from zero to production.{" "}
+            <span style={{ position: "relative", display: "inline-block" }}>
+              <strong style={{ color: colors.text, fontWeight: 700 }}>Full stack.</strong>
+            </span>
+            {" "}Auth. Payments. Real users.
+            Each one shipped to the internet, polished enough to charge money for.
           </p>
-          <p style={{ fontSize: 15, color: colors.text3, lineHeight: 1.8, maxWidth: 520, margin: "0 auto 20px" }}>
-            Task managers and kanban boards all the way to auth, payments,
-            and a product I intend to charge real money for. Every tile on this page is live.
+          <p style={{ fontSize: 15, color: colors.text3, lineHeight: 1.8, maxWidth: 520, margin: "0 auto 12px" }}>
+            Task managers to SaaS products — the complete journey from{" "}
+            <span style={{ color: colors.acc1, fontWeight: 500 }}>day one</span> to{" "}
+            <span style={{ color: colors.acc2, fontWeight: 500 }}>production-ready</span>,
+            documented live.
           </p>
 
+          {/* ── 22 REAL APPS with squiggly underline ── */}
           <div style={{ marginBottom: 32 }}>
+            <p style={{ fontSize: "clamp(13px,1.6vw,15px)", color: colors.text3, marginBottom: 18 }}>
+              Every single one of these{" "}
+              <span style={{ position: "relative", display: "inline-block" }}>
+                <span style={{
+                  color: colors.acc1, fontWeight: 700,
+                  fontSize: "clamp(15px,1.8vw,17px)",
+                  letterSpacing: "-0.01em",
+                }}>22 real apps</span>
+                <SquigglyUnderline color={colors.acc1} />
+              </span>
+              {" "}has a live URL, real code, and a lesson I earned the hard way.
+            </p>
             <AnimatedCycler dark={dark} colors={colors} />
           </div>
 
@@ -1410,27 +1173,25 @@ export default function Home() {
               }} />
             </div>
 
-            {/* ── Feature 3: Page view counter ── */}
+            {/* ── PAGE VIEW COUNTER ── */}
             {views !== null && (
               <div style={{
-                display: "inline-flex", alignItems: "center", gap: 7,
+                display: "flex", alignItems: "center", justifyContent: "center", gap: 7,
                 fontSize: 12, color: colors.text3,
-                margin: "12px auto 0",
-                padding: "5px 14px", borderRadius: 20,
-                background: dark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.04)",
-                border: `1px solid ${colors.border}`,
+                marginTop: 14,
               }}>
                 <span style={{
                   width: 6, height: 6, borderRadius: "50%",
-                  background: colors.acc2,
-                  boxShadow: `0 0 6px ${colors.acc2}`,
+                  background: "#10B981",
+                  boxShadow: "0 0 0 0 rgba(16,185,129,0.7)",
+                  animation: "pingDot 2s cubic-bezier(0.4,0,0.6,1) infinite",
                   flexShrink: 0,
                 }} />
-                {views.toLocaleString()} visits
+                <span>{views.toLocaleString()} visits</span>
               </div>
             )}
 
-            <div style={{ display: "flex", justifyContent: "center", marginTop: 20 }}>
+            <div style={{ display: "flex", justifyContent: "center", marginTop: 16 }}>
               <GitHubBanner colors={colors} dark={dark} />
             </div>
           </div>
@@ -1453,8 +1214,7 @@ export default function Home() {
             animation: "photoGlow 4s ease-in-out infinite",
           }}>
             <img
-              src="/profile_mehran.jpg"
-              alt="Mehran Khan"
+              src="/profile_mehran.jpg" alt="Mehran Khan"
               style={{ width: "100%", height: 280, objectFit: "cover", objectPosition: "center 30%", display: "block" }}
             />
           </div>
@@ -1468,56 +1228,33 @@ export default function Home() {
             border: `1px solid ${dark ? "rgba(139,124,246,0.11)" : "rgba(79,60,210,0.09)"}`,
             padding: "36px 44px 32px", textAlign: "center", position: "relative", overflow: "hidden",
           }}>
-            <div style={{
-              position: "absolute", top: 8, left: 28,
-              fontSize: 120, lineHeight: 1,
-              fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700,
-              color: dark ? "rgba(139,124,246,0.12)" : "rgba(79,60,210,0.08)",
-              userSelect: "none", pointerEvents: "none",
-            }}>&ldquo;</div>
-            <p style={{
-              fontSize: "clamp(18px,2.8vw,26px)",
-              fontFamily: "'Instrument Serif', 'Georgia', serif",
-              fontStyle: "italic", color: colors.text,
-              lineHeight: 1.5, letterSpacing: "0.005em",
-              position: "relative", maxWidth: 680, margin: "0 auto",
-            }}>
+            <div style={{ position: "absolute", top: 8, left: 28, fontSize: 120, lineHeight: 1, fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, color: dark ? "rgba(139,124,246,0.12)" : "rgba(79,60,210,0.08)", userSelect: "none", pointerEvents: "none" }}>&ldquo;</div>
+            <p style={{ fontSize: "clamp(18px,2.8vw,26px)", fontFamily: "'Instrument Serif', 'Georgia', serif", fontStyle: "italic", color: colors.text, lineHeight: 1.5, letterSpacing: "0.005em", position: "relative", maxWidth: 680, margin: "0 auto" }}>
               Took a sledgehammer to my comfort zone.&ensp;Currently homeless.
             </p>
-            <p style={{
-              fontSize: 12, color: colors.text3, marginTop: 14,
-              letterSpacing: "0.1em", textTransform: "uppercase",
-              fontFamily: "'Instrument Sans', system-ui, sans-serif", fontWeight: 500,
-            }}>— Mehran Khan</p>
+            <p style={{ fontSize: 12, color: colors.text3, marginTop: 14, letterSpacing: "0.1em", textTransform: "uppercase", fontFamily: "'Instrument Sans', system-ui, sans-serif", fontWeight: 500 }}>— Mehran Khan</p>
           </div>
         </div>
 
         {/* ── PHASES + TILES ── */}
         <div style={{ padding: "0 32px", maxWidth: 1100, margin: "0 auto" }}>
 
-          {/* ── Feature 4: Stack filter pills ── */}
+          {/* ── STACK FILTER PILLS ── */}
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8, margin: "32px 0 8px" }}>
             {filterTags.map(tag => {
               const isActive = activeFilter === tag || (tag === "All" && !activeFilter);
               return (
-                <button
-                  key={tag}
-                  onClick={() => setActiveFilter(tag === "All" ? null : tag)}
-                  style={{
-                    padding: "7px 16px", borderRadius: 20, fontSize: 12, fontWeight: 600,
-                    fontFamily: "inherit", cursor: "pointer", letterSpacing: "-0.01em",
-                    border: `1px solid ${isActive ? colors.acc1 : colors.border}`,
-                    background: isActive
-                      ? `linear-gradient(135deg, ${colors.acc1}22, ${colors.acc2}11)`
-                      : "transparent",
-                    color: isActive ? colors.acc1 : colors.text3,
-                    transition: "all 0.18s ease",
-                  }}
+                <button key={tag} onClick={() => setActiveFilter(tag === "All" ? null : tag)} style={{
+                  padding: "7px 16px", borderRadius: 20, fontSize: 12, fontWeight: 600,
+                  fontFamily: "inherit", cursor: "pointer", letterSpacing: "-0.01em",
+                  border: `1px solid ${isActive ? colors.acc1 : colors.border}`,
+                  background: isActive ? `linear-gradient(135deg, ${colors.acc1}22, ${colors.acc2}11)` : "transparent",
+                  color: isActive ? colors.acc1 : colors.text3,
+                  transition: "all 0.18s ease",
+                }}
                   onMouseEnter={e => { if (!isActive) e.currentTarget.style.borderColor = colors.acc1; }}
                   onMouseLeave={e => { if (!isActive) e.currentTarget.style.borderColor = colors.border; }}
-                >
-                  {tag}
-                </button>
+                >{tag}</button>
               );
             })}
           </div>
@@ -1533,49 +1270,26 @@ export default function Home() {
                   transition: `opacity 0.6s ease ${0.1 + phaseIdx * 0.07}s, transform 0.6s ease ${0.1 + phaseIdx * 0.07}s`,
                 }}>
                   <PhaseIcon color={phase.color} phase={phaseIdx} />
-                  <span style={{
-                    fontSize: 10, fontWeight: 600, padding: "4px 12px", borderRadius: 20,
-                    letterSpacing: "0.06em", textTransform: "uppercase",
-                    background: phase.colorBg, color: phase.color, border: `1px solid ${phase.colorBorder}`,
-                  }}>{phase.label}</span>
+                  <span style={{ fontSize: 10, fontWeight: 600, padding: "4px 12px", borderRadius: 20, letterSpacing: "0.06em", textTransform: "uppercase", background: phase.colorBg, color: phase.color, border: `1px solid ${phase.colorBorder}` }}>{phase.label}</span>
                   <span style={{ fontSize: 14, fontWeight: 600, color: colors.text, letterSpacing: "-0.02em" }}>{phase.title}</span>
                   <span style={{ fontSize: 12, color: colors.text3 }}>— {phase.desc}</span>
                   <div style={{ flex: 1, height: 1, background: colors.border }} />
                 </div>
-
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(158px, 1fr))", gap: 12 }}>
                   {phase.projects.map((p, pi) => {
                     const i = phaseStart + pi;
                     const isDone = i < DONE;
                     const isNext = i === DONE;
                     const isLocked = !isDone && !isNext;
-                    const isFiltered = activeFilter && stackMatch[activeFilter]
-                      ? !stackMatch[activeFilter].includes(p.id)
-                      : false;
-
+                    const isFiltered = activeFilter && stackMatch[activeFilter] ? !stackMatch[activeFilter].includes(p.id) : false;
                     return (
                       <RevealTile key={p.id} delay={pi * 45}>
-                        <div style={{
-                          opacity: isFiltered ? 0.15 : 1,
-                          transform: isFiltered ? "scale(0.97)" : "none",
-                          transition: "opacity 0.25s ease, transform 0.25s ease",
-                          pointerEvents: isFiltered ? "none" : "auto",
-                        }}>
+                        <div style={{ opacity: isFiltered ? 0.15 : 1, transform: isFiltered ? "scale(0.97)" : "none", transition: "opacity 0.25s ease, transform 0.25s ease", pointerEvents: isFiltered ? "none" : "auto" }}>
                           <TileCard
-                            project={p}
-                            phase={phase}
-                            isDone={isDone}
-                            isNext={isNext}
-                            isLocked={isLocked}
-                            artIdx={i}
-                            colors={colors}
-                            dark={dark}
+                            project={p} phase={phase} isDone={isDone} isNext={isNext} isLocked={isLocked}
+                            artIdx={i} colors={colors} dark={dark}
                             onClick={(e) => handleTileClick(p, phase, isDone, e)}
-                            tooltipText={
-                              isDone ? `View ${p.name} →`
-                              : isNext ? "Building this now…"
-                              : COMING_SOON[i % COMING_SOON.length]
-                            }
+                            tooltipText={isDone ? `View ${p.name} →` : isNext ? "Building this now…" : COMING_SOON[i % COMING_SOON.length]}
                           />
                         </div>
                       </RevealTile>
@@ -1591,35 +1305,18 @@ export default function Home() {
         <div style={{ padding: "52px 32px 0", maxWidth: 1100, margin: "0 auto" }}>
           <div style={{
             borderRadius: 24,
-            background: dark
-              ? "linear-gradient(135deg, rgba(139,124,246,0.05) 0%, rgba(16,185,129,0.028) 100%)"
-              : "linear-gradient(135deg, rgba(90,76,200,0.04) 0%, rgba(10,122,86,0.02) 100%)",
-            border: `1px solid ${colors.border}`,
-            padding: "40px 36px", position: "relative", overflow: "hidden",
+            background: dark ? "linear-gradient(135deg, rgba(139,124,246,0.05) 0%, rgba(16,185,129,0.028) 100%)" : "linear-gradient(135deg, rgba(90,76,200,0.04) 0%, rgba(10,122,86,0.02) 100%)",
+            border: `1px solid ${colors.border}`, padding: "40px 36px", position: "relative", overflow: "hidden",
           }}>
             <div style={{ display: "flex", gap: 24, alignItems: "flex-start" }}>
-              <div className="mission-avatar" style={{
-                width: 58, height: 58, minWidth: 58, borderRadius: "50%",
-                background: `linear-gradient(135deg, ${colors.acc1}, ${colors.acc2})`,
-                display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: 17, fontWeight: 700, color: "#fff", flexShrink: 0,
-              }}>MK</div>
+              <div className="mission-avatar" style={{ width: 58, height: 58, minWidth: 58, borderRadius: "50%", background: `linear-gradient(135deg, ${colors.acc1}, ${colors.acc2})`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 17, fontWeight: 700, color: "#fff", flexShrink: 0 }}>MK</div>
               <div style={{ flex: 1 }}>
-                <p style={{
-                  fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase",
-                  color: colors.acc1, fontWeight: 600, marginBottom: 12,
-                  display: "flex", alignItems: "center", gap: 8,
-                }}>
+                <p style={{ fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", color: colors.acc1, fontWeight: 600, marginBottom: 12, display: "flex", alignItems: "center", gap: 8 }}>
                   <span style={{ display: "inline-block", width: 20, height: 1.5, background: colors.acc1, borderRadius: 2 }}/>
                   Why 22 apps
                   <span style={{ display: "inline-block", width: 20, height: 1.5, background: colors.acc1, borderRadius: 2, opacity: 0.4 }}/>
                 </p>
-                <p style={{
-                  fontSize: "clamp(18px, 2.4vw, 22px)", fontWeight: 700,
-                  fontFamily: "'Cormorant Garamond', Georgia, serif",
-                  color: colors.text, marginBottom: 16,
-                  lineHeight: 1.35, letterSpacing: "-0.01em",
-                }}>
+                <p style={{ fontSize: "clamp(18px, 2.4vw, 22px)", fontWeight: 700, fontFamily: "'Cormorant Garamond', Georgia, serif", color: colors.text, marginBottom: 16, lineHeight: 1.35, letterSpacing: "-0.01em" }}>
                   The gap between knowing React and being able to build production software is enormous.
                   {" "}<em style={{ fontStyle: "italic", color: colors.acc1 }}>I wanted to close it deliberately.</em>
                 </p>
@@ -1639,18 +1336,12 @@ export default function Home() {
         </div>
 
         {/* ── STATS ── */}
-        <div style={{
-          display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))",
-          gap: 12, padding: "24px 32px 56px", maxWidth: 1100, margin: "0 auto",
-        }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: 12, padding: "24px 32px 56px", maxWidth: 1100, margin: "0 auto" }}>
           {[
-            { n: DONE,  label: "apps shipped",   sub: `${TOTAL - DONE} remaining`,  color: colors.acc1 },
-            { n: TOTAL, label: "apps planned",    sub: "full-stack to production",   color: colors.text },
+            { n: DONE,  label: "apps shipped", sub: `${TOTAL - DONE} remaining`,   color: colors.acc1 },
+            { n: TOTAL, label: "apps planned",  sub: "full-stack to production",    color: colors.text },
           ].map(s => (
-            <div key={s.label} style={{
-              background: colors.card, border: `1px solid ${colors.border}`,
-              borderRadius: 18, padding: "22px 18px", textAlign: "center",
-            }}>
+            <div key={s.label} style={{ background: colors.card, border: `1px solid ${colors.border}`, borderRadius: 18, padding: "22px 18px", textAlign: "center" }}>
               <div style={{ fontSize: 36, fontWeight: 300, color: s.color, lineHeight: 1, letterSpacing: "-0.04em", fontFamily: "'Playfair Display', 'Instrument Serif', Georgia, serif" }}>{s.n}</div>
               <div style={{ fontSize: 12, color: colors.text2, marginTop: 7, fontWeight: 500 }}>{s.label}</div>
               <div style={{ fontSize: 11, color: colors.text3, marginTop: 3 }}>{s.sub}</div>
@@ -1660,126 +1351,60 @@ export default function Home() {
 
         <footer style={{ borderTop: `1px solid ${colors.border}`, padding: "48px 32px 36px", marginTop: 8 }}>
           <div style={{ maxWidth: 1100, margin: "0 auto" }}>
-            <div style={{
-              display: "flex", alignItems: "flex-start",
-              justifyContent: "space-between", flexWrap: "wrap", gap: 28, marginBottom: 40,
-            }}>
+            <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", flexWrap: "wrap", gap: 28, marginBottom: 40 }}>
               <div style={{ maxWidth: 340 }}>
-                <p style={{
-                  fontSize: "clamp(22px,3.5vw,32px)",
-                  fontFamily: "'Cormorant Garamond', Georgia, serif",
-                  fontWeight: 600, color: colors.text,
-                  lineHeight: 1.3, letterSpacing: "-0.02em", marginBottom: 12,
-                }}>
+                <p style={{ fontSize: "clamp(22px,3.5vw,32px)", fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 600, color: colors.text, lineHeight: 1.3, letterSpacing: "-0.02em", marginBottom: 12 }}>
                   Building in public.<br/>
                   <em style={{ fontStyle: "italic", color: colors.acc1 }}>Watch it happen.</em>
                 </p>
-                <a
-                  href="mailto:mehran@mehrankhan.net"
-                  style={{
-                    fontSize: 13, color: colors.text3,
-                    display: "inline-flex", alignItems: "center", gap: 6,
-                    transition: "color 0.2s",
-                    fontFamily: "'JetBrains Mono', monospace", letterSpacing: "0.01em",
-                  }}
+                <a href="mailto:mehran@mehrankhan.net" style={{ fontSize: 13, color: colors.text3, display: "inline-flex", alignItems: "center", gap: 6, transition: "color 0.2s", fontFamily: "'JetBrains Mono', monospace", letterSpacing: "0.01em" }}
                   onMouseEnter={e => e.currentTarget.style.color = colors.acc1}
                   onMouseLeave={e => e.currentTarget.style.color = colors.text3}
                 >
-                  <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
-                    <rect x="1" y="3" width="12" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.2"/>
-                    <path d="M1 4.5l6 4 6-4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
-                  </svg>
+                  <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><rect x="1" y="3" width="12" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.2"/><path d="M1 4.5l6 4 6-4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>
                   mehran@mehrankhan.net
                 </a>
               </div>
-              <div style={{
-                display: "inline-flex", alignItems: "center", gap: 8,
-                padding: "8px 16px", borderRadius: 20,
-                background: dark ? "rgba(16,185,129,0.08)" : "rgba(10,122,86,0.06)",
-                border: `1px solid ${dark ? "rgba(16,185,129,0.2)" : "rgba(10,122,86,0.14)"}`,
-                alignSelf: "flex-start",
-              }}>
-                <span style={{
-                  width: 7, height: 7, borderRadius: "50%", background: "#10b981",
-                  boxShadow: "0 0 0 0 rgba(16,185,129,0.7)",
-                  animation: "pingDot 2s cubic-bezier(0.4,0,0.6,1) infinite", flexShrink: 0,
-                }}/>
-                <span style={{ fontSize: 12, fontWeight: 500, color: colors.acc2, letterSpacing: "-0.01em" }}>
-                  Currently building — Phase 1
-                </span>
+              <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "8px 16px", borderRadius: 20, background: dark ? "rgba(16,185,129,0.08)" : "rgba(10,122,86,0.06)", border: `1px solid ${dark ? "rgba(16,185,129,0.2)" : "rgba(10,122,86,0.14)"}`, alignSelf: "flex-start" }}>
+                <span style={{ width: 7, height: 7, borderRadius: "50%", background: "#10b981", boxShadow: "0 0 0 0 rgba(16,185,129,0.7)", animation: "pingDot 2s cubic-bezier(0.4,0,0.6,1) infinite", flexShrink: 0 }}/>
+                <span style={{ fontSize: 12, fontWeight: 500, color: colors.acc2, letterSpacing: "-0.01em" }}>Currently building — Phase 1</span>
               </div>
             </div>
             <div style={{ height: 1, background: colors.border, marginBottom: 20 }}/>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
-              <span style={{ fontSize: 12, color: colors.text4, letterSpacing: "0.02em" }}>
-                © {new Date().getFullYear()} Mehran Khan · mehrankhan.net
-              </span>
+              <span style={{ fontSize: 12, color: colors.text4, letterSpacing: "0.02em" }}>© {new Date().getFullYear()} Mehran Khan · mehrankhan.net</span>
               <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-                <a
-                  href={`https://github.com/${GITHUB_USER}`}
-                  target="_blank" rel="noreferrer"
-                  style={{ fontSize: 12, color: colors.text3, display: "flex", alignItems: "center", gap: 5, transition: "color 0.2s" }}
+                <a href={`https://github.com/${GITHUB_USER}`} target="_blank" rel="noreferrer" style={{ fontSize: 12, color: colors.text3, display: "flex", alignItems: "center", gap: 5, transition: "color 0.2s" }}
                   onMouseEnter={e => e.currentTarget.style.color = colors.acc1}
                   onMouseLeave={e => e.currentTarget.style.color = colors.text3}
-                >
-                  {Icons.github}
-                  GitHub
-                </a>
+                >{Icons.github} GitHub</a>
                 <span style={{ width: 1, height: 12, background: colors.border }}/>
-                <a
-                  href="mailto:mehran@mehrankhan.net"
-                  style={{ fontSize: 12, color: colors.text3, transition: "color 0.2s" }}
+                <a href="mailto:mehran@mehrankhan.net" style={{ fontSize: 12, color: colors.text3, transition: "color 0.2s" }}
                   onMouseEnter={e => e.currentTarget.style.color = colors.acc1}
                   onMouseLeave={e => e.currentTarget.style.color = colors.text3}
-                >
-                  Email
-                </a>
+                >Email</a>
                 <span style={{ width: 1, height: 12, background: colors.border }}/>
-                <button
-                  onClick={() => setFeedbackOpen(true)}
-                  style={{
-                    fontSize: 12, color: colors.text3, background: "none",
-                    border: "none", cursor: "pointer", fontFamily: "inherit",
-                    transition: "color 0.2s", padding: 0,
-                  }}
+                <button onClick={() => setFeedbackOpen(true)} style={{ fontSize: 12, color: colors.text3, background: "none", border: "none", cursor: "pointer", fontFamily: "inherit", transition: "color 0.2s", padding: 0 }}
                   onMouseEnter={e => e.currentTarget.style.color = colors.acc1}
                   onMouseLeave={e => e.currentTarget.style.color = colors.text3}
-                >
-                  Leave a note
-                </button>
+                >Leave a note</button>
               </div>
             </div>
           </div>
         </footer>
       </div>
 
-      {/* Modals */}
-      {activeProject && (
-        <ProjectModal
-          project={activeProject.project}
-          phase={activeProject.phase}
-          onClose={() => setActiveProject(null)}
-          colors={colors}
-          dark={dark}
-        />
-      )}
+      {activeProject && <ProjectModal project={activeProject.project} phase={activeProject.phase} onClose={() => setActiveProject(null)} colors={colors} dark={dark} />}
       <FeedbackModal open={feedbackOpen} onClose={() => setFeedbackOpen(false)} colors={colors} dark={dark} />
-
-      {confetti && (
-        <Confetti
-          key={confetti.id}
-          x={confetti.x}
-          y={confetti.y}
-          color={confetti.color}
-          onDone={() => setConfetti(null)}
-        />
-      )}
+      {confetti && <Confetti key={confetti.id} x={confetti.x} y={confetti.y} color={confetti.color} onDone={() => setConfetti(null)} />}
 
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600;1,700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap');
         @keyframes gradShift { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
         @keyframes shimmerLeft { 0%{background-position:0% 50%} 100%{background-position:100% 50%} }
         @keyframes shimmerRight { 0%{background-position:100% 50%} 100%{background-position:0% 50%} }
+        @keyframes fireShift { 0%{background-position:0% 50%} 100%{background-position:200% 50%} }
+        @keyframes squiggleShift { 0%{stroke-dashoffset:0} 100%{stroke-dashoffset:-40} }
         @keyframes pingDot { 0%{box-shadow:0 0 0 0 rgba(249,115,22,0.7)} 60%{box-shadow:0 0 0 7px rgba(249,115,22,0)} 100%{box-shadow:0 0 0 0 rgba(249,115,22,0)} }
         @keyframes marquee { 0%{transform:translateX(0)} 100%{transform:translateX(-33.333%)} }
         @keyframes marqueeReverse { 0%{transform:translateX(-33.333%)} 100%{transform:translateX(0)} }
@@ -1791,17 +1416,11 @@ export default function Home() {
         @keyframes pulseGlow { 0%,100%{opacity:.5;transform:scale(1)} 50%{opacity:1;transform:scale(1.3)} }
         @keyframes fadeIn { from{opacity:0} to{opacity:1} }
         @keyframes slideUp { from{opacity:0;transform:translateY(16px) scale(0.98)} to{opacity:1;transform:none} }
-        @keyframes confettiPop {
-          0%  { transform: translate(0,0) scale(1); opacity: 1; }
-          100% { transform: translate(var(--vx), var(--vy)) scale(0); opacity: 0; }
-        }
+        @keyframes confettiPop { 0%{transform:translate(0,0) scale(1);opacity:1} 100%{transform:translate(var(--vx),var(--vy)) scale(0);opacity:0} }
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        html, body { overscroll-behavior: none; overscroll-behavior-y: none; }
+        html, body { overscroll-behavior: none; }
         :root { --ticker-speed: 35s; --ticker-speed-r: 48s; }
-        @media (max-width: 600px) {
-          :root { --ticker-speed: 32s; --ticker-speed-r: 44s; }
-          .mission-avatar { display: none !important; }
-        }
+        @media (max-width: 600px) { :root { --ticker-speed: 32s; --ticker-speed-r: 44s; } .mission-avatar { display: none !important; } }
         @media (min-width: 480px) { .nav-domain { display: inline !important; } }
         a { text-decoration: none; color: inherit; }
         ::-webkit-scrollbar { width: 5px; }
@@ -1817,140 +1436,65 @@ export default function Home() {
 
 // ─── TILE CARD ────────────────────────────────────────────────────────────────
 
-function TileCard({
-  project, phase, isDone, isNext, isLocked, artIdx, colors, dark, onClick, tooltipText,
-}: {
-  project: Project; phase: Phase;
-  isDone: boolean; isNext: boolean; isLocked: boolean;
-  artIdx: number; colors: ReturnType<typeof buildColors>;
-  dark: boolean;
-  onClick: (e: React.MouseEvent) => void;
-  tooltipText: string;
+function TileCard({ project, phase, isDone, isNext, isLocked, artIdx, colors, dark, onClick, tooltipText }: {
+  project: Project; phase: Phase; isDone: boolean; isNext: boolean; isLocked: boolean;
+  artIdx: number; colors: ReturnType<typeof buildColors>; dark: boolean;
+  onClick: (e: React.MouseEvent) => void; tooltipText: string;
 }) {
   const [hov, setHov] = useState(false);
   const [tipVisible, setTipVisible] = useState(false);
   const tipTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const handleEnter = () => {
-    setHov(true);
-    tipTimer.current = setTimeout(() => setTipVisible(true), 300);
-  };
-  const handleLeave = () => {
-    setHov(false);
-    setTipVisible(false);
-    if (tipTimer.current) clearTimeout(tipTimer.current);
-  };
+  const handleEnter = () => { setHov(true); tipTimer.current = setTimeout(() => setTipVisible(true), 300); };
+  const handleLeave = () => { setHov(false); setTipVisible(false); if (tipTimer.current) clearTimeout(tipTimer.current); };
 
   return (
     <div style={{ position: "relative" }}>
       <div style={{
-        position: "absolute",
-        bottom: "calc(100% + 10px)",
-        left: "50%",
+        position: "absolute", bottom: "calc(100% + 10px)", left: "50%",
         transform: `translateX(-50%) translateY(${tipVisible ? 0 : 6}px)`,
-        background: colors.bg === "#07070f" ? "rgba(7,7,15,0.97)" : "rgba(15,14,26,0.93)",
-        backdropFilter: "blur(14px)",
-        border: `1px solid ${phase.colorBorder}`,
-        borderRadius: 10,
-        padding: "7px 12px",
-        fontSize: 12, color: "#e8e4f8", lineHeight: 1.5,
-        opacity: tipVisible ? 1 : 0,
-        transition: "all 0.18s cubic-bezier(.4,0,.2,1)",
-        pointerEvents: "none",
-        zIndex: 50,
-        boxShadow: "0 8px 24px rgba(0,0,0,0.35)",
-        width: 180, textAlign: "center",
+        background: "rgba(15,14,26,0.93)", backdropFilter: "blur(14px)",
+        border: `1px solid ${phase.colorBorder}`, borderRadius: 10,
+        padding: "7px 12px", fontSize: 12, color: "#e8e4f8", lineHeight: 1.5,
+        opacity: tipVisible ? 1 : 0, transition: "all 0.18s cubic-bezier(.4,0,.2,1)",
+        pointerEvents: "none", zIndex: 50,
+        boxShadow: "0 8px 24px rgba(0,0,0,0.35)", width: 180, textAlign: "center",
       }}>
         {tooltipText}
-        <div style={{
-          position: "absolute", bottom: -5, left: "50%",
-          transform: "translateX(-50%) rotate(45deg)",
-          width: 8, height: 8,
-          background: colors.bg === "#07070f" ? "rgba(7,7,15,0.97)" : "rgba(15,14,26,0.93)",
-          border: `1px solid ${phase.colorBorder}`,
-          borderTop: "none", borderLeft: "none",
-        }} />
+        <div style={{ position: "absolute", bottom: -5, left: "50%", transform: "translateX(-50%) rotate(45deg)", width: 8, height: 8, background: "rgba(15,14,26,0.93)", border: `1px solid ${phase.colorBorder}`, borderTop: "none", borderLeft: "none" }} />
       </div>
-
       <div
-        role="button"
-        tabIndex={0}
-        onClick={onClick}
+        role="button" tabIndex={0} onClick={onClick}
         onKeyDown={e => { if (e.key === "Enter" || e.key === " ") onClick(e as unknown as React.MouseEvent); }}
-        onMouseEnter={handleEnter}
-        onMouseLeave={handleLeave}
+        onMouseEnter={handleEnter} onMouseLeave={handleLeave}
         aria-label={`${project.name}${isLocked ? " — coming soon" : isDone ? " — view details" : " — building next"}`}
         style={{
           borderRadius: 18,
           border: `1px solid ${isLocked ? colors.lockedBorder : phase.colorBorder}`,
           padding: "18px 16px 38px",
-          background: isLocked
-            ? colors.lockedBg
-            : hov
-            ? `linear-gradient(145deg, ${phase.colorBg}, ${colors.card})`
-            : colors.card,
-          cursor: "pointer",
-          position: "relative", overflow: "visible",
+          background: isLocked ? colors.lockedBg : hov ? `linear-gradient(145deg, ${phase.colorBg}, ${colors.card})` : colors.card,
+          cursor: "pointer", position: "relative", overflow: "visible",
           transform: hov && !isLocked ? "translateY(-5px) scale(1.016)" : "none",
           transition: "all 0.2s cubic-bezier(.4,0,.2,1)",
-          boxShadow: hov && !isLocked
-            ? `0 14px 36px ${phase.color}18, 0 4px 12px rgba(0,0,0,0.12)`
-            : "none",
+          boxShadow: hov && !isLocked ? `0 14px 36px ${phase.color}18, 0 4px 12px rgba(0,0,0,0.12)` : "none",
           outline: "none",
         }}
       >
-        {(isDone || isNext) && (
-          <div style={{
-            position: "absolute", top: 0, left: "20%", right: "20%", height: 2,
-            background: `linear-gradient(90deg, transparent, ${phase.color}60, transparent)`,
-            borderRadius: "0 0 2px 2px",
-          }} />
-        )}
-        <div style={{ marginBottom: 14, opacity: isLocked ? 0.3 : 1, transition: "opacity 0.2s" }}>
-          {tileArts(phase.color)[artIdx % 22]}
-        </div>
-        <div style={{ fontSize: 9.5, color: isLocked ? colors.lockedText : colors.text4, fontFamily: "'JetBrains Mono', monospace", marginBottom: 6, letterSpacing: "0.06em" }}>
-          {project.id}
-        </div>
-        <div style={{ fontSize: 13.5, fontWeight: 600, color: isLocked ? colors.lockedText : colors.text, marginBottom: 5, lineHeight: 1.3, letterSpacing: "-0.02em" }}>
-          {project.name}
-        </div>
-        <div style={{ fontSize: 11, color: isLocked ? colors.lockedText : colors.text3, lineHeight: 1.55 }}>
-          {project.desc}
-        </div>
-        {isDone && (
-          <div style={{
-            position: "absolute", top: 14, right: 14,
-            width: 20, height: 20, borderRadius: "50%",
-            background: phase.colorBg, border: `1px solid ${phase.colorBorder}`,
-            display: "flex", alignItems: "center", justifyContent: "center",
-            color: phase.color, opacity: hov ? 1 : 0.7, transition: "opacity 0.2s",
-          }}>
-            {Icons.check}
-          </div>
-        )}
-        {isNext && (
-          <span style={{
-            position: "absolute", bottom: 11, right: 11,
-            fontSize: 9, fontWeight: 600, padding: "3px 8px", borderRadius: 20,
-            background: `${colors.acc1}22`, color: colors.acc1,
-            letterSpacing: "0.04em", textTransform: "uppercase",
-            animation: "pulseGlow 2.6s ease-in-out infinite",
-          }}>building</span>
-        )}
-        {isLocked && (
-          <span style={{
-            position: "absolute", bottom: 11, right: 12,
-            display: "flex", opacity: hov ? 1 : 0.75, transition: "opacity 0.2s",
-          }}>
-            <svg width="13" height="15" viewBox="0 0 13 15" fill="none">
-              <rect x="1" y="6.5" width="11" height="8" rx="2" fill="#f59e0b" opacity="0.18"/>
-              <rect x="1" y="6.5" width="11" height="8" rx="2" stroke="#f59e0b" strokeWidth="1.4"/>
-              <path d="M4 6.5V4a2.5 2.5 0 0 1 5 0v2.5" stroke="#f59e0b" strokeWidth="1.4" strokeLinecap="round"/>
-              <circle cx="6.5" cy="10.5" r="1.2" fill="#fbbf24"/>
-            </svg>
-          </span>
-        )}
+        {(isDone || isNext) && <div style={{ position: "absolute", top: 0, left: "20%", right: "20%", height: 2, background: `linear-gradient(90deg, transparent, ${phase.color}60, transparent)`, borderRadius: "0 0 2px 2px" }} />}
+        <div style={{ marginBottom: 14, opacity: isLocked ? 0.3 : 1, transition: "opacity 0.2s" }}>{tileArts(phase.color)[artIdx % 22]}</div>
+        <div style={{ fontSize: 9.5, color: isLocked ? colors.lockedText : colors.text4, fontFamily: "'JetBrains Mono', monospace", marginBottom: 6, letterSpacing: "0.06em" }}>{project.id}</div>
+        <div style={{ fontSize: 13.5, fontWeight: 600, color: isLocked ? colors.lockedText : colors.text, marginBottom: 5, lineHeight: 1.3, letterSpacing: "-0.02em" }}>{project.name}</div>
+        <div style={{ fontSize: 11, color: isLocked ? colors.lockedText : colors.text3, lineHeight: 1.55 }}>{project.desc}</div>
+        {isDone && <div style={{ position: "absolute", top: 14, right: 14, width: 20, height: 20, borderRadius: "50%", background: phase.colorBg, border: `1px solid ${phase.colorBorder}`, display: "flex", alignItems: "center", justifyContent: "center", color: phase.color, opacity: hov ? 1 : 0.7, transition: "opacity 0.2s" }}>{Icons.check}</div>}
+        {isNext && <span style={{ position: "absolute", bottom: 11, right: 11, fontSize: 9, fontWeight: 600, padding: "3px 8px", borderRadius: 20, background: `${colors.acc1}22`, color: colors.acc1, letterSpacing: "0.04em", textTransform: "uppercase", animation: "pulseGlow 2.6s ease-in-out infinite" }}>building</span>}
+        {isLocked && <span style={{ position: "absolute", bottom: 11, right: 12, display: "flex", opacity: hov ? 1 : 0.75, transition: "opacity 0.2s" }}>
+          <svg width="13" height="15" viewBox="0 0 13 15" fill="none">
+            <rect x="1" y="6.5" width="11" height="8" rx="2" fill="#f59e0b" opacity="0.18"/>
+            <rect x="1" y="6.5" width="11" height="8" rx="2" stroke="#f59e0b" strokeWidth="1.4"/>
+            <path d="M4 6.5V4a2.5 2.5 0 0 1 5 0v2.5" stroke="#f59e0b" strokeWidth="1.4" strokeLinecap="round"/>
+            <circle cx="6.5" cy="10.5" r="1.2" fill="#fbbf24"/>
+          </svg>
+        </span>}
       </div>
     </div>
   );
