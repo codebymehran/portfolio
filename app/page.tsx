@@ -1633,7 +1633,7 @@ export default function Home() {
 
 function HackerTerminal({ colors, dark }: { colors: ReturnType<typeof buildColors>; dark: boolean }) {
   const termRef = useRef<HTMLDivElement>(null);
-  const [lines, setLines] = useState<{ text: string; type: string }[]>([]);
+  
   const lineIdx = useRef(0);
   const timeouts = useRef<ReturnType<typeof setTimeout>[]>([]);
 
