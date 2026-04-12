@@ -1254,7 +1254,7 @@ export default function Home() {
             <img
               src="/profile_mehran.jpg"
               alt="Mehran Khan"
-              style={{ width: "100%", height: 280, objectFit: "cover", objectPosition: "center 60%", display: "block" }}
+              style={{ width: "100%", height: 280, objectFit: "cover", objectPosition: "center 40%", display: "block" }}
             />
           </div>
         </div>
@@ -1692,24 +1692,53 @@ function HackerTerminal({ colors, dark }: { colors: ReturnType<typeof buildColor
     return t;
   };
 
+const [lines, setLines] = useState<{ text: string; type: string; visible: string }[]>([]);
+
   const runLoop = useCallback(() => {
     if (lineIdx.current >= hackerLines.length) {
       lineIdx.current = 0;
       addTimeout(() => {
         setLines([]);
-        addTimeout(runLoop, 400);
-      }, 2500);
+        addTimeout(runLoop, 3000);
+      }, 3000);
       return;
     }
 
     const line = hackerLines[lineIdx.current++];
-    setLines(prev => [...prev, line]);
+    const isPrompt = line.type === "prompt";
 
-    const delay = line.type === "prompt" ? 900 + Math.random() * 400
-      : line.type === "danger" ? 300
-      : 220 + Math.random() * 180;
+    // pause before prompt lines like someone is thinking
+    const thinkDelay = isPrompt ? 800 + Math.random() * 600 : 120;
 
-    addTimeout(runLoop, delay);
+    addTimeout(() => {
+      // add the line with empty visible text first
+      setLines(prev => [...prev, { ...line, visible: "" }]);
+
+      let charIdx = 0;
+      const charSpeed = isPrompt ? 85 : 18;
+
+      const typeChar = () => {
+        if (charIdx <= line.text.length) {
+          const captured = charIdx;
+          setLines(prev => {
+            const updated = [...prev];
+            updated[updated.length - 1] = {
+              ...updated[updated.length - 1],
+              visible: line.text.slice(0, captured),
+            };
+            return updated;
+          });
+          charIdx++;
+          addTimeout(typeChar, charSpeed + Math.random() * (isPrompt ? 60 : 10));
+        } else {
+          // line done — move to next after a pause
+          const nextDelay = isPrompt ? 200 : line.type === "danger" ? 400 : 80;
+          addTimeout(runLoop, nextDelay);
+        }
+      };
+
+      typeChar();
+    }, thinkDelay);
   }, []);
 
   useEffect(() => {
