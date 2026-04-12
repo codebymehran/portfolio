@@ -1254,7 +1254,7 @@ export default function Home() {
             <img
               src="/profile_mehran.jpg"
               alt="Mehran Khan"
-              style={{ width: "100%", height: 280, objectFit: "cover", objectPosition: "center 35%", display: "block" }}
+              style={{ width: "100%", height: 280, objectFit: "cover", objectPosition: "center 30%", display: "block" }}
             />
           </div>
         </div>
