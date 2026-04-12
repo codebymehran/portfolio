@@ -626,6 +626,83 @@ function PhaseIcon({ color, phase }: { color: string; phase: number }) {
   return <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M10 2l2 6h6l-5 3.5 2 6L10 14l-5 3.5 2-6L2 8h6l2-6z" fill={color}/></svg>;
 }
 
+// ─── ANIMATED CYCLER ─────────────────────────────────────────────────────────
+
+const cyclerItems = [
+  { text: "a task manager",        color: "#8B7CF6" },
+  { text: "an expense tracker",    color: "#10B981" },
+  { text: "a weather widget",      color: "#38BDF8" },
+  { text: "a quiz app",            color: "#F59E0B" },
+  { text: "a recipe book",         color: "#8B7CF6" },
+  { text: "a kanban board",        color: "#10B981" },
+  { text: "a habit tracker",       color: "#F59E0B" },
+  { text: "a portfolio site",      color: "#38BDF8" },
+  { text: "a movie browser",       color: "#8B7CF6" },
+  { text: "a dashboard",           color: "#10B981" },
+  { text: "an e-commerce store",   color: "#F59E0B" },
+  { text: "a blog + CMS",          color: "#38BDF8" },
+  { text: "a real-time chat app",  color: "#8B7CF6" },
+  { text: "a SaaS product",        color: "#10B981" },
+  { text: "something people pay for", color: "#EF4444" },
+];
+
+function AnimatedCycler({ dark, colors }: { dark: boolean; colors: ReturnType<typeof buildColors> }) {
+  const [idx, setIdx] = useState(0);
+  const [phase, setPhase] = useState<"in" | "hold" | "out">("in");
+
+  useEffect(() => {
+    const durations: Record<string, number> = { in: 400, hold: 2200, out: 300 };
+    const timer = setTimeout(() => {
+      if (phase === "in") setPhase("hold");
+      else if (phase === "hold") setPhase("out");
+      else { setIdx(i => (i + 1) % cyclerItems.length); setPhase("in"); }
+    }, durations[phase]);
+    return () => clearTimeout(timer);
+  }, [phase, idx]);
+
+  const item = cyclerItems[idx];
+
+  return (
+    <div style={{
+      display: "inline-flex", flexDirection: "column", alignItems: "center", gap: 0,
+      padding: "12px 28px 14px",
+      background: dark ? "rgba(255,255,255,0.025)" : "rgba(0,0,0,0.03)",
+      border: `1px solid ${dark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.07)"}`,
+      borderRadius: 16,
+    }}>
+      <span style={{ fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase", color: colors.text3, fontWeight: 500, marginBottom: 6 }}>
+        currently building
+      </span>
+      <div style={{
+        fontSize: "clamp(18px,3vw,26px)",
+        fontFamily: "'Cormorant Garamond', Georgia, serif",
+        fontWeight: 600,
+        letterSpacing: "-0.01em",
+        color: item.color,
+        opacity: phase === "in" ? 1 : phase === "out" ? 0 : 1,
+        transform: phase === "in" ? "translateY(0)" : phase === "out" ? "translateY(-8px)" : "translateY(0)",
+        transition: phase === "in"
+          ? "opacity 0.4s ease, transform 0.4s cubic-bezier(.22,.68,0,1.2)"
+          : "opacity 0.3s ease, transform 0.3s ease",
+        textShadow: `0 0 24px ${item.color}55`,
+        whiteSpace: "nowrap",
+        position: "relative",
+      }}>
+        {item.text}
+        {/* Animated underline */}
+        <span style={{
+          position: "absolute", bottom: -3, left: 0, right: 0, height: 2,
+          background: `linear-gradient(90deg, transparent, ${item.color}, transparent)`,
+          borderRadius: 2,
+          opacity: phase === "hold" ? 1 : 0,
+          transition: "opacity 0.3s ease",
+          boxShadow: `0 0 8px ${item.color}88`,
+        }}/>
+      </div>
+    </div>
+  );
+}
+
 // ─── ROCKET VISUAL ────────────────────────────────────────────────────────────
 
 function RocketVisual({
@@ -643,8 +720,18 @@ function RocketVisual({
   ] as const;
   const currentPhase = phases.find(([s, e]) => done >= s && done < e) ?? phases[phases.length - 1];
 
-  const tags = ["React", "Next.js", "TypeScript", "Prisma", "Postgres", "Stripe", "Auth", "Vitest"];
-  const orbitR = 118;
+  const techTags = [
+    { name: "React",      color: "#61DAFB", glow: "rgba(97,218,251,0.35)",  ring: 1, icon: "⚛" },
+    { name: "Next.js",    color: "#ffffff", glow: "rgba(255,255,255,0.25)", ring: 1, icon: "▲" },
+    { name: "TypeScript", color: "#3B82F6", glow: "rgba(59,130,246,0.4)",  ring: 1, icon: "TS" },
+    { name: "Prisma",     color: "#A855F7", glow: "rgba(168,85,247,0.4)",  ring: 1, icon: "◈" },
+    { name: "Postgres",   color: "#38BDF8", glow: "rgba(56,189,248,0.35)", ring: 2, icon: "🐘" },
+    { name: "Stripe",     color: "#818CF8", glow: "rgba(129,140,248,0.4)", ring: 2, icon: "⚡" },
+    { name: "Auth",       color: "#F59E0B", glow: "rgba(245,158,11,0.4)",  ring: 2, icon: "🔑" },
+    { name: "Vitest",     color: "#4ADE80", glow: "rgba(74,222,128,0.4)",  ring: 2, icon: "✓" },
+  ];
+  const orbitR1 = 105;
+  const orbitR2 = 132;
 
   return (
     <div style={{
@@ -653,10 +740,27 @@ function RocketVisual({
       opacity: mounted ? 1 : 0, transition: "opacity 0.8s ease 0.3s",
     }}>
       {/* Scene */}
-      <div style={{ position: "relative", width: 300, height: 300, display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <div style={{ position: "relative", width: 320, height: 320, display: "flex", alignItems: "center", justifyContent: "center" }}>
+
+        {/* Orbit ring 1 */}
+        <div style={{
+          position: "absolute",
+          width: orbitR1 * 2, height: orbitR1 * 2,
+          borderRadius: "50%",
+          border: `1px solid ${dark ? "rgba(139,124,246,0.12)" : "rgba(79,60,210,0.08)"}`,
+          pointerEvents: "none",
+        }}/>
+        {/* Orbit ring 2 */}
+        <div style={{
+          position: "absolute",
+          width: orbitR2 * 2, height: orbitR2 * 2,
+          borderRadius: "50%",
+          border: `1px dashed ${dark ? "rgba(139,124,246,0.07)" : "rgba(79,60,210,0.05)"}`,
+          pointerEvents: "none",
+        }}/>
 
         {/* Stars */}
-        {Array.from({ length: 26 }).map((_, i) => {
+        {Array.from({ length: 30 }).map((_, i) => {
           const seed = i * 137.5;
           const size = (seed % 1.8) + 0.8;
           const top = (seed * 3.1) % 100;
@@ -668,36 +772,43 @@ function RocketVisual({
               position: "absolute", borderRadius: "50%",
               width: size, height: size,
               top: `${top}%`, left: `${left}%`,
-              background: dark ? `rgba(196,181,253,${0.12 + (i % 4) * 0.08})` : `rgba(79,60,210,${0.08 + (i % 3) * 0.06})`,
+              background: dark ? `rgba(196,181,253,${0.1 + (i % 4) * 0.08})` : `rgba(79,60,210,${0.06 + (i % 3) * 0.05})`,
               animation: `starPulse ${dur}s ease-in-out ${delay}s infinite`,
             }} />
           );
         })}
 
         {/* Orbiting tech tags */}
-        {tags.map((tag, i) => {
-          const isReverse = i % 2 === 1;
-          const dur = isReverse ? 19 + (i * 1.3) : 14 + (i * 1.1);
-          const delay = -(i * (isReverse ? 2.4 : 3.5));
-          const angle = (i / tags.length) * 360;
-          const rad = (angle * Math.PI) / 180;
-          const x = 150 + orbitR * Math.cos(rad) - 28;
-          const y = 150 + orbitR * Math.sin(rad) - 12;
+        {techTags.map((tech, i) => {
+          const ring = tech.ring === 1 ? orbitR1 : orbitR2;
+          const totalInRing = techTags.filter(t => t.ring === tech.ring).length;
+          const idxInRing = techTags.filter(t => t.ring === tech.ring).findIndex(t => t.name === tech.name);
+          const baseAngle = (idxInRing / totalInRing) * 360;
+          const isReverse = tech.ring === 2;
+          const dur = tech.ring === 1 ? 16 : 22;
+          const delay = -(baseAngle / 360) * dur;
           return (
-            <span key={tag} style={{
+            <span key={tech.name} style={{
               position: "absolute",
-              left: x, top: y,
+              left: "50%", top: "50%",
               fontSize: 10.5,
               fontFamily: "'JetBrains Mono', monospace",
-              color: dark ? "rgba(196,181,253,0.65)" : colors.acc1,
-              background: dark ? "rgba(139,124,246,0.1)" : "rgba(79,60,210,0.06)",
-              border: `1px solid ${dark ? "rgba(139,124,246,0.2)" : "rgba(79,60,210,0.12)"}`,
+              color: tech.color,
+              background: dark ? `${tech.color}15` : `${tech.color}18`,
+              border: `1px solid ${tech.color}55`,
               borderRadius: 20,
-              padding: "2px 8px",
+              padding: "3px 9px",
               whiteSpace: "nowrap",
-              animation: `${isReverse ? "orbitTagR" : "orbitTag"} ${dur}s linear ${delay}s infinite`,
-              transformOrigin: `${150 - x + 28}px ${150 - y + 12}px`,
-            }}>{tag}</span>
+              boxShadow: `0 0 10px ${tech.glow}, inset 0 0 6px ${tech.color}10`,
+              animation: `${isReverse ? "orbitTagR" : "orbitTag"}${ring} ${dur}s linear ${delay}s infinite`,
+              transformOrigin: `calc(-${ring}px + 50%) 50%`,
+              fontWeight: 600,
+              letterSpacing: "0.02em",
+              zIndex: 3,
+            }}>
+              <span style={{ marginRight: 4, fontSize: 9 }}>{tech.icon}</span>
+              {tech.name}
+            </span>
           );
         })}
 
@@ -800,8 +911,8 @@ function RocketVisual({
         @keyframes starPulse { 0%,100%{opacity:.2} 50%{opacity:.7} }
         @keyframes flameOuter { 0%,100%{transform:scaleY(1) scaleX(1)} 30%{transform:scaleY(.85) scaleX(1.1)} 65%{transform:scaleY(1.06) scaleX(.94)} }
         @keyframes flameInner { 0%,100%{transform:scaleY(.9)} 40%{transform:scaleY(1.12) scaleX(.88)} 70%{transform:scaleY(.74)} }
-        @keyframes orbitTag  { from{transform:rotate(0deg)   translateX(${orbitR}px) rotate(0deg)}   to{transform:rotate(360deg)  translateX(${orbitR}px) rotate(-360deg)} }
-        @keyframes orbitTagR { from{transform:rotate(0deg)   translateX(${orbitR}px) rotate(0deg)}   to{transform:rotate(-360deg) translateX(${orbitR}px) rotate(360deg)} }
+        @keyframes orbitTag105  { from{transform:rotate(0deg)   translateX(105px) rotate(0deg)}   to{transform:rotate(360deg)  translateX(105px) rotate(-360deg)} }
+        @keyframes orbitTagR132 { from{transform:rotate(0deg)   translateX(132px) rotate(0deg)}   to{transform:rotate(-360deg) translateX(132px) rotate(360deg)} }
       `}</style>
     </div>
   );
@@ -928,77 +1039,85 @@ export default function Home() {
         {/* ── TICKER ── */}
         <div style={{
           overflow: "hidden",
-          background: dark
-            ? "linear-gradient(180deg, rgba(139,124,246,0.07) 0%, rgba(16,185,129,0.04) 100%)"
-            : "linear-gradient(180deg, rgba(79,60,210,0.05) 0%, rgba(10,122,86,0.025) 100%)",
           borderBottom: `1px solid ${colors.border}`,
           borderTop: `1px solid ${colors.border}`,
           padding: "0",
           position: "relative",
+          background: dark
+            ? "rgba(17,17,24,0.8)"
+            : "rgba(247,246,242,0.9)",
         }}>
           {/* Left fade */}
           <div style={{
-            position: "absolute", left: 0, top: 0, bottom: 0, width: 80, zIndex: 2, pointerEvents: "none",
-            background: `linear-gradient(90deg, ${colors.bg} 0%, transparent 100%)`,
+            position: "absolute", left: 0, top: 0, bottom: 0, width: 60, zIndex: 2, pointerEvents: "none",
+            background: `linear-gradient(90deg, ${colors.bg}, transparent)`,
           }}/>
           {/* Right fade */}
           <div style={{
-            position: "absolute", right: 0, top: 0, bottom: 0, width: 80, zIndex: 2, pointerEvents: "none",
-            background: `linear-gradient(270deg, ${colors.bg} 0%, transparent 100%)`,
+            position: "absolute", right: 0, top: 0, bottom: 0, width: 60, zIndex: 2, pointerEvents: "none",
+            background: `linear-gradient(270deg, ${colors.bg}, transparent)`,
           }}/>
 
-          {/* Row 1 — forward */}
-          <div style={{ display: "flex", whiteSpace: "nowrap", animation: "ticker var(--ticker-speed, 10s) linear infinite", padding: "9px 0 5px" }}>
-            {[...phases, ...phases, ...phases, ...phases].flatMap((phase, pi) =>
-              phase.projects.map((p, i) => (
-                <span key={`${pi}-${i}`} style={{ display: "inline-flex", alignItems: "center", gap: 0 }}>
-                  <span style={{
-                    fontSize: 11, fontWeight: 600,
-                    color: phase.color,
-                    background: phase.colorBg,
-                    border: `1px solid ${phase.colorBorder}`,
-                    borderRadius: 20,
-                    padding: "3px 11px",
-                    letterSpacing: "0.07em",
-                    textTransform: "uppercase",
-                    marginRight: 10,
-                    whiteSpace: "nowrap",
-                  }}>{p.name}</span>
-                  <span style={{
-                    marginRight: 10,
-                    color: dark ? "rgba(139,124,246,0.5)" : "rgba(79,60,210,0.3)",
-                    fontSize: 8,
-                    animation: "spinDiamond 3s linear infinite",
-                    display: "inline-block",
-                    animationDelay: `${(pi * 4 + i) * 0.15}s`,
-                  }}>◆</span>
-                </span>
-              ))
+          {/* Row 1 — forward: THREE copies, scroll one-third */}
+          <div style={{ display: "flex", whiteSpace: "nowrap", animation: "marquee var(--ticker-speed, 18s) linear infinite", padding: "9px 0 5px", willChange: "transform", minWidth: "max-content" }}>
+            {[0, 1, 2].map(copy =>
+              <span key={copy} style={{ display: "inline-flex", flexShrink: 0, minWidth: "max-content" }}>
+                {phases.flatMap((phase, pi) =>
+                  phase.projects.map((p, i) => (
+                    <span key={`${copy}-${pi}-${i}`} style={{ display: "inline-flex", alignItems: "center" }}>
+                      <span style={{
+                        fontSize: 10.5, fontWeight: 600,
+                        color: phase.color,
+                        background: phase.colorBg,
+                        border: `1px solid ${phase.colorBorder}`,
+                        borderRadius: 20,
+                        padding: "2px 9px",
+                        letterSpacing: "0.05em",
+                        textTransform: "uppercase",
+                        marginRight: 6,
+                        whiteSpace: "nowrap",
+                        flexShrink: 0,
+                      }}>{p.name}</span>
+                      <span style={{
+                        marginRight: 6, fontSize: 6,
+                        color: phase.color, opacity: 0.5,
+                        display: "inline-block",
+                        animation: `spinDiamond ${2.5 + (pi + i) % 2}s linear infinite`,
+                        animationDelay: `${(pi * 4 + i) * 0.12}s`,
+                      }}>◆</span>
+                    </span>
+                  ))
+                )}
+              </span>
             )}
           </div>
 
-          {/* Row 2 — reverse, different speed */}
-          <div style={{ display: "flex", whiteSpace: "nowrap", animation: "tickerReverse var(--ticker-speed-r, 14s) linear infinite", padding: "5px 0 9px" }}>
-            {[...phases, ...phases, ...phases, ...phases].flatMap((phase, pi) =>
-              phase.projects.slice().reverse().map((p, i) => (
-                <span key={`r${pi}-${i}`} style={{ display: "inline-flex", alignItems: "center", gap: 0 }}>
-                  <span style={{
-                    fontSize: 10.5, fontWeight: 500,
-                    color: dark ? "rgba(238,234,248,0.38)" : colors.text3,
-                    letterSpacing: "0.1em",
-                    textTransform: "uppercase",
-                    marginRight: 10,
-                    whiteSpace: "nowrap",
-                    fontFamily: "'JetBrains Mono', monospace",
-                  }}>{p.name}</span>
-                  <span style={{
-                    marginRight: 10,
-                    color: phase.color,
-                    opacity: 0.35,
-                    fontSize: 7,
-                  }}>●</span>
-                </span>
-              ))
+          {/* Row 2 — reverse: THREE copies, scroll one-third */}
+          <div style={{ display: "flex", whiteSpace: "nowrap", animation: "marqueeReverse var(--ticker-speed-r, 24s) linear infinite", padding: "5px 0 9px", willChange: "transform", minWidth: "max-content" }}>
+            {[0, 1, 2].map(copy =>
+              <span key={copy} style={{ display: "inline-flex", flexShrink: 0, minWidth: "max-content" }}>
+                {phases.flatMap((phase, pi) =>
+                  phase.projects.slice().reverse().map((p, i) => (
+                    <span key={`r${copy}-${pi}-${i}`} style={{ display: "inline-flex", alignItems: "center" }}>
+                      <span style={{
+                        fontSize: 10.5, fontWeight: 500,
+                        color: dark ? "rgba(238,234,248,0.45)" : colors.text3,
+                        letterSpacing: "0.1em",
+                        textTransform: "uppercase",
+                        marginRight: 6,
+                        whiteSpace: "nowrap",
+                        fontFamily: "'JetBrains Mono', monospace",
+                        flexShrink: 0,
+                      }}>{p.name}</span>
+                      <span style={{
+                        marginRight: 6, fontSize: 6,
+                        color: phase.color, opacity: 0.45,
+                        flexShrink: 0,
+                      }}>●</span>
+                    </span>
+                  ))
+                )}
+              </span>
             )}
           </div>
         </div>
@@ -1082,22 +1201,21 @@ export default function Home() {
 
           <p style={{
             fontSize: "clamp(16px,2.1vw,20px)", color: colors.text2,
-            lineHeight: 1.72, maxWidth: 590, margin: "0 auto 14px", letterSpacing: "-0.01em",
+            lineHeight: 1.72, maxWidth: 600, margin: "0 auto 14px", letterSpacing: "-0.01em",
           }}>
-            Most developers spend years learning without shipping.
-            I gave myself a different brief:{" "}
-            <strong style={{ color: colors.text, fontWeight: 600 }}>22 apps, fully built and deployed</strong>
-            {" "}— each one harder than the last, each one something
-            a real user could open in a browser right now.
+            Not learning to code.{" "}
+            <strong style={{ color: colors.text, fontWeight: 600 }}>Actually building.</strong>
+            {" "}22 real apps — each one
+            designed from scratch, shipped to the internet, and hard enough to keep me honest.
           </p>
-          <p style={{ fontSize: 15, color: colors.text3, lineHeight: 1.8, maxWidth: 520, margin: "0 auto 28px" }}>
-            Starting with React fundamentals. Ending with auth, payments, and a product I intend to charge for.
-            Every tile on this page is a shipped, working app.
+          <p style={{ fontSize: 15, color: colors.text3, lineHeight: 1.8, maxWidth: 520, margin: "0 auto 20px" }}>
+            Task managers and kanban boards all the way to auth, payments,
+            and a product I intend to charge real money for. Every tile on this page is live.
           </p>
 
-          {/* GitHub last commit banner */}
-          <div style={{ display: "flex", justifyContent: "center", marginBottom: 32 }}>
-            <GitHubBanner colors={colors} dark={dark} />
+          {/* Animated word cycler */}
+          <div style={{ marginBottom: 32 }}>
+            <AnimatedCycler dark={dark} colors={colors} />
           </div>
 
           <div style={{ maxWidth: 400, margin: "0 auto" }}>
@@ -1114,11 +1232,101 @@ export default function Home() {
                 boxShadow: `0 0 10px ${colors.acc1}55`,
               }} />
             </div>
+            <div style={{ display: "flex", justifyContent: "center", marginTop: 20 }}>
+              <GitHubBanner colors={colors} dark={dark} />
+            </div>
           </div>
         </div>
 
         {/* ── ROCKET ── */}
         <RocketVisual done={DONE} total={TOTAL} dark={dark} colors={colors} mounted={mounted} />
+
+        {/* ── PHOTO PLACEHOLDER ──
+            TODO: Replace the div below with an <img> tag pointing to your photo.
+            e.g. <img src="/mehran.jpg" alt="Mehran Khan" style={{ width:"100%", height:"100%", objectFit:"cover", borderRadius: "inherit" }} />
+        ── */}
+        <div style={{ padding: "0 32px 8px", maxWidth: 560, margin: "0 auto", width: "100%" }}>
+          <div style={{
+            position: "relative", borderRadius: 24, overflow: "hidden",
+            border: `1px solid ${dark ? "rgba(139,124,246,0.25)" : "rgba(79,60,210,0.15)"}`,
+            boxShadow: dark
+              ? "0 0 0 1px rgba(139,124,246,0.1), 0 8px 40px rgba(139,124,246,0.15), 0 24px 60px rgba(0,0,0,0.4)"
+              : "0 0 0 1px rgba(79,60,210,0.08), 0 8px 32px rgba(79,60,210,0.1)",
+            animation: "photoGlow 4s ease-in-out infinite",
+          }}>
+            {/* Photo goes here — currently a styled placeholder */}
+            {/* <div style={{
+              height: 280, width: "100%",
+              background: dark
+                ? "linear-gradient(135deg, #1a1830 0%, #111118 40%, #1a2535 100%)"
+                : "linear-gradient(135deg, #ede9fe 0%, #f7f6f2 40%, #dbeafe 100%)",
+              display: "flex", flexDirection: "column",
+              alignItems: "center", justifyContent: "center", gap: 14,
+              position: "relative", overflow: "hidden",
+            }}> */}
+            <img src="/profile_mehran.jpg" alt="Mehran Khan"
+  style={{ width:"100%", height:280, objectFit:"cover", borderRadius:"inherit", display:"block" }} />
+              {/* Animated background grid */}
+              <div style={{
+                position: "absolute", inset: 0, opacity: 0.4,
+                backgroundImage: `linear-gradient(${dark ? "rgba(139,124,246,0.08)" : "rgba(79,60,210,0.06)"} 1px, transparent 1px),
+                  linear-gradient(90deg, ${dark ? "rgba(139,124,246,0.08)" : "rgba(79,60,210,0.06)"} 1px, transparent 1px)`,
+                backgroundSize: "32px 32px",
+                animation: "gridDrift 12s linear infinite",
+              }}/>
+              {/* Avatar circle */}
+              <div style={{
+                width: 88, height: 88, borderRadius: "50%",
+                background: `linear-gradient(135deg, ${colors.acc1}, ${colors.acc2})`,
+                display: "flex", alignItems: "center", justifyContent: "center",
+                fontSize: 28, fontWeight: 700, color: "#fff",
+                boxShadow: `0 0 0 4px ${dark ? "rgba(139,124,246,0.2)" : "rgba(79,60,210,0.15)"}, 0 0 32px ${colors.acc1}55`,
+                animation: "avatarPulse 3s ease-in-out infinite",
+                position: "relative", zIndex: 1,
+              }}>MK</div>
+              {/* Glowing label */}
+              <div style={{
+                position: "relative", zIndex: 1,
+                display: "inline-flex", alignItems: "center", gap: 8,
+              }}>
+                <span style={{
+                  width: 6, height: 6, borderRadius: "50%",
+                  background: "#f97316",
+                  boxShadow: "0 0 0 0 rgba(249,115,22,0.7)",
+                  animation: "pingDot 2s cubic-bezier(0.4,0,0.6,1) infinite",
+                  flexShrink: 0,
+                }}/>
+                <span style={{
+                  fontSize: 14, fontWeight: 600,
+                  fontFamily: "'Instrument Sans', system-ui, sans-serif",
+                  letterSpacing: "0.08em", textTransform: "uppercase",
+                  background: dark
+                    ? "linear-gradient(90deg, #c4b5fd, #a78bfa, #818cf8, #c4b5fd)"
+                    : "linear-gradient(90deg, #4338ca, #6d28d9, #4338ca)",
+                  backgroundSize: "200% 100%",
+                  WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
+                  backgroundClip: "text",
+                  animation: "shimmerLeft 3s ease-in-out infinite alternate",
+                  filter: dark ? "drop-shadow(0 0 8px rgba(139,124,246,0.6))" : "none",
+                }}>Mehran at work</span>
+                <span style={{
+                  width: 6, height: 6, borderRadius: "50%",
+                  background: "#f97316",
+                  boxShadow: "0 0 0 0 rgba(249,115,22,0.7)",
+                  animation: "pingDot 2s cubic-bezier(0.4,0,0.6,1) infinite",
+                  animationDelay: "1s",
+                  flexShrink: 0,
+                }}/>
+              </div>
+              <p style={{
+                fontSize: 12, color: colors.text3,
+                position: "relative", zIndex: 1,
+                fontFamily: "'JetBrains Mono', monospace",
+                letterSpacing: "0.04em",
+              }}>// photo coming soon</p>
+            </div>
+          </div>
+        </div>
 
         {/* ── QUOTE ── */}
         <div style={{ padding: "0 32px", maxWidth: 1100, margin: "0 auto 8px" }}>
@@ -1297,8 +1505,125 @@ export default function Home() {
           ))}
         </div>
 
-        <footer style={{ padding: "22px 32px", borderTop: `1px solid ${colors.border}`, textAlign: "center", fontSize: 12, color: colors.text4, letterSpacing: "0.04em" }}>
-          mehrankhan.net — updated every time something ships
+        <footer style={{
+          borderTop: `1px solid ${colors.border}`,
+          padding: "48px 32px 36px",
+          marginTop: 8,
+        }}>
+          <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+
+            {/* Top — tagline + status */}
+            <div style={{
+              display: "flex", alignItems: "flex-start",
+              justifyContent: "space-between", flexWrap: "wrap", gap: 28,
+              marginBottom: 40,
+            }}>
+              <div style={{ maxWidth: 340 }}>
+                <p style={{
+                  fontSize: "clamp(22px,3.5vw,32px)",
+                  fontFamily: "'Cormorant Garamond', Georgia, serif",
+                  fontWeight: 600, color: colors.text,
+                  lineHeight: 1.3, letterSpacing: "-0.02em",
+                  marginBottom: 12,
+                }}>
+                  Building in public.<br/>
+                  <em style={{ fontStyle: "italic", color: colors.acc1 }}>Watch it happen.</em>
+                </p>
+                <a
+                  href="mailto:mehran@mehrankhan.net"
+                  style={{
+                    fontSize: 13, color: colors.text3,
+                    display: "inline-flex", alignItems: "center", gap: 6,
+                    transition: "color 0.2s",
+                    fontFamily: "'JetBrains Mono', monospace",
+                    letterSpacing: "0.01em",
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.color = colors.acc1}
+                  onMouseLeave={e => e.currentTarget.style.color = colors.text3}
+                >
+                  <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+                    <rect x="1" y="3" width="12" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.2"/>
+                    <path d="M1 4.5l6 4 6-4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+                  </svg>
+                  mehran@mehrankhan.net
+                </a>
+              </div>
+
+              {/* Status pill */}
+              <div style={{
+                display: "inline-flex", alignItems: "center", gap: 8,
+                padding: "8px 16px", borderRadius: 20,
+                background: dark ? "rgba(16,185,129,0.08)" : "rgba(10,122,86,0.06)",
+                border: `1px solid ${dark ? "rgba(16,185,129,0.2)" : "rgba(10,122,86,0.14)"}`,
+                alignSelf: "flex-start",
+              }}>
+                <span style={{
+                  width: 7, height: 7, borderRadius: "50%",
+                  background: "#10b981",
+                  boxShadow: "0 0 0 0 rgba(16,185,129,0.7)",
+                  animation: "pingDot 2s cubic-bezier(0.4,0,0.6,1) infinite",
+                  flexShrink: 0,
+                }}/>
+                <span style={{ fontSize: 12, fontWeight: 500, color: colors.acc2, letterSpacing: "-0.01em" }}>
+                  Currently building — Phase 1
+                </span>
+              </div>
+            </div>
+
+            {/* Divider */}
+            <div style={{ height: 1, background: colors.border, marginBottom: 20 }}/>
+
+            {/* Bottom row */}
+            <div style={{
+              display: "flex", alignItems: "center",
+              justifyContent: "space-between", flexWrap: "wrap", gap: 12,
+            }}>
+              <span style={{ fontSize: 12, color: colors.text4, letterSpacing: "0.02em" }}>
+                © {new Date().getFullYear()} Mehran Khan · mehrankhan.net
+              </span>
+              <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+                <a
+                  href={`https://github.com/${GITHUB_USER}`}
+                  target="_blank" rel="noreferrer"
+                  style={{
+                    fontSize: 12, color: colors.text3,
+                    display: "flex", alignItems: "center", gap: 5,
+                    transition: "color 0.2s",
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.color = colors.acc1}
+                  onMouseLeave={e => e.currentTarget.style.color = colors.text3}
+                >
+                  {Icons.github}
+                  GitHub
+                </a>
+                <span style={{ width: 1, height: 12, background: colors.border }}/>
+                <a
+                  href="mailto:mehran@mehrankhan.net"
+                  style={{
+                    fontSize: 12, color: colors.text3,
+                    transition: "color 0.2s",
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.color = colors.acc1}
+                  onMouseLeave={e => e.currentTarget.style.color = colors.text3}
+                >
+                  Email
+                </a>
+                <span style={{ width: 1, height: 12, background: colors.border }}/>
+                <button
+                  onClick={() => setFeedbackOpen(true)}
+                  style={{
+                    fontSize: 12, color: colors.text3, background: "none",
+                    border: "none", cursor: "pointer", fontFamily: "inherit",
+                    transition: "color 0.2s", padding: 0,
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.color = colors.acc1}
+                  onMouseLeave={e => e.currentTarget.style.color = colors.text3}
+                >
+                  Leave a note
+                </button>
+              </div>
+            </div>
+          </div>
         </footer>
       </div>
 
@@ -1335,9 +1660,18 @@ export default function Home() {
           60%  { box-shadow: 0 0 0 7px rgba(249,115,22,0); }
           100% { box-shadow: 0 0 0 0 rgba(249,115,22,0); }
         }
-        @keyframes ticker { 0%{transform:translateX(0)} 100%{transform:translateX(-25%)} }
-        @keyframes tickerReverse { 0%{transform:translateX(-25%)} 100%{transform:translateX(0)} }
-        @keyframes spinDiamond { 0%{transform:rotate(0deg) scale(1)} 50%{transform:rotate(180deg) scale(1.4)} 100%{transform:rotate(360deg) scale(1)} }
+        @keyframes marquee { 0%{transform:translateX(0)} 100%{transform:translateX(-33.333%)} }
+        @keyframes marqueeReverse { 0%{transform:translateX(-33.333%)} 100%{transform:translateX(0)} }
+        @keyframes spinDiamond { 0%{transform:rotate(0deg) scale(1)} 50%{transform:rotate(180deg) scale(1.5)} 100%{transform:rotate(360deg) scale(1)} }
+        @keyframes photoGlow {
+          0%,100% { box-shadow: 0 0 0 1px rgba(139,124,246,0.1), 0 8px 40px rgba(139,124,246,0.12), 0 24px 60px rgba(0,0,0,0.35); }
+          50%      { box-shadow: 0 0 0 1px rgba(139,124,246,0.22), 0 8px 40px rgba(139,124,246,0.28), 0 24px 60px rgba(0,0,0,0.45); }
+        }
+        @keyframes avatarPulse {
+          0%,100% { box-shadow: 0 0 0 4px rgba(139,124,246,0.2), 0 0 20px rgba(139,124,246,0.3); }
+          50%      { box-shadow: 0 0 0 8px rgba(139,124,246,0.1), 0 0 40px rgba(139,124,246,0.5); }
+        }
+        @keyframes gridDrift { 0%{background-position:0 0} 100%{background-position:32px 32px} }
         @keyframes pulseGlow { 0%,100%{opacity:.5;transform:scale(1)} 50%{opacity:1;transform:scale(1.3)} }
         @keyframes fadeIn { from{opacity:0} to{opacity:1} }
         @keyframes slideUp { from{opacity:0;transform:translateY(16px) scale(0.98)} to{opacity:1;transform:none} }
@@ -1347,9 +1681,9 @@ export default function Home() {
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         html, body { overscroll-behavior: none; overscroll-behavior-y: none; }
-        :root { --ticker-speed: 10s; --ticker-speed-r: 14s; }
+        :root { --ticker-speed: 35s; --ticker-speed-r: 48s; }
         @media (max-width: 600px) {
-          :root { --ticker-speed: 5s; --ticker-speed-r: 7s; }
+          :root { --ticker-speed: 32s; --ticker-speed-r: 44s; }
           .mission-avatar { display: none !important; }
         }
         @media (min-width: 480px) { .nav-domain { display: inline !important; } }
