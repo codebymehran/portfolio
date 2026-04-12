@@ -399,6 +399,7 @@ function FeedbackModal({
 }) {
   const [msg, setMsg] = useState("");
   const [state, setState] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const [errorMsg, setErrorMsg] = useState("");
 
   const handleSend = async () => {
     if (!msg.trim() || state === "sending") return;
@@ -406,12 +407,13 @@ function FeedbackModal({
     try {
       const res = await fetch("https://api.web3forms.com/submit", {
         method: "POST",
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          access_key: "821b5a66-e7e4-4d4e-a046-506c051daf4a", // get free key at web3forms.com — takes 30s, no account needed
+          access_key: "821b5a66-e7e4-4d4e-a046-506c051daf4a",
           subject: "Note from mehrankhan.net",
           message: msg,
           from_name: "Site visitor",
+          botcheck: "",
         }),
       });
       const json = await res.json();
@@ -419,12 +421,16 @@ function FeedbackModal({
         setState("sent");
         setTimeout(() => { setState("idle"); setMsg(""); onClose(); }, 2200);
       } else {
+        console.error("Web3Forms error:", json);
+        setErrorMsg(json.message || "Submission failed.");
         setState("error");
-        setTimeout(() => setState("idle"), 3000);
+        setTimeout(() => { setState("idle"); setErrorMsg(""); }, 4000);
       }
-    } catch {
+    } catch (err) {
+      console.error("Submit failed:", err);
+      setErrorMsg("Network error — check your connection.");
       setState("error");
-      setTimeout(() => setState("idle"), 3000);
+      setTimeout(() => { setState("idle"); setErrorMsg(""); }, 4000);
     }
   };
 
@@ -500,7 +506,7 @@ function FeedbackModal({
             />
             {state === "error" && (
               <p style={{ fontSize: 12, color: "#EF4444", marginBottom: 10 }}>
-                Something went wrong. Try again?
+                {errorMsg || "Something went wrong. Try again?"}
               </p>
             )}
             <button
@@ -873,15 +879,22 @@ export default function Home() {
             <button
               onClick={() => setFeedbackOpen(true)}
               style={{
-                padding: "6px 15px", borderRadius: 20,
-                background: "transparent", border: `1px solid ${colors.border}`,
-                color: colors.text3, fontSize: 12, fontWeight: 500,
+                padding: "7px 16px", borderRadius: 20,
+                background: `linear-gradient(135deg, ${colors.acc1}, ${colors.acc2})`,
+                border: "none",
+                color: "#fff", fontSize: 12, fontWeight: 600,
                 cursor: "pointer", fontFamily: "inherit",
-                transition: "border-color 0.2s, color 0.2s",
+                letterSpacing: "-0.01em",
+                boxShadow: `0 2px 12px ${colors.acc1}44`,
+                transition: "opacity 0.2s, transform 0.2s",
+                display: "flex", alignItems: "center", gap: 6,
               }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = colors.acc1; e.currentTarget.style.color = colors.acc1; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = colors.border; e.currentTarget.style.color = colors.text3; }}
+              onMouseEnter={e => { e.currentTarget.style.opacity = "0.88"; e.currentTarget.style.transform = "translateY(-1px)"; }}
+              onMouseLeave={e => { e.currentTarget.style.opacity = "1"; e.currentTarget.style.transform = "none"; }}
             >
+              <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
+                <path d="M8.5 1.5a1.5 1.5 0 0 1 2 2L4 10H2v-2L8.5 1.5z" stroke="white" strokeWidth="1.3" strokeLinejoin="round" fill="none"/>
+              </svg>
               Leave a note
             </button>
             <button
@@ -926,7 +939,7 @@ export default function Home() {
           }}/>
 
           {/* Row 1 — forward */}
-          <div style={{ display: "flex", whiteSpace: "nowrap", animation: "ticker 10s linear infinite", padding: "9px 0 5px" }}>
+          <div style={{ display: "flex", whiteSpace: "nowrap", animation: "ticker var(--ticker-speed, 10s) linear infinite", padding: "9px 0 5px" }}>
             {[...phases, ...phases].flatMap((phase, pi) =>
               phase.projects.map((p, i) => (
                 <span key={`${pi}-${i}`} style={{ display: "inline-flex", alignItems: "center", gap: 0 }}>
@@ -956,7 +969,7 @@ export default function Home() {
           </div>
 
           {/* Row 2 — reverse, different speed */}
-          <div style={{ display: "flex", whiteSpace: "nowrap", animation: "tickerReverse 14s linear infinite", padding: "5px 0 9px" }}>
+          <div style={{ display: "flex", whiteSpace: "nowrap", animation: "tickerReverse var(--ticker-speed-r, 14s) linear infinite", padding: "5px 0 9px" }}>
             {[...phases, ...phases].flatMap((phase, pi) =>
               phase.projects.slice().reverse().map((p, i) => (
                 <span key={`r${pi}-${i}`} style={{ display: "inline-flex", alignItems: "center", gap: 0 }}>
@@ -1325,8 +1338,12 @@ export default function Home() {
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         html, body { overscroll-behavior: none; overscroll-behavior-y: none; }
+        :root { --ticker-speed: 10s; --ticker-speed-r: 14s; }
+        @media (max-width: 600px) {
+          :root { --ticker-speed: 5s; --ticker-speed-r: 7s; }
+          .mission-avatar { display: none !important; }
+        }
         @media (min-width: 480px) { .nav-domain { display: inline !important; } }
-        @media (max-width: 600px) { .mission-avatar { display: none !important; } }
         a { text-decoration: none; color: inherit; }
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
