@@ -1241,11 +1241,7 @@ export default function Home() {
         {/* ── ROCKET ── */}
         <RocketVisual done={DONE} total={TOTAL} dark={dark} colors={colors} mounted={mounted} />
 
-        {/* ── PHOTO PLACEHOLDER ──
-            TODO: Replace the div below with an <img> tag pointing to your photo.
-            e.g. <img src="/mehran.jpg" alt="Mehran Khan" style={{ width:"100%", height:"100%", objectFit:"cover", borderRadius: "inherit" }} />
-        ── */}
-        <div style={{ padding: "0 32px 8px", maxWidth: 560, margin: "0 auto", width: "100%" }}>
+       <div style={{ padding: "0 32px 8px", maxWidth: 560, margin: "0 auto", width: "100%" }}>
           <div style={{
             position: "relative", borderRadius: 24, overflow: "hidden",
             border: `1px solid ${dark ? "rgba(139,124,246,0.25)" : "rgba(79,60,210,0.15)"}`,
@@ -1254,77 +1250,11 @@ export default function Home() {
               : "0 0 0 1px rgba(79,60,210,0.08), 0 8px 32px rgba(79,60,210,0.1)",
             animation: "photoGlow 4s ease-in-out infinite",
           }}>
-            {/* Photo goes here — currently a styled placeholder */}
-            {/* <div style={{
-              height: 280, width: "100%",
-              background: dark
-                ? "linear-gradient(135deg, #1a1830 0%, #111118 40%, #1a2535 100%)"
-                : "linear-gradient(135deg, #ede9fe 0%, #f7f6f2 40%, #dbeafe 100%)",
-              display: "flex", flexDirection: "column",
-              alignItems: "center", justifyContent: "center", gap: 14,
-              position: "relative", overflow: "hidden",
-            }}> */}
-            <img src="/profile_mehran.jpg" alt="Mehran Khan"
-  style={{ width:"100%", height:280, objectFit:"cover", borderRadius:"inherit", display:"block" }} />
-              {/* Animated background grid */}
-              <div style={{
-                position: "absolute", inset: 0, opacity: 0.4,
-                backgroundImage: `linear-gradient(${dark ? "rgba(139,124,246,0.08)" : "rgba(79,60,210,0.06)"} 1px, transparent 1px),
-                  linear-gradient(90deg, ${dark ? "rgba(139,124,246,0.08)" : "rgba(79,60,210,0.06)"} 1px, transparent 1px)`,
-                backgroundSize: "32px 32px",
-                animation: "gridDrift 12s linear infinite",
-              }}/>
-              {/* Avatar circle */}
-              <div style={{
-                width: 88, height: 88, borderRadius: "50%",
-                background: `linear-gradient(135deg, ${colors.acc1}, ${colors.acc2})`,
-                display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: 28, fontWeight: 700, color: "#fff",
-                boxShadow: `0 0 0 4px ${dark ? "rgba(139,124,246,0.2)" : "rgba(79,60,210,0.15)"}, 0 0 32px ${colors.acc1}55`,
-                animation: "avatarPulse 3s ease-in-out infinite",
-                position: "relative", zIndex: 1,
-              }}>MK</div>
-              {/* Glowing label */}
-              <div style={{
-                position: "relative", zIndex: 1,
-                display: "inline-flex", alignItems: "center", gap: 8,
-              }}>
-                <span style={{
-                  width: 6, height: 6, borderRadius: "50%",
-                  background: "#f97316",
-                  boxShadow: "0 0 0 0 rgba(249,115,22,0.7)",
-                  animation: "pingDot 2s cubic-bezier(0.4,0,0.6,1) infinite",
-                  flexShrink: 0,
-                }}/>
-                <span style={{
-                  fontSize: 14, fontWeight: 600,
-                  fontFamily: "'Instrument Sans', system-ui, sans-serif",
-                  letterSpacing: "0.08em", textTransform: "uppercase",
-                  background: dark
-                    ? "linear-gradient(90deg, #c4b5fd, #a78bfa, #818cf8, #c4b5fd)"
-                    : "linear-gradient(90deg, #4338ca, #6d28d9, #4338ca)",
-                  backgroundSize: "200% 100%",
-                  WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
-                  backgroundClip: "text",
-                  animation: "shimmerLeft 3s ease-in-out infinite alternate",
-                  filter: dark ? "drop-shadow(0 0 8px rgba(139,124,246,0.6))" : "none",
-                }}>Mehran at work</span>
-                <span style={{
-                  width: 6, height: 6, borderRadius: "50%",
-                  background: "#f97316",
-                  boxShadow: "0 0 0 0 rgba(249,115,22,0.7)",
-                  animation: "pingDot 2s cubic-bezier(0.4,0,0.6,1) infinite",
-                  animationDelay: "1s",
-                  flexShrink: 0,
-                }}/>
-              </div>
-              <p style={{
-                fontSize: 12, color: colors.text3,
-                position: "relative", zIndex: 1,
-                fontFamily: "'JetBrains Mono', monospace",
-                letterSpacing: "0.04em",
-              }}>// photo coming soon</p>
-            </div>
+            <img
+              src="/profile_mehran.jpg"
+              alt="Mehran Khan"
+              style={{ width: "100%", height: 280, objectFit: "cover", display: "block" }}
+            />
           </div>
         </div>
 
