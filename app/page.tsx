@@ -731,13 +731,13 @@ export default function Home() {
 useEffect(() => {
   let ignore = false;
 
-  fetch("https://api.countapi.xyz/hit/mehrankhan.net/visits")
+  fetch("https://api.allorigins.win/raw?url=https://api.countapi.xyz/hit/mehrankhan.net/visits")
     .then((r) => r.json())
     .then((d) => {
       if (!ignore) setViews(d.value);
     })
     .catch(() => {
-      if (!ignore) setViews(null);
+      if (!ignore) setViews(0);
     });
 
   return () => {
