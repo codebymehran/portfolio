@@ -838,7 +838,7 @@ export default function Home() {
               <strong style={{ color: colors.acc1, fontWeight: 800, fontSize: "1.1em", letterSpacing: "-0.02em" }}>22 real apps</strong>
               {circleVisible && <CircleHighlight color={colors.acc1} />}
             </span>
-            {" "}— from zero to production.{" "}
+            {" "} From zero to production.{" "}
             Full stack. Auth. Payments. Real users.
             Each one shipped to the internet, polished enough to charge money for.
           </p>
