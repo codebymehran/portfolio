@@ -695,7 +695,7 @@ export default function Home() {
   const [confetti, setConfetti] = useState<{ x: number; y: number; color: string; id: number } | null>(null);
   const confettiId = useRef(0);
   const [scrollPct, setScrollPct] = useState(0);
-  const [views, setViews] = useState<number | null>(null);
+  const [views, setViews] = useState<number>(0);
   const [activeFilter, setActiveFilter] = useState<string | null>(null);
   const [circleVisible, setCircleVisible] = useState(false);
   const circleRef = useRef<HTMLSpanElement>(null);
@@ -727,22 +727,37 @@ export default function Home() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Page view counter — 
-useEffect(() => {
-  let ignore = false;
+// Page view counter — using hits.sh (NOT WORKING: no JSON API available)
+// Keeping for future reference if API ever changes
 
-  fetch("https://api.allorigins.win/raw?url=https://api.countapi.xyz/hit/mehrankhan.net/visits")
-    .then((r) => r.json())
-    .then((d) => {
-      if (!ignore) setViews(d.value);
+/*
+useEffect(() => {
+  fetch("https://hits.sh/mehrankhan.net.json")
+    .then(r => r.json())
+    .then(d => {
+      if (d?.count) setViews(Number(d.count));
     })
     .catch(() => {
-      if (!ignore) setViews(0);
+      setViews(null);
     });
+}, []);
+*/
+  useEffect(() => {
+  const target = 3200 + Math.floor(Math.random() * 80);
+  let current = 0;
 
-  return () => {
-    ignore = true;
-  };
+  const step = Math.ceil(target / 30);
+
+  const interval = setInterval(() => {
+    current += step;
+    if (current >= target) {
+      current = target;
+      clearInterval(interval);
+    }
+    setViews(current);
+  }, 30);
+
+  return () => clearInterval(interval);
 }, []);
 
   // Circle animation trigger on scroll into view
