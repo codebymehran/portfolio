@@ -849,7 +849,7 @@ export default function Home() {
       position: "relative",
       display: "inline-block",
       padding: "0 6px",
-      marginRight: "8px", // 👈 key fix
+      marginRight: "12px",
     }}
   >
     <strong
