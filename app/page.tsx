@@ -727,16 +727,23 @@ export default function Home() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Page view counter — using hits.sh (reliable, no signup needed)
-  useEffect(() => {
-    fetch("https://hits.sh/mehrankhan.net.json")
-      .then(r => r.json())
-      .then(d => { if (d?.count) setViews(Number(d.count)); })
-      .catch(() => {
-        // Fallback: just show a placeholder so layout doesn't break
-        setViews(null);
-      });
-  }, []);
+  // Page view counter — 
+useEffect(() => {
+  let ignore = false;
+
+  fetch("https://api.countapi.xyz/hit/mehrankhan.net/visits")
+    .then((r) => r.json())
+    .then((d) => {
+      if (!ignore) setViews(d.value);
+    })
+    .catch(() => {
+      if (!ignore) setViews(null);
+    });
+
+  return () => {
+    ignore = true;
+  };
+}, []);
 
   // Circle animation trigger on scroll into view
   useEffect(() => {
