@@ -832,16 +832,43 @@ export default function Home() {
           </h1>
 
           {/* Hero copy */}
-          <p style={{ fontSize: "clamp(16px,2.1vw,20px)", color: colors.text2, lineHeight: 1.72, maxWidth: 600, margin: "0 auto 14px", letterSpacing: "-0.01em" }}>
-            {/* ── CIRCLE HIGHLIGHT around "22 real apps" ── */}
-            <span ref={circleRef} style={{ position: "relative", display: "inline-block", padding: "0 6px" }}>
-              <strong style={{ color: colors.acc1, fontWeight: 800, fontSize: "1.1em", letterSpacing: "-0.02em" }}>22 real apps</strong>
-              {circleVisible && <CircleHighlight color={colors.acc1} />}
-            </span>
-            {" "}    From zero to production.{" "}
-            Full stack. Auth. Payments. Real users.
-            Each one shipped to the internet, polished enough to charge money for.
-          </p>
+        <p
+  style={{
+    fontSize: "clamp(16px,2.1vw,20px)",
+    color: colors.text2,
+    lineHeight: 1.72,
+    maxWidth: 600,
+    margin: "0 auto 14px",
+    letterSpacing: "-0.01em",
+  }}
+>
+  {/* ── CIRCLE HIGHLIGHT around "22 real apps" ── */}
+  <span
+    ref={circleRef}
+    style={{
+      position: "relative",
+      display: "inline-block",
+      padding: "0 6px",
+      marginRight: "8px", // 👈 key fix
+    }}
+  >
+    <strong
+      style={{
+        color: colors.acc1,
+        fontWeight: 800,
+        fontSize: "1.1em",
+        letterSpacing: "-0.02em",
+      }}
+    >
+      22 real apps
+    </strong>
+    {circleVisible && <CircleHighlight color={colors.acc1} />}
+  </span>
+
+  From zero to production.{" "}
+  Full stack. Auth. Payments. Real users.
+  Each one shipped to the internet, polished enough to charge money for.
+</p>
           <p style={{ fontSize: 15, color: colors.text3, lineHeight: 1.8, maxWidth: 520, margin: "0 auto 12px" }}>
             Task managers to SaaS products — the complete journey from{" "}
             <span style={{ color: colors.acc1, fontWeight: 500 }}>day one</span> to{" "}
