@@ -78,10 +78,7 @@ const COMING_SOON = [
   "Almost its turn.",
 ];
 
-// ─── STACK FILTER DATA ────────────────────────────────────────────────────────
-
 const filterTags = ["All", "React", "Next.js", "Full Stack", "Production"];
-
 const stackMatch: Record<string, string[]> = {
   "React":       ["01","02","02.5","03","04","05","05.5","05C"],
   "Next.js":     ["06","07","07.5","08","09","09C"],
@@ -92,49 +89,14 @@ const stackMatch: Record<string, string[]> = {
 // ─── ICONS ────────────────────────────────────────────────────────────────────
 
 const Icons = {
-  close: (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-      <path d="M12 4L4 12M4 4l8 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-    </svg>
-  ),
-  external: (
-    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-      <path d="M6 2H2a1 1 0 00-1 1v9a1 1 0 001 1h9a1 1 0 001-1V8M9 1h4m0 0v4m0-4L6 8" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
-    </svg>
-  ),
-  check: (
-    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-      <path d="M2 7l4 4 6-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-    </svg>
-  ),
-  lock: (
-    <svg width="11" height="13" viewBox="0 0 11 13" fill="none">
-      <rect x="1" y="5.5" width="9" height="7" rx="1.5" stroke="currentColor" strokeWidth="1.2"/>
-      <path d="M3.5 5.5V3.5a2 2 0 014 0v2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
-    </svg>
-  ),
-  send: (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-      <path d="M14 2L7 9M14 2L9 14l-2-5-5-2 12-5z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-    </svg>
-  ),
-  github: (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
-    </svg>
-  ),
-  clock: (
-    <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
-      <circle cx="6.5" cy="6.5" r="5.5" stroke="currentColor" strokeWidth="1.2"/>
-      <path d="M6.5 4v3l2 1.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
-    </svg>
-  ),
-  commit: (
-    <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
-      <circle cx="6.5" cy="6.5" r="2.5" stroke="currentColor" strokeWidth="1.2"/>
-      <path d="M1 6.5h3M9 6.5h3" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
-    </svg>
-  ),
+  close: (<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M12 4L4 12M4 4l8 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>),
+  external: (<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M6 2H2a1 1 0 00-1 1v9a1 1 0 001 1h9a1 1 0 001-1V8M9 1h4m0 0v4m0-4L6 8" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/></svg>),
+  check: (<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l4 4 6-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>),
+  lock: (<svg width="11" height="13" viewBox="0 0 11 13" fill="none"><rect x="1" y="5.5" width="9" height="7" rx="1.5" stroke="currentColor" strokeWidth="1.2"/><path d="M3.5 5.5V3.5a2 2 0 014 0v2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>),
+  send: (<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M14 2L7 9M14 2L9 14l-2-5-5-2 12-5z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>),
+  github: (<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>),
+  clock: (<svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="5.5" stroke="currentColor" strokeWidth="1.2"/><path d="M6.5 4v3l2 1.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>),
+  commit: (<svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="2.5" stroke="currentColor" strokeWidth="1.2"/><path d="M1 6.5h3M9 6.5h3" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>),
 };
 
 // ─── TILE ARTS ────────────────────────────────────────────────────────────────
@@ -168,20 +130,16 @@ const tileArts = (color: string) => [
 
 function buildColors(dark: boolean) {
   return dark ? {
-    bg: "#111118", bg2: "#17171f", bg3: "#1e1e28",
-    card: "#16161e",
+    bg: "#111118", bg2: "#17171f", bg3: "#1e1e28", card: "#16161e",
     border: "rgba(255,255,255,0.08)", borderH: "rgba(139,124,246,0.35)",
     text: "#eeeaf8", text2: "rgba(238,234,248,0.75)", text3: "rgba(238,234,248,0.48)", text4: "rgba(238,234,248,0.24)",
-    acc1: "#8B7CF6", acc2: "#10B981",
-    navBg: "rgba(17,17,24,0.9)",
+    acc1: "#8B7CF6", acc2: "#10B981", navBg: "rgba(17,17,24,0.9)",
     lockedBg: "rgba(255,255,255,0.022)", lockedBorder: "rgba(255,255,255,0.06)", lockedText: "rgba(238,234,248,0.28)",
   } : {
-    bg: "#f7f6f2", bg2: "#ffffff", bg3: "#ebe9e2",
-    card: "#ffffff",
+    bg: "#f7f6f2", bg2: "#ffffff", bg3: "#ebe9e2", card: "#ffffff",
     border: "rgba(0,0,0,0.09)", borderH: "rgba(79,60,210,0.3)",
     text: "#0f0e1a", text2: "#3a384f", text3: "#6e6b82", text4: "#a8a5b8",
-    acc1: "#4f3cd2", acc2: "#0a7a56",
-    navBg: "rgba(247,246,242,0.92)",
+    acc1: "#4f3cd2", acc2: "#0a7a56", navBg: "rgba(247,246,242,0.92)",
     lockedBg: "rgba(15,14,26,0.03)", lockedBorder: "rgba(15,14,26,0.08)", lockedText: "#9996ab",
   };
 }
@@ -209,24 +167,17 @@ function useScrollReveal() {
 function Confetti({ x, y, color, onDone }: { x: number; y: number; color: string; onDone: () => void }) {
   const particles = useMemo(() =>
     Array.from({ length: 18 }, (_, i) => ({
-      id: i,
-      angle: (i / 18) * Math.PI * 2 + Math.random() * 0.4,
-      speed: 60 + Math.random() * 80,
-      size: 4 + Math.random() * 5,
+      id: i, angle: (i / 18) * Math.PI * 2 + Math.random() * 0.4,
+      speed: 60 + Math.random() * 80, size: 4 + Math.random() * 5,
       color: [color, "#ffffff", color + "aa"][i % 3],
     })), [color]);
-
-  useEffect(() => {
-    const t = setTimeout(onDone, 1000);
-    return () => clearTimeout(t);
-  }, [onDone]);
-
+  useEffect(() => { const t = setTimeout(onDone, 1000); return () => clearTimeout(t); }, [onDone]);
   return (
     <div style={{ position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh", pointerEvents: "none", zIndex: 300 }}>
       {particles.map(p => (
         <div key={p.id} style={{
-          position: "absolute", left: x, top: y,
-          width: p.size, height: p.size, borderRadius: "50%", background: p.color,
+          position: "absolute", left: x, top: y, width: p.size, height: p.size,
+          borderRadius: "50%", background: p.color,
           animation: `confettiPop 0.9s cubic-bezier(.22,.68,0,1.2) forwards`,
           animationDelay: `${p.id * 20}ms`,
           "--vx": `${Math.cos(p.angle) * p.speed}px`,
@@ -243,7 +194,8 @@ type Project = typeof phases[0]["projects"][0];
 type Phase = typeof phases[0];
 
 function ProjectModal({ project, phase, onClose, colors, dark }: {
-  project: Project; phase: Phase; onClose: () => void; colors: ReturnType<typeof buildColors>; dark: boolean;
+  project: Project; phase: Phase; onClose: () => void;
+  colors: ReturnType<typeof buildColors>; dark: boolean;
 }) {
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
@@ -253,98 +205,43 @@ function ProjectModal({ project, phase, onClose, colors, dark }: {
   }, [onClose]);
 
   return (
-    <div onClick={onClose} style={{
-      position: "fixed", inset: 0, zIndex: 200,
-      background: "rgba(0,0,0,0.65)", backdropFilter: "blur(12px)",
-      display: "flex", alignItems: "center", justifyContent: "center", padding: "24px 16px",
-      animation: "fadeIn 0.18s ease",
-    }}>
-      <div onClick={e => e.stopPropagation()} style={{
-        background: colors.card, border: `1px solid ${phase.colorBorder}`,
-        borderRadius: 28, width: "100%", maxWidth: 480,
-        boxShadow: `0 32px 80px ${phase.color}22, 0 8px 24px rgba(0,0,0,0.3)`,
-        position: "relative", overflow: "hidden",
-        animation: "slideUp 0.22s cubic-bezier(.4,0,.2,1)",
-      }}>
+    <div onClick={onClose} style={{ position: "fixed", inset: 0, zIndex: 200, background: "rgba(0,0,0,0.65)", backdropFilter: "blur(12px)", display: "flex", alignItems: "center", justifyContent: "center", padding: "24px 16px", animation: "fadeIn 0.18s ease" }}>
+      <div onClick={e => e.stopPropagation()} style={{ background: colors.card, border: `1px solid ${phase.colorBorder}`, borderRadius: 28, width: "100%", maxWidth: 480, boxShadow: `0 32px 80px ${phase.color}22, 0 8px 24px rgba(0,0,0,0.3)`, position: "relative", overflow: "hidden", animation: "slideUp 0.22s cubic-bezier(.4,0,.2,1)" }}>
         <div style={{ height: 3, background: `linear-gradient(90deg, ${phase.color}, ${phase.color}44)` }} />
         <div style={{ padding: "28px 28px 0" }}>
           <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 20 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-              <div style={{
-                width: 52, height: 52, borderRadius: 16,
-                background: phase.colorBg, border: `1px solid ${phase.colorBorder}`,
-                display: "flex", alignItems: "center", justifyContent: "center",
-              }}>
+              <div style={{ width: 52, height: 52, borderRadius: 16, background: phase.colorBg, border: `1px solid ${phase.colorBorder}`, display: "flex", alignItems: "center", justifyContent: "center" }}>
                 {tileArts(phase.color)[parseInt(project.id) % 22] ?? tileArts(phase.color)[0]}
               </div>
               <div>
-                <div style={{ fontSize: 9.5, letterSpacing: "0.1em", textTransform: "uppercase", color: phase.color, fontWeight: 600, marginBottom: 4 }}>
-                  {phase.label} · #{project.id}
-                </div>
-                <div style={{ fontSize: 20, fontWeight: 700, color: colors.text, letterSpacing: "-0.025em", lineHeight: 1.2, fontFamily: "'Playfair Display', Georgia, serif" }}>
-                  {project.name}
-                </div>
+                <div style={{ fontSize: 9.5, letterSpacing: "0.1em", textTransform: "uppercase", color: phase.color, fontWeight: 600, marginBottom: 4 }}>{phase.label} · #{project.id}</div>
+                <div style={{ fontSize: 20, fontWeight: 700, color: colors.text, letterSpacing: "-0.025em", lineHeight: 1.2, fontFamily: "'Playfair Display', Georgia, serif" }}>{project.name}</div>
               </div>
             </div>
-            <button onClick={onClose} style={{
-              width: 32, height: 32, borderRadius: "50%",
-              background: colors.bg3, border: `1px solid ${colors.border}`,
-              color: colors.text3, cursor: "pointer",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              fontFamily: "inherit", flexShrink: 0, marginTop: 2,
-            }}>{Icons.close}</button>
+            <button onClick={onClose} style={{ width: 32, height: 32, borderRadius: "50%", background: colors.bg3, border: `1px solid ${colors.border}`, color: colors.text3, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "inherit", flexShrink: 0, marginTop: 2 }}>{Icons.close}</button>
           </div>
           <p style={{ fontSize: 14.5, color: colors.text2, lineHeight: 1.7, marginBottom: 24 }}>{project.desc}</p>
         </div>
         <div style={{ padding: "0 28px 22px" }}>
           <div style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: colors.text3, fontWeight: 600, marginBottom: 10 }}>Tech stack</div>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 7 }}>
-            {project.stack.map(s => (
-              <span key={s} style={{
-                fontSize: 12, padding: "4px 10px", borderRadius: 8,
-                background: phase.colorBg, color: phase.color,
-                border: `1px solid ${phase.colorBorder}`,
-                fontWeight: 500, letterSpacing: "-0.01em",
-              }}>{s}</span>
-            ))}
+            {project.stack.map(s => (<span key={s} style={{ fontSize: 12, padding: "4px 10px", borderRadius: 8, background: phase.colorBg, color: phase.color, border: `1px solid ${phase.colorBorder}`, fontWeight: 500 }}>{s}</span>))}
           </div>
         </div>
         {project.learned && (
-          <div style={{
-            margin: "0 28px 28px", padding: "16px 18px",
-            background: dark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.025)",
-            borderRadius: 14, border: `1px solid ${colors.border}`,
-            borderLeft: `3px solid ${phase.color}`,
-          }}>
+          <div style={{ margin: "0 28px 28px", padding: "16px 18px", background: dark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.025)", borderRadius: 14, border: `1px solid ${colors.border}`, borderLeft: `3px solid ${phase.color}` }}>
             <div style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: colors.text3, fontWeight: 600, marginBottom: 7 }}>What I learned</div>
             <p style={{ fontSize: 13.5, color: colors.text2, lineHeight: 1.65, margin: 0 }}>{project.learned}</p>
           </div>
         )}
         {project.live ? (
           <div style={{ padding: "0 28px 28px" }}>
-            <a href={project.live} target="_blank" rel="noreferrer" style={{
-              display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-              padding: "12px", borderRadius: 14,
-              background: `linear-gradient(135deg, ${phase.color}, ${phase.color}cc)`,
-              color: "#fff", fontWeight: 600, fontSize: 14,
-              textDecoration: "none", letterSpacing: "-0.01em", transition: "opacity 0.2s",
-            }}
-              onMouseEnter={e => (e.currentTarget.style.opacity = "0.88")}
-              onMouseLeave={e => (e.currentTarget.style.opacity = "1")}
-            >
-              {Icons.external} View live project
-            </a>
+            <a href={project.live} target="_blank" rel="noreferrer" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, padding: "12px", borderRadius: 14, background: `linear-gradient(135deg, ${phase.color}, ${phase.color}cc)`, color: "#fff", fontWeight: 600, fontSize: 14, textDecoration: "none", transition: "opacity 0.2s" }} onMouseEnter={e => (e.currentTarget.style.opacity = "0.88")} onMouseLeave={e => (e.currentTarget.style.opacity = "1")}>{Icons.external} View live project</a>
           </div>
         ) : (
           <div style={{ padding: "0 28px 28px" }}>
-            <div style={{
-              display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-              padding: "12px", borderRadius: 14,
-              background: colors.lockedBg, border: `1px solid ${colors.lockedBorder}`,
-              color: colors.lockedText, fontSize: 13, fontWeight: 500,
-            }}>
-              {Icons.lock} Not shipped yet — check back soon
-            </div>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, padding: "12px", borderRadius: 14, background: colors.lockedBg, border: `1px solid ${colors.lockedBorder}`, color: colors.lockedText, fontSize: 13, fontWeight: 500 }}>{Icons.lock} Not shipped yet — check back soon</div>
           </div>
         )}
       </div>
@@ -366,96 +263,39 @@ function FeedbackModal({ open, onClose, colors, dark }: {
     setState("sending");
     try {
       const res = await fetch("https://api.web3forms.com/submit", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          access_key: "821b5a66-e7e4-4d4e-a046-506c051daf4a",
-          subject: "Note from mehrankhan.net",
-          message: msg, from_name: "Site visitor", botcheck: "",
-        }),
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ access_key: "821b5a66-e7e4-4d4e-a046-506c051daf4a", subject: "Note from mehrankhan.net", message: msg, from_name: "Site visitor", botcheck: "" }),
       });
       const json = await res.json();
-      if (json.success) {
-        setState("sent");
-        setTimeout(() => { setState("idle"); setMsg(""); onClose(); }, 2200);
-      } else {
-        setErrorMsg(json.message || "Submission failed.");
-        setState("error");
-        setTimeout(() => { setState("idle"); setErrorMsg(""); }, 4000);
-      }
+      if (json.success) { setState("sent"); setTimeout(() => { setState("idle"); setMsg(""); onClose(); }, 2200); }
+      else { setErrorMsg(json.message || "Submission failed."); setState("error"); setTimeout(() => { setState("idle"); setErrorMsg(""); }, 4000); }
     } catch {
-      setErrorMsg("Network error — check your connection.");
-      setState("error");
-      setTimeout(() => { setState("idle"); setErrorMsg(""); }, 4000);
+      setErrorMsg("Network error — check your connection."); setState("error"); setTimeout(() => { setState("idle"); setErrorMsg(""); }, 4000);
     }
   };
 
   if (!open) return null;
-
   return (
-    <div onClick={onClose} style={{
-      position: "fixed", inset: 0, zIndex: 200,
-      background: "rgba(0,0,0,0.6)", backdropFilter: "blur(10px)",
-      display: "flex", alignItems: "center", justifyContent: "center", padding: 24,
-      animation: "fadeIn 0.15s ease",
-    }}>
-      <div onClick={e => e.stopPropagation()} style={{
-        background: colors.card, border: `1px solid ${colors.border}`,
-        borderRadius: 24, padding: "36px 32px", width: "100%", maxWidth: 420,
-        boxShadow: "0 24px 80px rgba(0,0,0,0.4)", position: "relative",
-        animation: "slideUp 0.2s cubic-bezier(.4,0,.2,1)",
-      }}>
-        <button onClick={onClose} style={{
-          position: "absolute", top: 14, right: 14,
-          width: 30, height: 30, borderRadius: "50%",
-          background: colors.bg3, border: `1px solid ${colors.border}`,
-          color: colors.text3, cursor: "pointer",
-          display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "inherit",
-        }}>{Icons.close}</button>
+    <div onClick={onClose} style={{ position: "fixed", inset: 0, zIndex: 200, background: "rgba(0,0,0,0.6)", backdropFilter: "blur(10px)", display: "flex", alignItems: "center", justifyContent: "center", padding: 24, animation: "fadeIn 0.15s ease" }}>
+      <div onClick={e => e.stopPropagation()} style={{ background: colors.card, border: `1px solid ${colors.border}`, borderRadius: 24, padding: "36px 32px", width: "100%", maxWidth: 420, boxShadow: "0 24px 80px rgba(0,0,0,0.4)", position: "relative", animation: "slideUp 0.2s cubic-bezier(.4,0,.2,1)" }}>
+        <button onClick={onClose} style={{ position: "absolute", top: 14, right: 14, width: 30, height: 30, borderRadius: "50%", background: colors.bg3, border: `1px solid ${colors.border}`, color: colors.text3, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "inherit" }}>{Icons.close}</button>
         {state === "sent" ? (
           <div style={{ textAlign: "center", padding: "12px 0" }}>
-            <div style={{
-              width: 56, height: 56, borderRadius: "50%",
-              background: "rgba(16,185,129,0.1)", border: "1px solid rgba(16,185,129,0.3)",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              margin: "0 auto 18px", color: "#10B981",
-            }}>{Icons.check}</div>
-            <p style={{ fontSize: 18, fontWeight: 600, color: colors.text, marginBottom: 6, letterSpacing: "-0.02em" }}>Sent.</p>
+            <div style={{ width: 56, height: 56, borderRadius: "50%", background: "rgba(16,185,129,0.1)", border: "1px solid rgba(16,185,129,0.3)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 18px", color: "#10B981" }}>{Icons.check}</div>
+            <p style={{ fontSize: 18, fontWeight: 600, color: colors.text, marginBottom: 6 }}>Sent.</p>
             <p style={{ fontSize: 13.5, color: colors.text2 }}>Mehran will see this.</p>
           </div>
         ) : (
           <>
             <p style={{ fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase", color: colors.acc1, fontWeight: 600, marginBottom: 10 }}>Leave a note</p>
-            <p style={{ fontSize: 18, fontWeight: 600, color: colors.text, marginBottom: 7, letterSpacing: "-0.025em", fontFamily: "'Playfair Display', Georgia, serif" }}>What do you think?</p>
-            <p style={{ fontSize: 13.5, color: colors.text2, marginBottom: 22, lineHeight: 1.65 }}>
-              Encouragement, a question, or a critique — Mehran reads every message.
-            </p>
-            <textarea
-              value={msg} onChange={e => setMsg(e.target.value)}
-              onKeyDown={e => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) handleSend(); }}
-              placeholder="Type something..." rows={4}
-              style={{
-                width: "100%", background: colors.bg,
-                border: `1px solid ${msg ? colors.borderH : colors.border}`,
-                borderRadius: 12, padding: "13px 15px", fontSize: 14,
-                color: colors.text, resize: "none", outline: "none",
-                fontFamily: "inherit", lineHeight: 1.6, marginBottom: 14,
-                display: "block", transition: "border-color 0.2s",
-              }}
+            <p style={{ fontSize: 18, fontWeight: 600, color: colors.text, marginBottom: 7, fontFamily: "'Playfair Display', Georgia, serif" }}>What do you think?</p>
+            <p style={{ fontSize: 13.5, color: colors.text2, marginBottom: 22, lineHeight: 1.65 }}>Encouragement, a question, or a critique — Mehran reads every message.</p>
+            <textarea value={msg} onChange={e => setMsg(e.target.value)} onKeyDown={e => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) handleSend(); }} placeholder="Type something..." rows={4}
+              style={{ width: "100%", background: colors.bg, border: `1px solid ${msg ? colors.borderH : colors.border}`, borderRadius: 12, padding: "13px 15px", fontSize: 14, color: colors.text, resize: "none", outline: "none", fontFamily: "inherit", lineHeight: 1.6, marginBottom: 14, display: "block", transition: "border-color 0.2s" }}
             />
             {state === "error" && <p style={{ fontSize: 12, color: "#EF4444", marginBottom: 10 }}>{errorMsg || "Something went wrong. Try again?"}</p>}
-            <button onClick={handleSend} disabled={!msg.trim() || state === "sending"} style={{
-              width: "100%", padding: "13px", borderRadius: 12,
-              background: msg.trim() ? `linear-gradient(135deg, ${colors.acc1}, ${colors.acc2})` : colors.bg3,
-              border: "none", color: msg.trim() ? "#fff" : colors.text3,
-              fontSize: 14, fontWeight: 600,
-              cursor: msg.trim() ? "pointer" : "not-allowed",
-              letterSpacing: "-0.01em", transition: "all 0.2s", fontFamily: "inherit",
-              display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-            }}>
-              {Icons.send}
-              {state === "sending" ? "Sending…" : "Send message"}
-              <span style={{ fontSize: 11, opacity: 0.6 }}>⌘↵</span>
+            <button onClick={handleSend} disabled={!msg.trim() || state === "sending"} style={{ width: "100%", padding: "13px", borderRadius: 12, background: msg.trim() ? `linear-gradient(135deg, ${colors.acc1}, ${colors.acc2})` : colors.bg3, border: "none", color: msg.trim() ? "#fff" : colors.text3, fontSize: 14, fontWeight: 600, cursor: msg.trim() ? "pointer" : "not-allowed", transition: "all 0.2s", fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+              {Icons.send}{state === "sending" ? "Sending…" : "Send message"}<span style={{ fontSize: 11, opacity: 0.6 }}>⌘↵</span>
             </button>
           </>
         )}
@@ -468,49 +308,25 @@ function FeedbackModal({ open, onClose, colors, dark }: {
 
 function GitHubBanner({ colors, dark }: { colors: ReturnType<typeof buildColors>; dark: boolean }) {
   const [data, setData] = useState<{ message: string; sha: string; date: string } | null>(null);
-
   useEffect(() => {
     fetch(`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/commits?per_page=1`)
-      .then(r => r.json())
-      .then(commits => {
+      .then(r => r.json()).then(commits => {
         if (!Array.isArray(commits) || !commits[0]) return;
         const c = commits[0];
         const rawDate = c.commit?.author?.date ?? "";
-        const ago = rawDate ? timeAgo(new Date(rawDate)) : "";
+        const s = Math.floor((Date.now() - new Date(rawDate).getTime()) / 1000);
+        const ago = s < 60 ? `${s}s ago` : s < 3600 ? `${Math.floor(s/60)}m ago` : s < 86400 ? `${Math.floor(s/3600)}h ago` : `${Math.floor(s/86400)}d ago`;
         setData({ message: c.commit?.message?.split("\n")[0] ?? "", sha: c.sha?.slice(0, 7) ?? "", date: ago });
-      })
-      .catch(() => {});
+      }).catch(() => {});
   }, []);
-
-  function timeAgo(d: Date) {
-    const s = Math.floor((Date.now() - d.getTime()) / 1000);
-    if (s < 60) return `${s}s ago`;
-    if (s < 3600) return `${Math.floor(s / 60)}m ago`;
-    if (s < 86400) return `${Math.floor(s / 3600)}h ago`;
-    return `${Math.floor(s / 86400)}d ago`;
-  }
-
   if (!data) return null;
-
   return (
-    <a href={`https://github.com/${GITHUB_USER}/${GITHUB_REPO}`} target="_blank" rel="noreferrer" style={{
-      display: "flex", alignItems: "center", gap: 10, padding: "8px 14px",
-      background: dark ? "rgba(139,124,246,0.07)" : "rgba(90,76,200,0.055)",
-      border: `1px solid ${dark ? "rgba(139,124,246,0.18)" : "rgba(90,76,200,0.13)"}`,
-      borderRadius: 10, textDecoration: "none", transition: "background 0.2s",
-    }}
-      onMouseEnter={e => (e.currentTarget.style.background = dark ? "rgba(139,124,246,0.13)" : "rgba(90,76,200,0.1)")}
-      onMouseLeave={e => (e.currentTarget.style.background = dark ? "rgba(139,124,246,0.07)" : "rgba(90,76,200,0.055)")}
-    >
+    <a href={`https://github.com/${GITHUB_USER}/${GITHUB_REPO}`} target="_blank" rel="noreferrer" style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 14px", background: dark ? "rgba(139,124,246,0.07)" : "rgba(90,76,200,0.055)", border: `1px solid ${dark ? "rgba(139,124,246,0.18)" : "rgba(90,76,200,0.13)"}`, borderRadius: 10, textDecoration: "none", transition: "background 0.2s" }} onMouseEnter={e => (e.currentTarget.style.background = dark ? "rgba(139,124,246,0.13)" : "rgba(90,76,200,0.1)")} onMouseLeave={e => (e.currentTarget.style.background = dark ? "rgba(139,124,246,0.07)" : "rgba(90,76,200,0.055)")}>
       <span style={{ color: colors.acc1 }}>{Icons.commit}</span>
       <span style={{ fontSize: 12, color: colors.text3 }}>{Icons.clock}</span>
       <span style={{ fontSize: 12, color: colors.text3 }}>{data.date}</span>
       <span style={{ fontSize: 12, color: colors.text2, maxWidth: 200, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{data.message}</span>
-      <span style={{
-        fontSize: 10, fontFamily: "'JetBrains Mono', monospace",
-        color: colors.acc1, background: dark ? "rgba(139,124,246,0.12)" : "rgba(90,76,200,0.08)",
-        padding: "2px 6px", borderRadius: 5,
-      }}>{data.sha}</span>
+      <span style={{ fontSize: 10, fontFamily: "'JetBrains Mono', monospace", color: colors.acc1, background: dark ? "rgba(139,124,246,0.12)" : "rgba(90,76,200,0.08)", padding: "2px 6px", borderRadius: 5 }}>{data.sha}</span>
     </a>
   );
 }
@@ -520,11 +336,7 @@ function GitHubBanner({ colors, dark }: { colors: ReturnType<typeof buildColors>
 function RevealTile({ children, delay }: { children: React.ReactNode; delay: number }) {
   const { ref, visible } = useScrollReveal();
   return (
-    <div ref={ref} style={{
-      opacity: visible ? 1 : 0,
-      transform: visible ? "none" : "translateY(18px)",
-      transition: `opacity 0.5s ease ${delay}ms, transform 0.5s ease ${delay}ms`,
-    }}>
+    <div ref={ref} style={{ opacity: visible ? 1 : 0, transform: visible ? "none" : "translateY(18px)", transition: `opacity 0.5s ease ${delay}ms, transform 0.5s ease ${delay}ms` }}>
       {children}
     </div>
   );
@@ -562,7 +374,6 @@ const cyclerItems = [
 function AnimatedCycler({ dark, colors }: { dark: boolean; colors: ReturnType<typeof buildColors> }) {
   const [idx, setIdx] = useState(0);
   const [phase, setPhase] = useState<"in" | "hold" | "out">("in");
-
   useEffect(() => {
     const durations: Record<string, number> = { in: 400, hold: 2200, out: 300 };
     const timer = setTimeout(() => {
@@ -572,107 +383,243 @@ function AnimatedCycler({ dark, colors }: { dark: boolean; colors: ReturnType<ty
     }, durations[phase]);
     return () => clearTimeout(timer);
   }, [phase, idx]);
-
   const item = cyclerItems[idx];
-
   return (
-    <div style={{
-      display: "inline-flex", flexDirection: "column", alignItems: "center",
-      padding: "12px 28px 14px",
-      background: dark ? "rgba(255,255,255,0.025)" : "rgba(0,0,0,0.03)",
-      border: `1px solid ${dark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.07)"}`,
-      borderRadius: 16,
-    }}>
-      <span style={{ fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase", color: colors.text3, fontWeight: 500, marginBottom: 6 }}>
-        currently building
-      </span>
-      <div style={{
-        fontSize: "clamp(18px,3vw,26px)",
-        fontFamily: "'Cormorant Garamond', Georgia, serif",
-        fontWeight: 600, letterSpacing: "-0.01em", color: item.color,
-        opacity: phase === "in" ? 1 : phase === "out" ? 0 : 1,
-        transform: phase === "in" ? "translateY(0)" : phase === "out" ? "translateY(-8px)" : "translateY(0)",
-        transition: phase === "in"
-          ? "opacity 0.4s ease, transform 0.4s cubic-bezier(.22,.68,0,1.2)"
-          : "opacity 0.3s ease, transform 0.3s ease",
-        textShadow: `0 0 24px ${item.color}55`,
-        whiteSpace: "nowrap", position: "relative",
-      }}>
+    <div style={{ display: "inline-flex", flexDirection: "column", alignItems: "center", padding: "12px 28px 14px", background: dark ? "rgba(255,255,255,0.025)" : "rgba(0,0,0,0.03)", border: `1px solid ${dark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.07)"}`, borderRadius: 16 }}>
+      <span style={{ fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase", color: colors.text3, fontWeight: 500, marginBottom: 6 }}>currently building</span>
+      <div style={{ fontSize: "clamp(18px,3vw,26px)", fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 600, color: item.color, opacity: phase === "out" ? 0 : 1, transform: phase === "out" ? "translateY(-8px)" : "translateY(0)", transition: phase === "in" ? "opacity 0.4s ease, transform 0.4s cubic-bezier(.22,.68,0,1.2)" : "opacity 0.3s ease, transform 0.3s ease", textShadow: `0 0 24px ${item.color}55`, whiteSpace: "nowrap", position: "relative" }}>
         {item.text}
-        <span style={{
-          position: "absolute", bottom: -3, left: 0, right: 0, height: 2,
-          background: `linear-gradient(90deg, transparent, ${item.color}, transparent)`,
-          borderRadius: 2, opacity: phase === "hold" ? 1 : 0,
-          transition: "opacity 0.3s ease", boxShadow: `0 0 8px ${item.color}88`,
-        }}/>
+        <span style={{ position: "absolute", bottom: -3, left: 0, right: 0, height: 2, background: `linear-gradient(90deg, transparent, ${item.color}, transparent)`, borderRadius: 2, opacity: phase === "hold" ? 1 : 0, transition: "opacity 0.3s ease" }}/>
       </div>
     </div>
   );
 }
 
-// ─── SQUIGGLY UNDERLINE ───────────────────────────────────────────────────────
+// ─── CIRCLE HIGHLIGHT ─────────────────────────────────────────────────────────
+// Draws an animated hand-drawn circle around "22 real apps"
 
-function SquigglyUnderline({ color }: { color: string }) {
+function CircleHighlight({ color }: { color: string }) {
   return (
     <svg
-      viewBox="0 0 200 10" preserveAspectRatio="none"
-      style={{ position: "absolute", bottom: -6, left: 0, right: 0, width: "100%", height: 10, pointerEvents: "none" }}
+      viewBox="0 0 220 60" preserveAspectRatio="none"
+      style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: "calc(100% + 28px)", height: "calc(100% + 22px)", pointerEvents: "none", overflow: "visible" }}
     >
-      <path
-        d="M0 6 Q10 1 20 6 Q30 11 40 6 Q50 1 60 6 Q70 11 80 6 Q90 1 100 6 Q110 11 120 6 Q130 1 140 6 Q150 11 160 6 Q170 1 180 6 Q190 11 200 6"
-        fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round"
-        style={{ animation: "squiggleShift 2s linear infinite" }}
+      <ellipse
+        cx="110" cy="30" rx="104" ry="24"
+        fill="none"
+        stroke={color}
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        strokeDasharray="660"
+        strokeDashoffset="660"
+        style={{ animation: "drawCircle 1s cubic-bezier(.4,0,.2,1) 0.3s forwards" }}
+      />
+      {/* second offset stroke for hand-drawn feel */}
+      <ellipse
+        cx="111" cy="31" rx="103" ry="23"
+        fill="none"
+        stroke={color}
+        strokeWidth="1.2"
+        strokeLinecap="round"
+        strokeDasharray="660"
+        strokeDashoffset="660"
+        opacity="0.4"
+        style={{ animation: "drawCircle 1s cubic-bezier(.4,0,.2,1) 0.5s forwards" }}
       />
     </svg>
+  );
+}
+
+// ─── BUILD STREAK GRID ────────────────────────────────────────────────────────
+
+function BuildStreakGrid({ colors, dark }: { colors: ReturnType<typeof buildColors>; dark: boolean }) {
+  const [commits, setCommits] = useState<Record<string, number>>({});
+  const [streak, setStreak] = useState(0);
+  const [totalDays, setTotalDays] = useState(0);
+
+  useEffect(() => {
+    // Fetch last 90 days of commits
+    const since = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString();
+    fetch(`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/commits?per_page=100&since=${since}`)
+      .then(r => r.json())
+      .then(data => {
+        if (!Array.isArray(data)) return;
+        const map: Record<string, number> = {};
+        data.forEach((c: { commit?: { author?: { date?: string } } }) => {
+          const date = c.commit?.author?.date?.slice(0, 10);
+          if (date) map[date] = (map[date] || 0) + 1;
+        });
+        setCommits(map);
+
+        // Calculate current streak
+        let s = 0;
+        const today = new Date();
+        for (let i = 0; i < 90; i++) {
+          const d = new Date(today);
+          d.setDate(d.getDate() - i);
+          const key = d.toISOString().slice(0, 10);
+          if (map[key]) s++;
+          else if (i > 0) break;
+        }
+        setStreak(s);
+        setTotalDays(Object.keys(map).length);
+      })
+      .catch(() => {});
+  }, []);
+
+  // Build 15 weeks × 7 days grid (105 days back from today)
+  const weeks = 15;
+  const cells: { date: string; count: number; dayOfWeek: number }[] = [];
+  const today = new Date();
+  for (let i = weeks * 7 - 1; i >= 0; i--) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    const key = d.toISOString().slice(0, 10);
+    cells.push({ date: key, count: commits[key] || 0, dayOfWeek: d.getDay() });
+  }
+
+  const dayLabels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+  const getCellColor = (count: number) => {
+    if (count === 0) return dark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.06)";
+    if (count === 1) return dark ? "rgba(139,124,246,0.35)" : "rgba(79,60,210,0.25)";
+    if (count === 2) return dark ? "rgba(139,124,246,0.6)" : "rgba(79,60,210,0.5)";
+    return dark ? "#8B7CF6" : "#4f3cd2";
+  };
+
+  const getCellGlow = (count: number) => {
+    if (count >= 3) return `0 0 6px ${dark ? "rgba(139,124,246,0.8)" : "rgba(79,60,210,0.6)"}`;
+    if (count >= 2) return `0 0 4px ${dark ? "rgba(139,124,246,0.5)" : "rgba(79,60,210,0.3)"}`;
+    return "none";
+  };
+
+  return (
+    <div style={{ padding: "24px 32px 0", maxWidth: 680, margin: "0 auto", width: "100%" }}>
+      <div style={{
+        background: dark ? "rgba(22,22,30,0.9)" : "#ffffff",
+        borderRadius: 20,
+        border: `1px solid ${dark ? "rgba(139,124,246,0.18)" : "rgba(79,60,210,0.12)"}`,
+        padding: "24px 26px 20px",
+        boxShadow: dark ? "0 8px 40px rgba(0,0,0,0.4)" : "0 4px 24px rgba(0,0,0,0.07)",
+      }}>
+
+        {/* Header */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20, flexWrap: "wrap", gap: 12 }}>
+          <div>
+            <div style={{ fontSize: 13, fontWeight: 600, color: colors.text, letterSpacing: "-0.01em", marginBottom: 2 }}>
+              Build streak
+            </div>
+            <div style={{ fontSize: 11, color: colors.text3, fontFamily: "'JetBrains Mono', monospace" }}>
+              {GITHUB_USER}/{GITHUB_REPO} · last 15 weeks
+            </div>
+          </div>
+          <div style={{ display: "flex", gap: 16 }}>
+            <div style={{ textAlign: "center" }}>
+              <div style={{ fontSize: 22, fontWeight: 600, color: colors.acc1, lineHeight: 1, fontFamily: "'JetBrains Mono', monospace" }}>{streak}</div>
+              <div style={{ fontSize: 10, color: colors.text3, marginTop: 2, letterSpacing: "0.06em", textTransform: "uppercase" }}>day streak</div>
+            </div>
+            <div style={{ width: 1, background: colors.border }} />
+            <div style={{ textAlign: "center" }}>
+              <div style={{ fontSize: 22, fontWeight: 600, color: colors.acc2, lineHeight: 1, fontFamily: "'JetBrains Mono', monospace" }}>{totalDays}</div>
+              <div style={{ fontSize: 10, color: colors.text3, marginTop: 2, letterSpacing: "0.06em", textTransform: "uppercase" }}>days coded</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Day labels */}
+        <div style={{ display: "flex", gap: 3, marginBottom: 4, paddingLeft: 28 }}>
+          {Array.from({ length: weeks }).map((_, wi) => (
+            wi % 3 === 0 ? (
+              <div key={wi} style={{ width: 12, fontSize: 9, color: colors.text4, fontFamily: "'JetBrains Mono', monospace", flexShrink: 0 }}>
+                {new Date(cells[wi * 7]?.date || "").toLocaleString("default", { month: "short" })}
+              </div>
+            ) : <div key={wi} style={{ width: 12, flexShrink: 0 }} />
+          ))}
+        </div>
+
+        {/* Grid */}
+        <div style={{ display: "flex", gap: 2 }}>
+          {/* Day of week labels */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 2, marginRight: 4 }}>
+            {dayLabels.map((d, i) => (
+              <div key={d} style={{ height: 12, fontSize: 9, color: i % 2 === 1 ? colors.text4 : "transparent", fontFamily: "'JetBrains Mono', monospace", lineHeight: "12px", width: 20, flexShrink: 0 }}>
+                {i % 2 === 1 ? d.slice(0, 1) : ""}
+              </div>
+            ))}
+          </div>
+
+          {/* Cells grouped by week */}
+          {Array.from({ length: weeks }).map((_, wi) => (
+            <div key={wi} style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+              {Array.from({ length: 7 }).map((_, di) => {
+                const cell = cells[wi * 7 + di];
+                if (!cell) return <div key={di} style={{ width: 12, height: 12 }} />;
+                const isToday = cell.date === today.toISOString().slice(0, 10);
+                return (
+                  <div
+                    key={di}
+                    title={`${cell.date}: ${cell.count} commit${cell.count !== 1 ? "s" : ""}`}
+                    style={{
+                      width: 12, height: 12, borderRadius: 3,
+                      background: getCellColor(cell.count),
+                      boxShadow: isToday ? `0 0 0 1.5px ${colors.acc1}` : getCellGlow(cell.count),
+                      transition: "transform 0.15s ease",
+                      cursor: cell.count > 0 ? "pointer" : "default",
+                      flexShrink: 0,
+                    }}
+                    onMouseEnter={e => { if (cell.count > 0) e.currentTarget.style.transform = "scale(1.4)"; }}
+                    onMouseLeave={e => { e.currentTarget.style.transform = "scale(1)"; }}
+                  />
+                );
+              })}
+            </div>
+          ))}
+        </div>
+
+        {/* Legend */}
+        <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 14, justifyContent: "flex-end" }}>
+          <span style={{ fontSize: 10, color: colors.text4, fontFamily: "'JetBrains Mono', monospace" }}>less</span>
+          {[0, 1, 2, 3].map(n => (
+            <div key={n} style={{ width: 10, height: 10, borderRadius: 2, background: getCellColor(n === 3 ? 3 : n) }} />
+          ))}
+          <span style={{ fontSize: 10, color: colors.text4, fontFamily: "'JetBrains Mono', monospace" }}>more</span>
+        </div>
+      </div>
+    </div>
   );
 }
 
 // ─── ROCKET VISUAL ────────────────────────────────────────────────────────────
 
 function RocketVisual({ done, total, dark, colors, mounted }: {
-  done: number; total: number; dark: boolean;
-  colors: ReturnType<typeof buildColors>; mounted: boolean;
+  done: number; total: number; dark: boolean; colors: ReturnType<typeof buildColors>; mounted: boolean;
 }) {
   const pct = total > 0 ? Math.round((done / total) * 100) : 0;
-  const phases = [
-    [0,  8,  "Phase 1 — Core React"],
-    [8,  14, "Phase 2 — Next.js Frontend"],
-    [14, 19, "Phase 3 — Full Stack"],
-    [19, 22, "Phase 4 — Production"],
+  const rPhases = [
+    [0, 8,  "Phase 1 — Core React"],
+    [8, 14, "Phase 2 — Next.js Frontend"],
+    [14, 19,"Phase 3 — Full Stack"],
+    [19, 22,"Phase 4 — Production"],
   ] as const;
-  const currentPhase = phases.find(([s, e]) => done >= s && done < e) ?? phases[phases.length - 1];
-
+  const currentPhase = rPhases.find(([s, e]) => done >= s && done < e) ?? rPhases[rPhases.length - 1];
   const techTags = [
     { name: "React",      color: "#61DAFB", glow: "rgba(97,218,251,0.35)",  ring: 1, icon: "⚛" },
     { name: "Next.js",    color: "#ffffff", glow: "rgba(255,255,255,0.25)", ring: 1, icon: "▲" },
-    { name: "TypeScript", color: "#3B82F6", glow: "rgba(59,130,246,0.4)",  ring: 1, icon: "TS" },
-    { name: "Prisma",     color: "#A855F7", glow: "rgba(168,85,247,0.4)",  ring: 1, icon: "◈" },
-    { name: "Postgres",   color: "#38BDF8", glow: "rgba(56,189,248,0.35)", ring: 2, icon: "🐘" },
-    { name: "Stripe",     color: "#818CF8", glow: "rgba(129,140,248,0.4)", ring: 2, icon: "⚡" },
-    { name: "Auth",       color: "#F59E0B", glow: "rgba(245,158,11,0.4)",  ring: 2, icon: "🔑" },
-    { name: "Vitest",     color: "#4ADE80", glow: "rgba(74,222,128,0.4)",  ring: 2, icon: "✓" },
+    { name: "TypeScript", color: "#3B82F6", glow: "rgba(59,130,246,0.4)",   ring: 1, icon: "TS" },
+    { name: "Prisma",     color: "#A855F7", glow: "rgba(168,85,247,0.4)",   ring: 1, icon: "◈" },
+    { name: "Postgres",   color: "#38BDF8", glow: "rgba(56,189,248,0.35)",  ring: 2, icon: "🐘" },
+    { name: "Stripe",     color: "#818CF8", glow: "rgba(129,140,248,0.4)",  ring: 2, icon: "⚡" },
+    { name: "Auth",       color: "#F59E0B", glow: "rgba(245,158,11,0.4)",   ring: 2, icon: "🔑" },
+    { name: "Vitest",     color: "#4ADE80", glow: "rgba(74,222,128,0.4)",   ring: 2, icon: "✓" },
   ];
-  const orbitR1 = 105;
-  const orbitR2 = 132;
+  const orbitR1 = 105, orbitR2 = 132;
 
   return (
-    <div style={{
-      display: "flex", flexDirection: "column", alignItems: "center",
-      padding: "32px 0 24px",
-      opacity: mounted ? 1 : 0, transition: "opacity 0.8s ease 0.3s",
-    }}>
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "32px 0 24px", opacity: mounted ? 1 : 0, transition: "opacity 0.8s ease 0.3s" }}>
       <div style={{ position: "relative", width: 320, height: 320, display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <div style={{ position: "absolute", width: orbitR1 * 2, height: orbitR1 * 2, borderRadius: "50%", border: `1px solid ${dark ? "rgba(139,124,246,0.12)" : "rgba(79,60,210,0.08)"}`, pointerEvents: "none" }}/>
-        <div style={{ position: "absolute", width: orbitR2 * 2, height: orbitR2 * 2, borderRadius: "50%", border: `1px dashed ${dark ? "rgba(139,124,246,0.07)" : "rgba(79,60,210,0.05)"}`, pointerEvents: "none" }}/>
-        {Array.from({ length: 30 }).map((_, i) => {
-          const seed = i * 137.5;
-          const size = (seed % 1.8) + 0.8;
-          const top = (seed * 3.1) % 100;
-          const left = (seed * 7.3) % 100;
-          const dur = 1.4 + (seed % 2.8);
-          const delay = -(seed % 3.5);
-          return <span key={i} style={{ position: "absolute", borderRadius: "50%", width: size, height: size, top: `${top}%`, left: `${left}%`, background: dark ? `rgba(196,181,253,${0.1 + (i % 4) * 0.08})` : `rgba(79,60,210,${0.06 + (i % 3) * 0.05})`, animation: `starPulse ${dur}s ease-in-out ${delay}s infinite` }} />;
-        })}
+        <div style={{ position: "absolute", width: orbitR1*2, height: orbitR1*2, borderRadius: "50%", border: `1px solid ${dark ? "rgba(139,124,246,0.12)" : "rgba(79,60,210,0.08)"}`, pointerEvents: "none" }}/>
+        <div style={{ position: "absolute", width: orbitR2*2, height: orbitR2*2, borderRadius: "50%", border: `1px dashed ${dark ? "rgba(139,124,246,0.07)" : "rgba(79,60,210,0.05)"}`, pointerEvents: "none" }}/>
+        {Array.from({ length: 30 }).map((_, i) => { const seed = i * 137.5; return <span key={i} style={{ position: "absolute", borderRadius: "50%", width: (seed%1.8)+0.8, height: (seed%1.8)+0.8, top: `${(seed*3.1)%100}%`, left: `${(seed*7.3)%100}%`, background: dark ? `rgba(196,181,253,${0.1+(i%4)*0.08})` : `rgba(79,60,210,${0.06+(i%3)*0.05})`, animation: `starPulse ${1.4+(seed%2.8)}s ease-in-out ${-(seed%3.5)}s infinite` }} />; })}
         {techTags.map((tech) => {
           const ring = tech.ring === 1 ? orbitR1 : orbitR2;
           const totalInRing = techTags.filter(t => t.ring === tech.ring).length;
@@ -680,43 +627,24 @@ function RocketVisual({ done, total, dark, colors, mounted }: {
           const baseAngle = (idxInRing / totalInRing) * 360;
           const isReverse = tech.ring === 2;
           const dur = tech.ring === 1 ? 16 : 22;
-          const delay = -(baseAngle / 360) * dur;
           return (
-            <span key={tech.name} style={{
-              position: "absolute", left: "50%", top: "50%",
-              fontSize: 10.5, fontFamily: "'JetBrains Mono', monospace",
-              color: tech.color, background: dark ? `${tech.color}15` : `${tech.color}18`,
-              border: `1px solid ${tech.color}55`, borderRadius: 20, padding: "3px 9px",
-              whiteSpace: "nowrap", boxShadow: `0 0 10px ${tech.glow}, inset 0 0 6px ${tech.color}10`,
-              animation: `${isReverse ? "orbitTagR" : "orbitTag"}${ring} ${dur}s linear ${delay}s infinite`,
-              transformOrigin: `calc(-${ring}px + 50%) 50%`,
-              fontWeight: 600, letterSpacing: "0.02em", zIndex: 3,
-            }}>
-              <span style={{ marginRight: 4, fontSize: 9 }}>{tech.icon}</span>
-              {tech.name}
+            <span key={tech.name} style={{ position: "absolute", left: "50%", top: "50%", fontSize: 10.5, fontFamily: "'JetBrains Mono', monospace", color: tech.color, background: dark ? `${tech.color}15` : `${tech.color}18`, border: `1px solid ${tech.color}55`, borderRadius: 20, padding: "3px 9px", whiteSpace: "nowrap", boxShadow: `0 0 10px ${tech.glow}`, animation: `${isReverse ? "orbitTagR" : "orbitTag"}${ring} ${dur}s linear ${-(baseAngle/360)*dur}s infinite`, transformOrigin: `calc(-${ring}px + 50%) 50%`, fontWeight: 600, zIndex: 3 }}>
+              <span style={{ marginRight: 4, fontSize: 9 }}>{tech.icon}</span>{tech.name}
             </span>
           );
         })}
         <svg width="110" height="200" viewBox="0 0 110 200" fill="none" style={{ position: "relative", zIndex: 2, animation: "rocketFloat 3.2s ease-in-out infinite" }}>
           <defs>
-            <linearGradient id="rBodyGrad" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0%" stopColor="#5b4fbe"/><stop offset="50%" stopColor="#8b7cf6"/><stop offset="100%" stopColor="#5b4fbe"/>
-            </linearGradient>
-            <linearGradient id="rFuelGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#10b981"/><stop offset="100%" stopColor="#059669" stopOpacity="0.7"/>
-            </linearGradient>
-            <linearGradient id="rFlame1" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#fbbf24"/><stop offset="55%" stopColor="#f97316"/><stop offset="100%" stopColor="#ef4444" stopOpacity="0"/>
-            </linearGradient>
-            <linearGradient id="rFlame2" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#fef9c3"/><stop offset="60%" stopColor="#fbbf24"/><stop offset="100%" stopColor="#f97316" stopOpacity="0"/>
-            </linearGradient>
+            <linearGradient id="rBodyGrad" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stopColor="#5b4fbe"/><stop offset="50%" stopColor="#8b7cf6"/><stop offset="100%" stopColor="#5b4fbe"/></linearGradient>
+            <linearGradient id="rFuelGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#10b981"/><stop offset="100%" stopColor="#059669" stopOpacity="0.7"/></linearGradient>
+            <linearGradient id="rFlame1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#fbbf24"/><stop offset="55%" stopColor="#f97316"/><stop offset="100%" stopColor="#ef4444" stopOpacity="0"/></linearGradient>
+            <linearGradient id="rFlame2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#fef9c3"/><stop offset="60%" stopColor="#fbbf24"/><stop offset="100%" stopColor="#f97316" stopOpacity="0"/></linearGradient>
             <clipPath id="rBodyClip"><path d="M38 50 Q55 10 72 50 L72 142 Q55 150 38 142 Z"/></clipPath>
           </defs>
           <polygon points="16,142 38,108 38,150" fill="#3c3489" opacity="0.9"/>
           <polygon points="94,142 72,108 72,150" fill="#3c3489" opacity="0.9"/>
           <path d="M38 50 Q55 10 72 50 L72 142 Q55 150 38 142 Z" fill="url(#rBodyGrad)"/>
-          {done > 0 && <rect x="38" y={50 + 92 * (1 - pct / 100)} width="34" height={92 * (pct / 100)} fill="url(#rFuelGrad)" opacity="0.45" clipPath="url(#rBodyClip)" style={{ transition: "y 1.8s cubic-bezier(.4,0,.2,1), height 1.8s cubic-bezier(.4,0,.2,1)" }}/>}
+          {done > 0 && <rect x="38" y={50 + 92*(1-pct/100)} width="34" height={92*(pct/100)} fill="url(#rFuelGrad)" opacity="0.45" clipPath="url(#rBodyClip)" style={{ transition: "y 1.8s cubic-bezier(.4,0,.2,1), height 1.8s cubic-bezier(.4,0,.2,1)" }}/>}
           <path d="M38 50 Q55 10 72 50 L72 142 Q55 150 38 142 Z" fill="none" stroke="#a78bfa" strokeWidth="1" opacity="0.4"/>
           <circle cx="55" cy="88" r="14" fill={dark ? "#0d0d1c" : "#e8e4ff"} opacity="0.95"/>
           <circle cx="55" cy="88" r="14" fill="none" stroke="#a78bfa" strokeWidth="1.5" opacity="0.7"/>
@@ -743,9 +671,7 @@ function RocketVisual({ done, total, dark, colors, mounted }: {
           <div style={{ fontSize: 10.5, color: colors.text3, marginTop: 3, letterSpacing: "0.08em", textTransform: "uppercase" }}>total</div>
         </div>
       </div>
-      <div style={{ fontSize: 11, color: colors.text3, fontFamily: "'JetBrains Mono', monospace", marginTop: 10, letterSpacing: "0.04em" }}>
-        {currentPhase[2]}
-      </div>
+      <div style={{ fontSize: 11, color: colors.text3, fontFamily: "'JetBrains Mono', monospace", marginTop: 10, letterSpacing: "0.04em" }}>{currentPhase[2]}</div>
       <style>{`
         @keyframes rocketFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
         @keyframes starPulse { 0%,100%{opacity:.2} 50%{opacity:.7} }
@@ -754,122 +680,6 @@ function RocketVisual({ done, total, dark, colors, mounted }: {
         @keyframes orbitTag105  { from{transform:rotate(0deg) translateX(105px) rotate(0deg)} to{transform:rotate(360deg) translateX(105px) rotate(-360deg)} }
         @keyframes orbitTagR132 { from{transform:rotate(0deg) translateX(132px) rotate(0deg)} to{transform:rotate(-360deg) translateX(132px) rotate(360deg)} }
       `}</style>
-    </div>
-  );
-}
-
-// ─── HACKER TERMINAL ─────────────────────────────────────────────────────────
-
-function HackerTerminal({ colors, dark }: { colors: ReturnType<typeof buildColors>; dark: boolean }) {
-  const termRef = useRef<HTMLDivElement>(null);
-  const lineIdx = useRef(0);
-  const timeouts = useRef<ReturnType<typeof setTimeout>[]>([]);
-  const [lines, setLines] = useState<{ text: string; type: string; visible: string }[]>([]);
-
-  const hackerLines = [
-    { type: "prompt",  text: "ssh root@192.168.1.1" },
-    { type: "success", text: "Connected to 192.168.1.1 — welcome back." },
-    { type: "prompt",  text: "nmap -sV --open 10.0.0.0/24" },
-    { type: "info",    text: "Starting Nmap 7.94 ( https://nmap.org )" },
-    { type: "info",    text: "Scanning 256 hosts [1000 ports each]..." },
-    { type: "warn",    text: "Open  10.0.0.4:22   OpenSSH 9.2" },
-    { type: "warn",    text: "Open  10.0.0.7:80   nginx 1.25.3" },
-    { type: "warn",    text: "Open  10.0.0.12:443 Apache 2.4.58" },
-    { type: "success", text: "Nmap done — 14 hosts up in 3.21s" },
-    { type: "prompt",  text: "cat /etc/shadow | grep root" },
-    { type: "danger",  text: "root:$6$xyz$k8mN2qP...::0:99999:7:::" },
-    { type: "prompt",  text: "python3 exploit.py --target 10.0.0.7" },
-    { type: "info",    text: "[*] Injecting payload into header..." },
-    { type: "info",    text: "[*] Bypassing WAF rules..." },
-    { type: "success", text: "[+] Shell obtained. uid=0(root) gid=0(root)" },
-    { type: "prompt",  text: "whoami" },
-    { type: "success", text: "root" },
-    { type: "prompt",  text: "ls -la /var/www/html" },
-    { type: "dim",     text: "drwxr-xr-x  mehran  staff   4096 Apr 10 03:14 ." },
-    { type: "dim",     text: "-rw-r--r--  mehran  staff  18432 Apr 10 03:14 index.html" },
-    { type: "dim",     text: "-rw-r--r--  mehran  staff   2048 Apr 10 03:14 .env" },
-    { type: "prompt",  text: "cat .env" },
-    { type: "danger",  text: "DATABASE_URL=postgres://admin:••••••@db.prod:5432" },
-    { type: "danger",  text: "STRIPE_SECRET=sk_live_••••••••••••••••••" },
-    { type: "prompt",  text: "ping -c 4 mehrankhan.net" },
-    { type: "success", text: "64 bytes from 76.76.21.21: icmp_seq=1 ttl=55 time=11.2ms" },
-    { type: "success", text: "64 bytes from 76.76.21.21: icmp_seq=2 ttl=55 time=10.8ms" },
-    { type: "prompt",  text: "hashcat -m 1800 hash.txt rockyou.txt" },
-    { type: "warn",    text: "Speed.#1.......: 4231.2 MH/s" },
-    { type: "success", text: "Cracked: toor123  [status: Cracked]" },
-    { type: "prompt",  text: "rm -rf /var/log/*" },
-    { type: "warn",    text: "// tracks covered." },
-    { type: "prompt",  text: "exit" },
-    { type: "dim",     text: "Connection to 192.168.1.1 closed." },
-  ];
-
-  const clearTimeouts = () => { timeouts.current.forEach(clearTimeout); timeouts.current = []; };
-  const addTimeout = (fn: () => void, delay: number) => { const t = setTimeout(fn, delay); timeouts.current.push(t); return t; };
-
-  const runLoop = useCallback(() => {
-    if (lineIdx.current >= hackerLines.length) {
-      lineIdx.current = 0;
-      addTimeout(() => { setLines([]); addTimeout(runLoop, 3000); }, 3000);
-      return;
-    }
-    const line = hackerLines[lineIdx.current++];
-    const isPrompt = line.type === "prompt";
-    const thinkDelay = isPrompt ? 800 + Math.random() * 600 : 120;
-    addTimeout(() => {
-      setLines(prev => [...prev, { ...line, visible: "" }]);
-      let charIdx = 0;
-      const charSpeed = isPrompt ? 85 : 18;
-      const typeChar = () => {
-        if (charIdx <= line.text.length) {
-          const captured = charIdx;
-          setLines(prev => {
-            const updated = [...prev];
-            updated[updated.length - 1] = { ...updated[updated.length - 1], visible: line.text.slice(0, captured) };
-            return updated;
-          });
-          charIdx++;
-          addTimeout(typeChar, charSpeed + Math.random() * (isPrompt ? 60 : 10));
-        } else {
-          addTimeout(runLoop, isPrompt ? 200 : line.type === "danger" ? 400 : 80);
-        }
-      };
-      typeChar();
-    }, thinkDelay);
-  }, []);
-
-  useEffect(() => { addTimeout(runLoop, 500); return () => clearTimeouts(); }, [runLoop]);
-  useEffect(() => { if (termRef.current) termRef.current.scrollTop = termRef.current.scrollHeight; }, [lines]);
-
-  const typeColors: Record<string, string> = {
-    prompt: "#8B7CF6", success: "#10B981", info: "#38BDF8",
-    warn: "#F59E0B", danger: "#EF4444", dim: "rgba(238,234,248,0.35)",
-  };
-
-  return (
-    <div style={{ padding: "24px 32px 0", maxWidth: 680, margin: "0 auto", width: "100%" }}>
-      <div style={{
-        background: "#0a0a10", borderRadius: 16,
-        border: `1px solid ${dark ? "rgba(139,124,246,0.2)" : "rgba(79,60,210,0.15)"}`,
-        overflow: "hidden",
-        boxShadow: dark ? "0 8px 40px rgba(0,0,0,0.5)" : "0 8px 32px rgba(0,0,0,0.12)",
-      }}>
-        <div style={{ background: "#13131d", padding: "10px 14px", display: "flex", alignItems: "center", gap: 7, borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-          {["#ff5f57","#febc2e","#28c840"].map(c => <div key={c} style={{ width: 10, height: 10, borderRadius: "50%", background: c }} />)}
-          <span style={{ marginLeft: 8, fontSize: 11, color: "rgba(238,234,248,0.35)", fontFamily: "'JetBrains Mono', monospace", letterSpacing: "0.04em" }}>root@mehran ~ zsh</span>
-          <div style={{ flex: 1 }} />
-          <span style={{ fontSize: 10, color: "rgba(238,234,248,0.2)", fontFamily: "'JetBrains Mono', monospace" }}>● live</span>
-        </div>
-        <div ref={termRef} style={{ padding: "16px 18px", height: 220, overflowY: "auto", fontFamily: "'JetBrains Mono', 'Courier New', monospace", fontSize: 12, lineHeight: 1.8, scrollbarWidth: "none" }}>
-          {lines.map((line, i) => (
-            <div key={i} style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
-              {line.type === "prompt" && <span style={{ color: "#8B7CF6", flexShrink: 0 }}>❯</span>}
-              <span style={{ color: typeColors[line.type] ?? typeColors.dim }}>{line.visible}</span>
-            </div>
-          ))}
-          <span style={{ display: "inline-block", width: 7, height: 13, background: "#8B7CF6", verticalAlign: "middle", animation: "termCursor 1s step-end infinite" }} />
-        </div>
-      </div>
-      <style>{`@keyframes termCursor { 0%,100%{opacity:1} 50%{opacity:0} } div::-webkit-scrollbar { display: none; }`}</style>
     </div>
   );
 }
@@ -887,25 +697,24 @@ export default function Home() {
   const [scrollPct, setScrollPct] = useState(0);
   const [views, setViews] = useState<number | null>(null);
   const [activeFilter, setActiveFilter] = useState<string | null>(null);
+  const [circleVisible, setCircleVisible] = useState(false);
+  const circleRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
     setMounted(true);
     setDays(Math.max(1, Math.floor((Date.now() - START_DATE.getTime()) / 86400000)));
 
     // Animated favicon
-    const faviconFrames = ["%238B7CF6", "%2310B981", "%23F59E0B", "%23EF4444"];
+    const frames = ["%238B7CF6", "%2310B981", "%23F59E0B", "%23EF4444"];
     let f = 0;
     const link: HTMLLinkElement = document.querySelector("link[rel='icon']") ?? document.createElement("link");
-    link.rel = "icon";
-    document.head.appendChild(link);
-    const faviconInterval = setInterval(() => {
-      const bg = faviconFrames[f % faviconFrames.length];
-      link.href = `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='${bg}'/><text x='16' y='22' font-size='14' font-family='system-ui' font-weight='700' fill='white' text-anchor='middle'>MK</text></svg>`;
+    link.rel = "icon"; document.head.appendChild(link);
+    const fi = setInterval(() => {
+      link.href = `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='${frames[f % frames.length]}'/><text x='16' y='22' font-size='14' font-family='system-ui' font-weight='700' fill='white' text-anchor='middle'>MK</text></svg>`;
       f++;
     }, 1200);
-
     document.title = "Mehran Khan — Building 22 Apps";
-    return () => clearInterval(faviconInterval);
+    return () => clearInterval(fi);
   }, []);
 
   // Scroll progress
@@ -918,12 +727,27 @@ export default function Home() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Page view counter
+  // Page view counter — using hits.sh (reliable, no signup needed)
   useEffect(() => {
-    fetch("https://api.countapi.xyz/hit/mehrankhan-portfolio/pageviews")
+    fetch("https://hits.sh/mehrankhan.net.json")
       .then(r => r.json())
-      .then(d => { if (d?.value) setViews(d.value); })
-      .catch(() => {});
+      .then(d => { if (d?.count) setViews(Number(d.count)); })
+      .catch(() => {
+        // Fallback: just show a placeholder so layout doesn't break
+        setViews(null);
+      });
+  }, []);
+
+  // Circle animation trigger on scroll into view
+  useEffect(() => {
+    const el = circleRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setCircleVisible(true); observer.disconnect(); } },
+      { threshold: 0.5 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
   }, []);
 
   const colors = useMemo(() => buildColors(dark), [dark]);
@@ -937,23 +761,10 @@ export default function Home() {
   let globalIdx = 0;
 
   return (
-    <main style={{
-      background: colors.bg, minHeight: "100vh",
-      fontFamily: "'Instrument Sans', system-ui, sans-serif",
-      color: colors.text, transition: "background 0.3s, color 0.3s", overflowX: "hidden",
-    }}>
+    <main style={{ background: colors.bg, minHeight: "100vh", fontFamily: "'Instrument Sans', system-ui, sans-serif", color: colors.text, transition: "background 0.3s, color 0.3s", overflowX: "hidden" }}>
 
       {/* ── FIRE SCROLL PROGRESS BAR ── */}
-      <div style={{
-        position: "fixed", top: 0, left: 0, zIndex: 999,
-        height: 4, width: `${scrollPct}%`,
-        background: "linear-gradient(90deg, #8B7CF6, #f97316, #fbbf24, #ef4444)",
-        backgroundSize: "200% 100%",
-        animation: "fireShift 1.5s linear infinite",
-        boxShadow: "0 0 12px #f97316, 0 0 24px #ef444466",
-        transition: "width 0.08s linear",
-        pointerEvents: "none",
-      }} />
+      <div style={{ position: "fixed", top: 0, left: 0, zIndex: 999, height: 4, width: `${scrollPct}%`, background: "linear-gradient(90deg, #8B7CF6, #f97316, #fbbf24, #ef4444)", backgroundSize: "200% 100%", animation: "fireShift 1.5s linear infinite", boxShadow: "0 0 12px #f97316, 0 0 24px #ef444466", transition: "width 0.08s linear", pointerEvents: "none" }} />
 
       {/* Ambient glows */}
       <div style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0, overflow: "hidden" }}>
@@ -964,151 +775,49 @@ export default function Home() {
       <div style={{ position: "relative", zIndex: 1 }}>
 
         {/* ── NAV ── */}
-        <nav style={{
-          display: "flex", justifyContent: "space-between", alignItems: "center",
-          padding: "0 32px", height: 60,
-          borderBottom: `1px solid ${colors.border}`,
-          background: colors.navBg, backdropFilter: "blur(20px)",
-          position: "sticky", top: 0, zIndex: 100,
-        }}>
+        <nav style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0 32px", height: 60, borderBottom: `1px solid ${colors.border}`, background: colors.navBg, backdropFilter: "blur(20px)", position: "sticky", top: 0, zIndex: 100 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <div style={{
-              width: 28, height: 28, borderRadius: 7,
-              background: `linear-gradient(135deg, ${colors.acc1}, ${colors.acc2})`,
-              display: "flex", alignItems: "center", justifyContent: "center",
-              fontSize: 11, fontWeight: 700, color: "#fff", flexShrink: 0,
-            }}>MK</div>
+            <div style={{ width: 28, height: 28, borderRadius: 7, background: `linear-gradient(135deg, ${colors.acc1}, ${colors.acc2})`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, color: "#fff", flexShrink: 0 }}>MK</div>
             <span style={{ fontSize: 13, fontWeight: 500, letterSpacing: "-0.01em", display: "none" }} className="nav-domain">mehrankhan.net</span>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-
-            {/* ── IMPROVED LEAVE A NOTE BUTTON ── */}
-            <button
-              onClick={() => setFeedbackOpen(true)}
-              style={{
-                padding: "7px 18px", borderRadius: 20,
-                background: "transparent",
-                border: `1.5px solid ${dark ? "rgba(139,124,246,0.6)" : "rgba(79,60,210,0.5)"}`,
-                color: dark ? "#c4b5fd" : "#4f3cd2",
-                fontSize: 12, fontWeight: 600,
-                cursor: "pointer", fontFamily: "inherit",
-                letterSpacing: "-0.01em",
-                transition: "all 0.2s",
-                display: "flex", alignItems: "center", gap: 6,
-                flexShrink: 0,
-              }}
-              onMouseEnter={e => {
-                e.currentTarget.style.background = dark ? "rgba(139,124,246,0.15)" : "rgba(79,60,210,0.08)";
-                e.currentTarget.style.borderColor = dark ? "rgba(139,124,246,0.9)" : "rgba(79,60,210,0.8)";
-                e.currentTarget.style.transform = "translateY(-1px)";
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.background = "transparent";
-                e.currentTarget.style.borderColor = dark ? "rgba(139,124,246,0.6)" : "rgba(79,60,210,0.5)";
-                e.currentTarget.style.transform = "none";
-              }}
+            <button onClick={() => setFeedbackOpen(true)} style={{ padding: "7px 18px", borderRadius: 20, background: "transparent", border: `1.5px solid ${dark ? "rgba(139,124,246,0.6)" : "rgba(79,60,210,0.5)"}`, color: dark ? "#c4b5fd" : "#4f3cd2", fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", letterSpacing: "-0.01em", transition: "all 0.2s", display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}
+              onMouseEnter={e => { e.currentTarget.style.background = dark ? "rgba(139,124,246,0.15)" : "rgba(79,60,210,0.08)"; e.currentTarget.style.transform = "translateY(-1px)"; }}
+              onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.transform = "none"; }}
             >
-              <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
-                <path d="M8.5 1.5a1.5 1.5 0 0 1 2 2L4 10H2v-2L8.5 1.5z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round" fill="none"/>
-              </svg>
+              <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M8.5 1.5a1.5 1.5 0 0 1 2 2L4 10H2v-2L8.5 1.5z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round" fill="none"/></svg>
               Leave a note
             </button>
-
-            <button onClick={() => setDark(!dark)} aria-label="Toggle theme" style={{
-              width: 44, height: 26, borderRadius: 13,
-              background: colors.bg3, border: `1px solid ${colors.border}`,
-              cursor: "pointer", position: "relative", transition: "background 0.3s", flexShrink: 0,
-            }}>
-              <span style={{
-                position: "absolute", top: 4, left: dark ? 4 : 20,
-                width: 16, height: 16, borderRadius: "50%",
-                background: `linear-gradient(135deg, ${colors.acc1}, ${colors.acc2})`,
-                transition: "left 0.22s cubic-bezier(.4,0,.2,1)", display: "block",
-              }} />
+            <button onClick={() => setDark(!dark)} aria-label="Toggle theme" style={{ width: 44, height: 26, borderRadius: 13, background: colors.bg3, border: `1px solid ${colors.border}`, cursor: "pointer", position: "relative", transition: "background 0.3s", flexShrink: 0 }}>
+              <span style={{ position: "absolute", top: 4, left: dark ? 4 : 20, width: 16, height: 16, borderRadius: "50%", background: `linear-gradient(135deg, ${colors.acc1}, ${colors.acc2})`, transition: "left 0.22s cubic-bezier(.4,0,.2,1)", display: "block" }} />
             </button>
           </div>
         </nav>
 
         {/* ── TICKER ── */}
-        <div style={{
-          overflow: "hidden", borderBottom: `1px solid ${colors.border}`, borderTop: `1px solid ${colors.border}`,
-          padding: "0", position: "relative",
-          background: dark ? "rgba(17,17,24,0.8)" : "rgba(247,246,242,0.9)",
-        }}>
+        <div style={{ overflow: "hidden", borderBottom: `1px solid ${colors.border}`, borderTop: `1px solid ${colors.border}`, position: "relative", background: dark ? "rgba(17,17,24,0.8)" : "rgba(247,246,242,0.9)" }}>
           <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 60, zIndex: 2, pointerEvents: "none", background: `linear-gradient(90deg, ${colors.bg}, transparent)` }}/>
           <div style={{ position: "absolute", right: 0, top: 0, bottom: 0, width: 60, zIndex: 2, pointerEvents: "none", background: `linear-gradient(270deg, ${colors.bg}, transparent)` }}/>
-          <div style={{ display: "flex", whiteSpace: "nowrap", animation: "marquee var(--ticker-speed, 18s) linear infinite", padding: "9px 0 5px", willChange: "transform", minWidth: "max-content" }}>
-            {[0, 1, 2].map(copy =>
-              <span key={copy} style={{ display: "inline-flex", flexShrink: 0, minWidth: "max-content" }}>
-                {phases.flatMap((phase, pi) =>
-                  phase.projects.map((p, i) => (
-                    <span key={`${copy}-${pi}-${i}`} style={{ display: "inline-flex", alignItems: "center" }}>
-                      <span style={{ fontSize: 10.5, fontWeight: 600, color: phase.color, background: phase.colorBg, border: `1px solid ${phase.colorBorder}`, borderRadius: 20, padding: "2px 9px", letterSpacing: "0.05em", textTransform: "uppercase", marginRight: 6, whiteSpace: "nowrap", flexShrink: 0 }}>{p.name}</span>
-                      <span style={{ marginRight: 6, fontSize: 6, color: phase.color, opacity: 0.5, display: "inline-block", animation: `spinDiamond ${2.5 + (pi + i) % 2}s linear infinite`, animationDelay: `${(pi * 4 + i) * 0.12}s` }}>◆</span>
-                    </span>
-                  ))
-                )}
-              </span>
-            )}
+          <div style={{ display: "flex", whiteSpace: "nowrap", animation: "marquee var(--ticker-speed, 35s) linear infinite", padding: "9px 0 5px", willChange: "transform", minWidth: "max-content" }}>
+            {[0, 1, 2].map(copy => <span key={copy} style={{ display: "inline-flex", flexShrink: 0, minWidth: "max-content" }}>{phases.flatMap((phase, pi) => phase.projects.map((p, i) => (<span key={`${copy}-${pi}-${i}`} style={{ display: "inline-flex", alignItems: "center" }}><span style={{ fontSize: 10.5, fontWeight: 600, color: phase.color, background: phase.colorBg, border: `1px solid ${phase.colorBorder}`, borderRadius: 20, padding: "2px 9px", letterSpacing: "0.05em", textTransform: "uppercase", marginRight: 6, whiteSpace: "nowrap", flexShrink: 0 }}>{p.name}</span><span style={{ marginRight: 6, fontSize: 6, color: phase.color, opacity: 0.5, display: "inline-block", animation: `spinDiamond ${2.5+(pi+i)%2}s linear infinite`, animationDelay: `${(pi*4+i)*0.12}s` }}>◆</span></span>)))}</span>)}
           </div>
-          <div style={{ display: "flex", whiteSpace: "nowrap", animation: "marqueeReverse var(--ticker-speed-r, 24s) linear infinite", padding: "5px 0 9px", willChange: "transform", minWidth: "max-content" }}>
-            {[0, 1, 2].map(copy =>
-              <span key={copy} style={{ display: "inline-flex", flexShrink: 0, minWidth: "max-content" }}>
-                {phases.flatMap((phase, pi) =>
-                  phase.projects.slice().reverse().map((p, i) => (
-                    <span key={`r${copy}-${pi}-${i}`} style={{ display: "inline-flex", alignItems: "center" }}>
-                      <span style={{ fontSize: 10.5, fontWeight: 500, color: dark ? "rgba(238,234,248,0.45)" : colors.text3, letterSpacing: "0.1em", textTransform: "uppercase", marginRight: 6, whiteSpace: "nowrap", fontFamily: "'JetBrains Mono', monospace", flexShrink: 0 }}>{p.name}</span>
-                      <span style={{ marginRight: 6, fontSize: 6, color: phase.color, opacity: 0.45, flexShrink: 0 }}>●</span>
-                    </span>
-                  ))
-                )}
-              </span>
-            )}
+          <div style={{ display: "flex", whiteSpace: "nowrap", animation: "marqueeReverse var(--ticker-speed-r, 48s) linear infinite", padding: "5px 0 9px", willChange: "transform", minWidth: "max-content" }}>
+            {[0, 1, 2].map(copy => <span key={copy} style={{ display: "inline-flex", flexShrink: 0, minWidth: "max-content" }}>{phases.flatMap((phase, pi) => phase.projects.slice().reverse().map((p, i) => (<span key={`r${copy}-${pi}-${i}`} style={{ display: "inline-flex", alignItems: "center" }}><span style={{ fontSize: 10.5, fontWeight: 500, color: dark ? "rgba(238,234,248,0.45)" : colors.text3, letterSpacing: "0.1em", textTransform: "uppercase", marginRight: 6, whiteSpace: "nowrap", fontFamily: "'JetBrains Mono', monospace", flexShrink: 0 }}>{p.name}</span><span style={{ marginRight: 6, fontSize: 6, color: phase.color, opacity: 0.45, flexShrink: 0 }}>●</span></span>)))}</span>)}
           </div>
         </div>
 
         {/* ── HERO ── */}
-        <div style={{
-          padding: "72px 32px 48px", textAlign: "center",
-          opacity: mounted ? 1 : 0, transform: mounted ? "none" : "translateY(14px)",
-          transition: "opacity 0.75s ease, transform 0.75s ease",
-        }}>
+        <div style={{ padding: "72px 32px 48px", textAlign: "center", opacity: mounted ? 1 : 0, transform: mounted ? "none" : "translateY(14px)", transition: "opacity 0.75s ease, transform 0.75s ease" }}>
           <div style={{ position: "relative", display: "inline-block", marginBottom: 26 }}>
-            <div style={{
-              width: 86, height: 86, borderRadius: "50%",
-              background: `linear-gradient(135deg, ${colors.acc1}, ${colors.acc2})`,
-              display: "flex", alignItems: "center", justifyContent: "center",
-              fontSize: 26, fontWeight: 700, color: "#fff",
-              boxShadow: `0 0 0 8px ${dark ? "rgba(139,124,246,0.08)" : "rgba(90,76,200,0.07)"}, 0 8px 40px ${colors.acc1}28`,
-            }}>MK</div>
-            <span style={{
-              position: "absolute", bottom: 4, right: 4,
-              width: 14, height: 14, borderRadius: "50%",
-              background: "linear-gradient(135deg, #f97316, #fbbf24)",
-              border: `2.5px solid ${colors.bg}`,
-              boxShadow: "0 0 8px rgba(249,115,22,0.6)",
-              animation: "pingDot 2s cubic-bezier(0.4,0,0.6,1) infinite",
-            }} />
+            <div style={{ width: 86, height: 86, borderRadius: "50%", background: `linear-gradient(135deg, ${colors.acc1}, ${colors.acc2})`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 26, fontWeight: 700, color: "#fff", boxShadow: `0 0 0 8px ${dark ? "rgba(139,124,246,0.08)" : "rgba(90,76,200,0.07)"}, 0 8px 40px ${colors.acc1}28` }}>MK</div>
+            <span style={{ position: "absolute", bottom: 4, right: 4, width: 14, height: 14, borderRadius: "50%", background: "linear-gradient(135deg, #f97316, #fbbf24)", border: `2.5px solid ${colors.bg}`, boxShadow: "0 0 8px rgba(249,115,22,0.6)", animation: "pingDot 2s cubic-bezier(0.4,0,0.6,1) infinite" }} />
           </div>
 
-          <div style={{
-            display: "inline-flex", alignItems: "center", gap: 8,
-            fontSize: 11, letterSpacing: "0.14em", color: colors.acc2,
-            textTransform: "uppercase", fontWeight: 600, marginBottom: 20,
-            padding: "5px 16px", borderRadius: 20,
-            background: dark ? "rgba(16,185,129,0.07)" : "rgba(10,122,86,0.06)",
-            border: `1px solid ${dark ? "rgba(16,185,129,0.18)" : "rgba(10,122,86,0.14)"}`,
-          }}>
+          <div style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: 11, letterSpacing: "0.14em", color: colors.acc2, textTransform: "uppercase", fontWeight: 600, marginBottom: 20, padding: "5px 16px", borderRadius: 20, background: dark ? "rgba(16,185,129,0.07)" : "rgba(10,122,86,0.06)", border: `1px solid ${dark ? "rgba(16,185,129,0.18)" : "rgba(10,122,86,0.14)"}` }}>
             React → Next.js → Full Stack → Production · 22 apps
           </div>
 
-          <h1 style={{
-            fontSize: "clamp(60px,11vw,112px)",
-            letterSpacing: "-0.02em", lineHeight: 0.95, marginBottom: 28,
-            fontFamily: "'Cormorant Garamond', Georgia, serif",
-            display: "flex", alignItems: "baseline", justifyContent: "center",
-            gap: "0.14em", flexWrap: "wrap",
-          }}>
+          <h1 style={{ fontSize: "clamp(60px,11vw,112px)", letterSpacing: "-0.02em", lineHeight: 0.95, marginBottom: 28, fontFamily: "'Cormorant Garamond', Georgia, serif", display: "flex", alignItems: "baseline", justifyContent: "center", gap: "0.14em", flexWrap: "wrap" }}>
             {dark ? (
               <>
                 <span style={{ fontWeight: 300, fontStyle: "italic", background: "linear-gradient(125deg, #e0d9ff 0%, #a78bfa 55%, #8B7CF6 100%)", backgroundSize: "200% 100%", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text", animation: "shimmerLeft 5s ease-in-out infinite alternate", letterSpacing: "0.01em" }}>Mehran</span>
@@ -1122,16 +831,15 @@ export default function Home() {
             )}
           </h1>
 
-          {/* ── UPDATED HERO COPY ── */}
-          <p style={{
-            fontSize: "clamp(16px,2.1vw,20px)", color: colors.text2,
-            lineHeight: 1.72, maxWidth: 600, margin: "0 auto 14px", letterSpacing: "-0.01em",
-          }}>
-            22 real apps — from zero to production.{" "}
-            <span style={{ position: "relative", display: "inline-block" }}>
-              <strong style={{ color: colors.text, fontWeight: 700 }}>Full stack.</strong>
+          {/* Hero copy */}
+          <p style={{ fontSize: "clamp(16px,2.1vw,20px)", color: colors.text2, lineHeight: 1.72, maxWidth: 600, margin: "0 auto 14px", letterSpacing: "-0.01em" }}>
+            {/* ── CIRCLE HIGHLIGHT around "22 real apps" ── */}
+            <span ref={circleRef} style={{ position: "relative", display: "inline-block", padding: "0 6px" }}>
+              <strong style={{ color: colors.acc1, fontWeight: 800, fontSize: "1.1em", letterSpacing: "-0.02em" }}>22 real apps</strong>
+              {circleVisible && <CircleHighlight color={colors.acc1} />}
             </span>
-            {" "}Auth. Payments. Real users.
+            {" "}— from zero to production.{" "}
+            Full stack. Auth. Payments. Real users.
             Each one shipped to the internet, polished enough to charge money for.
           </p>
           <p style={{ fontSize: 15, color: colors.text3, lineHeight: 1.8, maxWidth: 520, margin: "0 auto 12px" }}>
@@ -1141,19 +849,9 @@ export default function Home() {
             documented live.
           </p>
 
-          {/* ── 22 REAL APPS with squiggly underline ── */}
           <div style={{ marginBottom: 32 }}>
             <p style={{ fontSize: "clamp(13px,1.6vw,15px)", color: colors.text3, marginBottom: 18 }}>
-              Every single one of these{" "}
-              <span style={{ position: "relative", display: "inline-block" }}>
-                <span style={{
-                  color: colors.acc1, fontWeight: 700,
-                  fontSize: "clamp(15px,1.8vw,17px)",
-                  letterSpacing: "-0.01em",
-                }}>22 real apps</span>
-                <SquigglyUnderline color={colors.acc1} />
-              </span>
-              {" "}has a live URL, real code, and a lesson I earned the hard way.
+              Every single one has a live URL, real code, and a lesson earned the hard way.
             </p>
             <AnimatedCycler dark={dark} colors={colors} />
           </div>
@@ -1164,29 +862,13 @@ export default function Home() {
               <span style={{ color: colors.text2 }}>{DONE} of {TOTAL} shipped</span>
             </div>
             <div style={{ height: 6, background: dark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.07)", borderRadius: 3, overflow: "hidden" }}>
-              <div style={{
-                height: "100%",
-                width: mounted ? `${DONE > 0 ? Math.max(pct, 3) : 0}%` : "0%",
-                background: `linear-gradient(90deg, ${colors.acc1}, ${colors.acc2})`,
-                borderRadius: 3, transition: "width 1.8s cubic-bezier(.4,0,.2,1)",
-                boxShadow: `0 0 10px ${colors.acc1}55`,
-              }} />
+              <div style={{ height: "100%", width: mounted ? `${DONE > 0 ? Math.max(pct, 3) : 0}%` : "0%", background: `linear-gradient(90deg, ${colors.acc1}, ${colors.acc2})`, borderRadius: 3, transition: "width 1.8s cubic-bezier(.4,0,.2,1)", boxShadow: `0 0 10px ${colors.acc1}55` }} />
             </div>
 
             {/* ── PAGE VIEW COUNTER ── */}
             {views !== null && (
-              <div style={{
-                display: "flex", alignItems: "center", justifyContent: "center", gap: 7,
-                fontSize: 12, color: colors.text3,
-                marginTop: 14,
-              }}>
-                <span style={{
-                  width: 6, height: 6, borderRadius: "50%",
-                  background: "#10B981",
-                  boxShadow: "0 0 0 0 rgba(16,185,129,0.7)",
-                  animation: "pingDot 2s cubic-bezier(0.4,0,0.6,1) infinite",
-                  flexShrink: 0,
-                }} />
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 7, fontSize: 12, color: colors.text3, marginTop: 14 }}>
+                <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#10B981", boxShadow: "0 0 0 0 rgba(16,185,129,0.7)", animation: "pingGreen 2s cubic-bezier(0.4,0,0.6,1) infinite", flexShrink: 0 }} />
                 <span>{views.toLocaleString()} visits</span>
               </div>
             )}
@@ -1200,36 +882,21 @@ export default function Home() {
         {/* ── ROCKET ── */}
         <RocketVisual done={DONE} total={TOTAL} dark={dark} colors={colors} mounted={mounted} />
 
-        {/* ── TERMINAL ── */}
-        <HackerTerminal colors={colors} dark={dark} />
+        {/* ── BUILD STREAK GRID ── */}
+        <BuildStreakGrid colors={colors} dark={dark} />
 
         {/* ── PHOTO ── */}
         <div style={{ padding: "24px 32px 8px", maxWidth: 560, margin: "0 auto", width: "100%" }}>
-          <div style={{
-            position: "relative", borderRadius: 24, overflow: "hidden",
-            border: `1px solid ${dark ? "rgba(139,124,246,0.25)" : "rgba(79,60,210,0.15)"}`,
-            boxShadow: dark
-              ? "0 0 0 1px rgba(139,124,246,0.1), 0 8px 40px rgba(139,124,246,0.15), 0 24px 60px rgba(0,0,0,0.4)"
-              : "0 0 0 1px rgba(79,60,210,0.08), 0 8px 32px rgba(79,60,210,0.1)",
-            animation: "photoGlow 4s ease-in-out infinite",
-          }}>
-            <img
-              src="/profile_mehran.jpg" alt="Mehran Khan"
-              style={{ width: "100%", height: 280, objectFit: "cover", objectPosition: "center 30%", display: "block" }}
-            />
+          <div style={{ position: "relative", borderRadius: 24, overflow: "hidden", border: `1px solid ${dark ? "rgba(139,124,246,0.25)" : "rgba(79,60,210,0.15)"}`, boxShadow: dark ? "0 0 0 1px rgba(139,124,246,0.1), 0 8px 40px rgba(139,124,246,0.15), 0 24px 60px rgba(0,0,0,0.4)" : "0 0 0 1px rgba(79,60,210,0.08), 0 8px 32px rgba(79,60,210,0.1)", animation: "photoGlow 4s ease-in-out infinite" }}>
+            <img src="/profile_mehran.jpg" alt="Mehran Khan" style={{ width: "100%", height: 280, objectFit: "cover", objectPosition: "center 30%", display: "block" }} />
           </div>
         </div>
 
         {/* ── QUOTE ── */}
         <div style={{ padding: "0 32px", maxWidth: 1100, margin: "0 auto 8px" }}>
-          <div style={{
-            borderRadius: 20,
-            background: dark ? "rgba(139,124,246,0.04)" : "rgba(79,60,210,0.035)",
-            border: `1px solid ${dark ? "rgba(139,124,246,0.11)" : "rgba(79,60,210,0.09)"}`,
-            padding: "36px 44px 32px", textAlign: "center", position: "relative", overflow: "hidden",
-          }}>
+          <div style={{ borderRadius: 20, background: dark ? "rgba(139,124,246,0.04)" : "rgba(79,60,210,0.035)", border: `1px solid ${dark ? "rgba(139,124,246,0.11)" : "rgba(79,60,210,0.09)"}`, padding: "36px 44px 32px", textAlign: "center", position: "relative", overflow: "hidden" }}>
             <div style={{ position: "absolute", top: 8, left: 28, fontSize: 120, lineHeight: 1, fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, color: dark ? "rgba(139,124,246,0.12)" : "rgba(79,60,210,0.08)", userSelect: "none", pointerEvents: "none" }}>&ldquo;</div>
-            <p style={{ fontSize: "clamp(18px,2.8vw,26px)", fontFamily: "'Instrument Serif', 'Georgia', serif", fontStyle: "italic", color: colors.text, lineHeight: 1.5, letterSpacing: "0.005em", position: "relative", maxWidth: 680, margin: "0 auto" }}>
+            <p style={{ fontSize: "clamp(18px,2.8vw,26px)", fontFamily: "'Instrument Serif', 'Georgia', serif", fontStyle: "italic", color: colors.text, lineHeight: 1.5, position: "relative", maxWidth: 680, margin: "0 auto" }}>
               Took a sledgehammer to my comfort zone.&ensp;Currently homeless.
             </p>
             <p style={{ fontSize: 12, color: colors.text3, marginTop: 14, letterSpacing: "0.1em", textTransform: "uppercase", fontFamily: "'Instrument Sans', system-ui, sans-serif", fontWeight: 500 }}>— Mehran Khan</p>
@@ -1238,20 +905,12 @@ export default function Home() {
 
         {/* ── PHASES + TILES ── */}
         <div style={{ padding: "0 32px", maxWidth: 1100, margin: "0 auto" }}>
-
-          {/* ── STACK FILTER PILLS ── */}
+          {/* Stack filter pills */}
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8, margin: "32px 0 8px" }}>
             {filterTags.map(tag => {
               const isActive = activeFilter === tag || (tag === "All" && !activeFilter);
               return (
-                <button key={tag} onClick={() => setActiveFilter(tag === "All" ? null : tag)} style={{
-                  padding: "7px 16px", borderRadius: 20, fontSize: 12, fontWeight: 600,
-                  fontFamily: "inherit", cursor: "pointer", letterSpacing: "-0.01em",
-                  border: `1px solid ${isActive ? colors.acc1 : colors.border}`,
-                  background: isActive ? `linear-gradient(135deg, ${colors.acc1}22, ${colors.acc2}11)` : "transparent",
-                  color: isActive ? colors.acc1 : colors.text3,
-                  transition: "all 0.18s ease",
-                }}
+                <button key={tag} onClick={() => setActiveFilter(tag === "All" ? null : tag)} style={{ padding: "7px 16px", borderRadius: 20, fontSize: 12, fontWeight: 600, fontFamily: "inherit", cursor: "pointer", letterSpacing: "-0.01em", border: `1px solid ${isActive ? colors.acc1 : colors.border}`, background: isActive ? `linear-gradient(135deg, ${colors.acc1}22, ${colors.acc2}11)` : "transparent", color: isActive ? colors.acc1 : colors.text3, transition: "all 0.18s ease" }}
                   onMouseEnter={e => { if (!isActive) e.currentTarget.style.borderColor = colors.acc1; }}
                   onMouseLeave={e => { if (!isActive) e.currentTarget.style.borderColor = colors.border; }}
                 >{tag}</button>
@@ -1264,11 +923,7 @@ export default function Home() {
             globalIdx += phase.projects.length;
             return (
               <div key={phase.label} style={{ marginBottom: 8 }}>
-                <div style={{
-                  display: "flex", alignItems: "center", gap: 12, margin: "40px 0 18px",
-                  opacity: mounted ? 1 : 0, transform: mounted ? "none" : "translateY(8px)",
-                  transition: `opacity 0.6s ease ${0.1 + phaseIdx * 0.07}s, transform 0.6s ease ${0.1 + phaseIdx * 0.07}s`,
-                }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 12, margin: "40px 0 18px", opacity: mounted ? 1 : 0, transform: mounted ? "none" : "translateY(8px)", transition: `opacity 0.6s ease ${0.1+phaseIdx*0.07}s, transform 0.6s ease ${0.1+phaseIdx*0.07}s` }}>
                   <PhaseIcon color={phase.color} phase={phaseIdx} />
                   <span style={{ fontSize: 10, fontWeight: 600, padding: "4px 12px", borderRadius: 20, letterSpacing: "0.06em", textTransform: "uppercase", background: phase.colorBg, color: phase.color, border: `1px solid ${phase.colorBorder}` }}>{phase.label}</span>
                   <span style={{ fontSize: 14, fontWeight: 600, color: colors.text, letterSpacing: "-0.02em" }}>{phase.title}</span>
@@ -1285,12 +940,7 @@ export default function Home() {
                     return (
                       <RevealTile key={p.id} delay={pi * 45}>
                         <div style={{ opacity: isFiltered ? 0.15 : 1, transform: isFiltered ? "scale(0.97)" : "none", transition: "opacity 0.25s ease, transform 0.25s ease", pointerEvents: isFiltered ? "none" : "auto" }}>
-                          <TileCard
-                            project={p} phase={phase} isDone={isDone} isNext={isNext} isLocked={isLocked}
-                            artIdx={i} colors={colors} dark={dark}
-                            onClick={(e) => handleTileClick(p, phase, isDone, e)}
-                            tooltipText={isDone ? `View ${p.name} →` : isNext ? "Building this now…" : COMING_SOON[i % COMING_SOON.length]}
-                          />
+                          <TileCard project={p} phase={phase} isDone={isDone} isNext={isNext} isLocked={isLocked} artIdx={i} colors={colors} dark={dark} onClick={(e) => handleTileClick(p, phase, isDone, e)} tooltipText={isDone ? `View ${p.name} →` : isNext ? "Building this now…" : COMING_SOON[i % COMING_SOON.length]} />
                         </div>
                       </RevealTile>
                     );
@@ -1303,32 +953,22 @@ export default function Home() {
 
         {/* ── MISSION BLOCK ── */}
         <div style={{ padding: "52px 32px 0", maxWidth: 1100, margin: "0 auto" }}>
-          <div style={{
-            borderRadius: 24,
-            background: dark ? "linear-gradient(135deg, rgba(139,124,246,0.05) 0%, rgba(16,185,129,0.028) 100%)" : "linear-gradient(135deg, rgba(90,76,200,0.04) 0%, rgba(10,122,86,0.02) 100%)",
-            border: `1px solid ${colors.border}`, padding: "40px 36px", position: "relative", overflow: "hidden",
-          }}>
+          <div style={{ borderRadius: 24, background: dark ? "linear-gradient(135deg, rgba(139,124,246,0.05) 0%, rgba(16,185,129,0.028) 100%)" : "linear-gradient(135deg, rgba(90,76,200,0.04) 0%, rgba(10,122,86,0.02) 100%)", border: `1px solid ${colors.border}`, padding: "40px 36px", position: "relative", overflow: "hidden" }}>
             <div style={{ display: "flex", gap: 24, alignItems: "flex-start" }}>
               <div className="mission-avatar" style={{ width: 58, height: 58, minWidth: 58, borderRadius: "50%", background: `linear-gradient(135deg, ${colors.acc1}, ${colors.acc2})`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 17, fontWeight: 700, color: "#fff", flexShrink: 0 }}>MK</div>
               <div style={{ flex: 1 }}>
                 <p style={{ fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", color: colors.acc1, fontWeight: 600, marginBottom: 12, display: "flex", alignItems: "center", gap: 8 }}>
-                  <span style={{ display: "inline-block", width: 20, height: 1.5, background: colors.acc1, borderRadius: 2 }}/>
-                  Why 22 apps
-                  <span style={{ display: "inline-block", width: 20, height: 1.5, background: colors.acc1, borderRadius: 2, opacity: 0.4 }}/>
+                  <span style={{ display: "inline-block", width: 20, height: 1.5, background: colors.acc1, borderRadius: 2 }}/>Why 22 apps<span style={{ display: "inline-block", width: 20, height: 1.5, background: colors.acc1, borderRadius: 2, opacity: 0.4 }}/>
                 </p>
                 <p style={{ fontSize: "clamp(18px, 2.4vw, 22px)", fontWeight: 700, fontFamily: "'Cormorant Garamond', Georgia, serif", color: colors.text, marginBottom: 16, lineHeight: 1.35, letterSpacing: "-0.01em" }}>
-                  The gap between knowing React and being able to build production software is enormous.
-                  {" "}<em style={{ fontStyle: "italic", color: colors.acc1 }}>I wanted to close it deliberately.</em>
+                  The gap between knowing React and being able to build production software is enormous.{" "}
+                  <em style={{ fontStyle: "italic", color: colors.acc1 }}>I wanted to close it deliberately.</em>
                 </p>
                 <p style={{ fontSize: 14.5, color: colors.text2, lineHeight: 1.82, marginBottom: 12 }}>
-                  Each project in this sequence was chosen to force a specific skill — state management, API design,
-                  database modelling, authentication, real-time data, billing, testing, performance.
-                  Not as isolated exercises, but as complete products a user can actually open.
+                  Each project in this sequence was chosen to force a specific skill — state management, API design, database modelling, authentication, real-time data, billing, testing, performance. Not as isolated exercises, but as complete products a user can actually open.
                 </p>
                 <p style={{ fontSize: 14.5, color: colors.text2, lineHeight: 1.82 }}>
-                  When all 22 are done, I&apos;ll have built the same stack a funded startup would use —
-                  and I&apos;ll have built it myself, from scratch, without shortcuts.
-                  This page is the record of that.
+                  When all 22 are done, I&apos;ll have built the same stack a funded startup would use — and I&apos;ll have built it myself, from scratch, without shortcuts. This page is the record of that.
                 </p>
               </div>
             </div>
@@ -1338,8 +978,8 @@ export default function Home() {
         {/* ── STATS ── */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: 12, padding: "24px 32px 56px", maxWidth: 1100, margin: "0 auto" }}>
           {[
-            { n: DONE,  label: "apps shipped", sub: `${TOTAL - DONE} remaining`,   color: colors.acc1 },
-            { n: TOTAL, label: "apps planned",  sub: "full-stack to production",    color: colors.text },
+            { n: DONE,  label: "apps shipped", sub: `${TOTAL - DONE} remaining`, color: colors.acc1 },
+            { n: TOTAL, label: "apps planned",  sub: "full-stack to production", color: colors.text },
           ].map(s => (
             <div key={s.label} style={{ background: colors.card, border: `1px solid ${colors.border}`, borderRadius: 18, padding: "22px 18px", textAlign: "center" }}>
               <div style={{ fontSize: 36, fontWeight: 300, color: s.color, lineHeight: 1, letterSpacing: "-0.04em", fontFamily: "'Playfair Display', 'Instrument Serif', Georgia, serif" }}>{s.n}</div>
@@ -1354,19 +994,15 @@ export default function Home() {
             <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", flexWrap: "wrap", gap: 28, marginBottom: 40 }}>
               <div style={{ maxWidth: 340 }}>
                 <p style={{ fontSize: "clamp(22px,3.5vw,32px)", fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 600, color: colors.text, lineHeight: 1.3, letterSpacing: "-0.02em", marginBottom: 12 }}>
-                  Building in public.<br/>
-                  <em style={{ fontStyle: "italic", color: colors.acc1 }}>Watch it happen.</em>
+                  Building in public.<br/><em style={{ fontStyle: "italic", color: colors.acc1 }}>Watch it happen.</em>
                 </p>
-                <a href="mailto:mehran@mehrankhan.net" style={{ fontSize: 13, color: colors.text3, display: "inline-flex", alignItems: "center", gap: 6, transition: "color 0.2s", fontFamily: "'JetBrains Mono', monospace", letterSpacing: "0.01em" }}
-                  onMouseEnter={e => e.currentTarget.style.color = colors.acc1}
-                  onMouseLeave={e => e.currentTarget.style.color = colors.text3}
-                >
+                <a href="mailto:mehran@mehrankhan.net" style={{ fontSize: 13, color: colors.text3, display: "inline-flex", alignItems: "center", gap: 6, transition: "color 0.2s", fontFamily: "'JetBrains Mono', monospace", letterSpacing: "0.01em" }} onMouseEnter={e => e.currentTarget.style.color = colors.acc1} onMouseLeave={e => e.currentTarget.style.color = colors.text3}>
                   <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><rect x="1" y="3" width="12" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.2"/><path d="M1 4.5l6 4 6-4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>
                   mehran@mehrankhan.net
                 </a>
               </div>
               <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "8px 16px", borderRadius: 20, background: dark ? "rgba(16,185,129,0.08)" : "rgba(10,122,86,0.06)", border: `1px solid ${dark ? "rgba(16,185,129,0.2)" : "rgba(10,122,86,0.14)"}`, alignSelf: "flex-start" }}>
-                <span style={{ width: 7, height: 7, borderRadius: "50%", background: "#10b981", boxShadow: "0 0 0 0 rgba(16,185,129,0.7)", animation: "pingDot 2s cubic-bezier(0.4,0,0.6,1) infinite", flexShrink: 0 }}/>
+                <span style={{ width: 7, height: 7, borderRadius: "50%", background: "#10b981", boxShadow: "0 0 0 0 rgba(16,185,129,0.7)", animation: "pingGreen 2s cubic-bezier(0.4,0,0.6,1) infinite", flexShrink: 0 }}/>
                 <span style={{ fontSize: 12, fontWeight: 500, color: colors.acc2, letterSpacing: "-0.01em" }}>Currently building — Phase 1</span>
               </div>
             </div>
@@ -1374,20 +1010,11 @@ export default function Home() {
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
               <span style={{ fontSize: 12, color: colors.text4, letterSpacing: "0.02em" }}>© {new Date().getFullYear()} Mehran Khan · mehrankhan.net</span>
               <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-                <a href={`https://github.com/${GITHUB_USER}`} target="_blank" rel="noreferrer" style={{ fontSize: 12, color: colors.text3, display: "flex", alignItems: "center", gap: 5, transition: "color 0.2s" }}
-                  onMouseEnter={e => e.currentTarget.style.color = colors.acc1}
-                  onMouseLeave={e => e.currentTarget.style.color = colors.text3}
-                >{Icons.github} GitHub</a>
+                <a href={`https://github.com/${GITHUB_USER}`} target="_blank" rel="noreferrer" style={{ fontSize: 12, color: colors.text3, display: "flex", alignItems: "center", gap: 5, transition: "color 0.2s" }} onMouseEnter={e => e.currentTarget.style.color = colors.acc1} onMouseLeave={e => e.currentTarget.style.color = colors.text3}>{Icons.github} GitHub</a>
                 <span style={{ width: 1, height: 12, background: colors.border }}/>
-                <a href="mailto:mehran@mehrankhan.net" style={{ fontSize: 12, color: colors.text3, transition: "color 0.2s" }}
-                  onMouseEnter={e => e.currentTarget.style.color = colors.acc1}
-                  onMouseLeave={e => e.currentTarget.style.color = colors.text3}
-                >Email</a>
+                <a href="mailto:mehran@mehrankhan.net" style={{ fontSize: 12, color: colors.text3, transition: "color 0.2s" }} onMouseEnter={e => e.currentTarget.style.color = colors.acc1} onMouseLeave={e => e.currentTarget.style.color = colors.text3}>Email</a>
                 <span style={{ width: 1, height: 12, background: colors.border }}/>
-                <button onClick={() => setFeedbackOpen(true)} style={{ fontSize: 12, color: colors.text3, background: "none", border: "none", cursor: "pointer", fontFamily: "inherit", transition: "color 0.2s", padding: 0 }}
-                  onMouseEnter={e => e.currentTarget.style.color = colors.acc1}
-                  onMouseLeave={e => e.currentTarget.style.color = colors.text3}
-                >Leave a note</button>
+                <button onClick={() => setFeedbackOpen(true)} style={{ fontSize: 12, color: colors.text3, background: "none", border: "none", cursor: "pointer", fontFamily: "inherit", transition: "color 0.2s", padding: 0 }} onMouseEnter={e => e.currentTarget.style.color = colors.acc1} onMouseLeave={e => e.currentTarget.style.color = colors.text3}>Leave a note</button>
               </div>
             </div>
           </div>
@@ -1400,12 +1027,12 @@ export default function Home() {
 
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600;1,700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap');
-        @keyframes gradShift { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
         @keyframes shimmerLeft { 0%{background-position:0% 50%} 100%{background-position:100% 50%} }
         @keyframes shimmerRight { 0%{background-position:100% 50%} 100%{background-position:0% 50%} }
         @keyframes fireShift { 0%{background-position:0% 50%} 100%{background-position:200% 50%} }
-        @keyframes squiggleShift { 0%{stroke-dashoffset:0} 100%{stroke-dashoffset:-40} }
+        @keyframes drawCircle { from{stroke-dashoffset:660} to{stroke-dashoffset:0} }
         @keyframes pingDot { 0%{box-shadow:0 0 0 0 rgba(249,115,22,0.7)} 60%{box-shadow:0 0 0 7px rgba(249,115,22,0)} 100%{box-shadow:0 0 0 0 rgba(249,115,22,0)} }
+        @keyframes pingGreen { 0%{box-shadow:0 0 0 0 rgba(16,185,129,0.7)} 60%{box-shadow:0 0 0 6px rgba(16,185,129,0)} 100%{box-shadow:0 0 0 0 rgba(16,185,129,0)} }
         @keyframes marquee { 0%{transform:translateX(0)} 100%{transform:translateX(-33.333%)} }
         @keyframes marqueeReverse { 0%{transform:translateX(-33.333%)} 100%{transform:translateX(0)} }
         @keyframes spinDiamond { 0%{transform:rotate(0deg) scale(1)} 50%{transform:rotate(180deg) scale(1.5)} 100%{transform:rotate(360deg) scale(1)} }
@@ -1444,41 +1071,18 @@ function TileCard({ project, phase, isDone, isNext, isLocked, artIdx, colors, da
   const [hov, setHov] = useState(false);
   const [tipVisible, setTipVisible] = useState(false);
   const tipTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
   const handleEnter = () => { setHov(true); tipTimer.current = setTimeout(() => setTipVisible(true), 300); };
   const handleLeave = () => { setHov(false); setTipVisible(false); if (tipTimer.current) clearTimeout(tipTimer.current); };
 
   return (
     <div style={{ position: "relative" }}>
-      <div style={{
-        position: "absolute", bottom: "calc(100% + 10px)", left: "50%",
-        transform: `translateX(-50%) translateY(${tipVisible ? 0 : 6}px)`,
-        background: "rgba(15,14,26,0.93)", backdropFilter: "blur(14px)",
-        border: `1px solid ${phase.colorBorder}`, borderRadius: 10,
-        padding: "7px 12px", fontSize: 12, color: "#e8e4f8", lineHeight: 1.5,
-        opacity: tipVisible ? 1 : 0, transition: "all 0.18s cubic-bezier(.4,0,.2,1)",
-        pointerEvents: "none", zIndex: 50,
-        boxShadow: "0 8px 24px rgba(0,0,0,0.35)", width: 180, textAlign: "center",
-      }}>
+      <div style={{ position: "absolute", bottom: "calc(100% + 10px)", left: "50%", transform: `translateX(-50%) translateY(${tipVisible ? 0 : 6}px)`, background: "rgba(15,14,26,0.93)", backdropFilter: "blur(14px)", border: `1px solid ${phase.colorBorder}`, borderRadius: 10, padding: "7px 12px", fontSize: 12, color: "#e8e4f8", lineHeight: 1.5, opacity: tipVisible ? 1 : 0, transition: "all 0.18s cubic-bezier(.4,0,.2,1)", pointerEvents: "none", zIndex: 50, boxShadow: "0 8px 24px rgba(0,0,0,0.35)", width: 180, textAlign: "center" }}>
         {tooltipText}
         <div style={{ position: "absolute", bottom: -5, left: "50%", transform: "translateX(-50%) rotate(45deg)", width: 8, height: 8, background: "rgba(15,14,26,0.93)", border: `1px solid ${phase.colorBorder}`, borderTop: "none", borderLeft: "none" }} />
       </div>
-      <div
-        role="button" tabIndex={0} onClick={onClick}
-        onKeyDown={e => { if (e.key === "Enter" || e.key === " ") onClick(e as unknown as React.MouseEvent); }}
-        onMouseEnter={handleEnter} onMouseLeave={handleLeave}
+      <div role="button" tabIndex={0} onClick={onClick} onKeyDown={e => { if (e.key === "Enter" || e.key === " ") onClick(e as unknown as React.MouseEvent); }} onMouseEnter={handleEnter} onMouseLeave={handleLeave}
         aria-label={`${project.name}${isLocked ? " — coming soon" : isDone ? " — view details" : " — building next"}`}
-        style={{
-          borderRadius: 18,
-          border: `1px solid ${isLocked ? colors.lockedBorder : phase.colorBorder}`,
-          padding: "18px 16px 38px",
-          background: isLocked ? colors.lockedBg : hov ? `linear-gradient(145deg, ${phase.colorBg}, ${colors.card})` : colors.card,
-          cursor: "pointer", position: "relative", overflow: "visible",
-          transform: hov && !isLocked ? "translateY(-5px) scale(1.016)" : "none",
-          transition: "all 0.2s cubic-bezier(.4,0,.2,1)",
-          boxShadow: hov && !isLocked ? `0 14px 36px ${phase.color}18, 0 4px 12px rgba(0,0,0,0.12)` : "none",
-          outline: "none",
-        }}
+        style={{ borderRadius: 18, border: `1px solid ${isLocked ? colors.lockedBorder : phase.colorBorder}`, padding: "18px 16px 38px", background: isLocked ? colors.lockedBg : hov ? `linear-gradient(145deg, ${phase.colorBg}, ${colors.card})` : colors.card, cursor: "pointer", position: "relative", overflow: "visible", transform: hov && !isLocked ? "translateY(-5px) scale(1.016)" : "none", transition: "all 0.2s cubic-bezier(.4,0,.2,1)", boxShadow: hov && !isLocked ? `0 14px 36px ${phase.color}18, 0 4px 12px rgba(0,0,0,0.12)` : "none", outline: "none" }}
       >
         {(isDone || isNext) && <div style={{ position: "absolute", top: 0, left: "20%", right: "20%", height: 2, background: `linear-gradient(90deg, transparent, ${phase.color}60, transparent)`, borderRadius: "0 0 2px 2px" }} />}
         <div style={{ marginBottom: 14, opacity: isLocked ? 0.3 : 1, transition: "opacity 0.2s" }}>{tileArts(phase.color)[artIdx % 22]}</div>
