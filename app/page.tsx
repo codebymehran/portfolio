@@ -439,16 +439,22 @@ function BuildStreakGrid({ colors, dark }: { colors: ReturnType<typeof buildColo
 
   useEffect(() => {
     // Fetch last 90 days of commits
-    const since = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString();
-    fetch(`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/commits?per_page=100&since=${since}`)
-      .then(r => r.json())
-      .then(data => {
-        if (!Array.isArray(data)) return;
-        const map: Record<string, number> = {};
-        data.forEach((c: { commit?: { author?: { date?: string } } }) => {
-          const date = c.commit?.author?.date?.slice(0, 10);
-          if (date) map[date] = (map[date] || 0) + 1;
-        });
+const since = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString();
+
+// Fetch all events for the user (includes pushes across all repos)
+fetch(`https://api.github.com/users/${GITHUB_USER}/events?per_page=100`)
+  .then(r => r.json())
+  .then(data => {
+    if (!Array.isArray(data)) return;
+    const map: Record<string, number> = {};
+    data.forEach((event: { type?: string; created_at?: string; payload?: { commits?: unknown[] } }) => {
+      if (event.type !== "PushEvent") return;
+      const date = event.created_at?.slice(0, 10);
+      if (!date) return;
+      // Count each commit in the push
+      const commitCount = Array.isArray(event.payload?.commits) ? event.payload.commits.length : 1;
+      map[date] = (map[date] || 0) + commitCount;
+    });
         setCommits(map);
 
         // Calculate current streak
