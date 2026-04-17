@@ -689,7 +689,116 @@ function RocketVisual({ done, total, dark, colors, mounted }: {
     </div>
   );
 }
+// ─── KIDS SECTION ─────────────────────────────────────────────────────────────
 
+type KidRepo = { name: string; html_url: string; homepage: string | null; has_pages: boolean; pushed_at: string };
+
+function KidApps({ user, accent, colors }: { user: string; accent: string; colors: ReturnType<typeof buildColors> }) {
+  const [repos, setRepos] = useState<KidRepo[] | null>(null);
+
+  useEffect(() => {
+    fetch(`https://api.github.com/users/${user}/repos?sort=pushed&per_page=12`)
+      .then(r => r.json())
+      .then(data => setRepos(Array.isArray(data) ? data : []))
+      .catch(() => setRepos([]));
+  }, [user]);
+
+  if (repos === null) return null;
+
+  if (repos.length === 0) return (
+    <p style={{ fontSize: 12, color: colors.text3, fontStyle: "italic", gridColumn: "1 / -1" }}>
+      No projects yet — first one coming soon.
+    </p>
+  );
+
+  return (
+    <>
+      {repos.map(repo => {
+        const liveUrl = repo.has_pages
+          ? `https://${user}.github.io/${repo.name}`
+          : repo.homepage || null;
+        const target = liveUrl || repo.html_url;
+        const isLive = !!liveUrl;
+        const daysAgo = Math.floor((Date.now() - new Date(repo.pushed_at).getTime()) / 86400000);
+        const when = daysAgo === 0 ? "today" : daysAgo === 1 ? "yesterday" : `${daysAgo}d ago`;
+
+        return (
+          <a key={repo.name} href={target} target="_blank" rel="noreferrer"
+            style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 13px", borderRadius: 12, border: `1px solid ${colors.border}`, background: colors.card, textDecoration: "none", transition: "border-color 0.15s" }}
+            onMouseEnter={e => e.currentTarget.style.borderColor = accent + "55"}
+            onMouseLeave={e => e.currentTarget.style.borderColor = colors.border}
+          >
+            <div style={{ width: 30, height: 30, borderRadius: 8, background: accent + "18", border: `1px solid ${accent}44`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+              {isLive
+                ? <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke={accent} strokeWidth="1.2"/><path d="M7 1.5c-2 1.5-2 7.5 0 9M7 1.5c2 1.5 2 7.5 0 9M1.5 7h11" stroke={accent} strokeWidth="1" strokeLinecap="round"/></svg>
+                : <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="2" width="12" height="9" rx="2" stroke={accent} strokeWidth="1.2"/><path d="M1 5h12" stroke={accent} strokeWidth="1"/><path d="M4 8h3M4 10h2" stroke={accent} strokeWidth="1" strokeLinecap="round"/></svg>
+              }
+            </div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontSize: 12, fontWeight: 600, color: colors.text, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{repo.name}</div>
+              <div style={{ fontSize: 10, color: colors.text3, marginTop: 1, fontFamily: "'JetBrains Mono', monospace" }}>{isLive ? "live app" : "github"} · {when}</div>
+            </div>
+            <span style={{ fontSize: 11, color: colors.text3 }}>↗</span>
+          </a>
+        );
+      })}
+    </>
+  );
+}
+
+function KidsSection({ colors, dark }: { colors: ReturnType<typeof buildColors>; dark: boolean }) {
+  const kids = [
+    { name: "Hashim", age: 12, user: "codebyhashimm", accent: "#8B7CF6", avatarBg: dark ? "rgba(139,124,246,0.18)" : "#EDE9FE", avatarColor: dark ? "#c4b5fd" : "#5b4fbe" },
+    { name: "Haziq",  age: 10, user: "codebyhaziq",   accent: "#10B981", avatarBg: dark ? "rgba(16,185,129,0.18)"  : "#D1FAE5", avatarColor: dark ? "#6ee7b7" : "#0a7a56" },
+  ];
+
+  return (
+    <div style={{ padding: "24px 32px 0", maxWidth: 680, margin: "0 auto", width: "100%" }}>
+      <div style={{ background: dark ? "rgba(22,22,30,0.9)" : "#ffffff", borderRadius: 20, border: `1px solid ${dark ? "rgba(139,124,246,0.18)" : "rgba(79,60,210,0.12)"}`, padding: "24px 26px 20px", boxShadow: dark ? "0 8px 40px rgba(0,0,0,0.4)" : "0 4px 24px rgba(0,0,0,0.07)" }}>
+
+        {/* Header */}
+        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
+          <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", color: colors.text3, padding: "4px 12px", borderRadius: 20, border: `1px solid ${colors.border}` }}>next generation</span>
+          <div style={{ flex: 1, height: 1, background: colors.border }} />
+        </div>
+
+        <p style={{ fontSize: 13, color: colors.text2, lineHeight: 1.7, marginBottom: 24, paddingLeft: 14, borderLeft: `2px solid ${dark ? "rgba(139,124,246,0.5)" : "#8B7CF6"}` }}>
+          While I build my 22 apps, my two boys are learning Python and shipping their first Streamlit projects. Hashim is 12, Haziq is 10 — building in public from day one.
+        </p>
+
+        {kids.map((kid, i) => (
+          <div key={kid.user} style={{ marginBottom: i < kids.length - 1 ? 24 : 0 }}>
+            {i > 0 && <div style={{ height: 1, background: colors.border, margin: "0 0 24px" }} />}
+
+            {/* Kid header */}
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
+              <div style={{ width: 36, height: 36, borderRadius: "50%", background: kid.avatarBg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 600, color: kid.avatarColor, flexShrink: 0 }}>{kid.name[0]}</div>
+              <div>
+                <div style={{ fontSize: 14, fontWeight: 600, color: colors.text }}>{kid.name}</div>
+                <div style={{ fontSize: 11, color: colors.text3, fontFamily: "'JetBrains Mono', monospace", marginTop: 1 }}>{kid.age} · {kid.user}</div>
+              </div>
+              <span style={{ marginLeft: "auto", fontSize: 10, fontWeight: 600, padding: "3px 10px", borderRadius: 20, background: kid.avatarBg, color: kid.avatarColor, letterSpacing: "0.04em" }}>Python · Streamlit</span>
+            </div>
+
+            {/* App grid */}
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 8 }}>
+              <KidApps user={kid.user} accent={kid.accent} colors={colors} />
+            </div>
+
+            {/* GitHub link */}
+            <a href={`https://github.com/${kid.user}`} target="_blank" rel="noreferrer"
+              style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 11, color: colors.text3, marginTop: 10, fontFamily: "'JetBrains Mono', monospace", textDecoration: "none", transition: "color 0.2s" }}
+              onMouseEnter={e => e.currentTarget.style.color = kid.accent}
+              onMouseLeave={e => e.currentTarget.style.color = colors.text3}
+            >
+              {Icons.github} github.com/{kid.user}
+            </a>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 // ─── MAIN ──────────────────────────────────────────────────────────────────────
 
 export default function Home() {
@@ -939,6 +1048,7 @@ useEffect(() => {
 
         {/* ── BUILD STREAK GRID ── */}
         <BuildStreakGrid colors={colors} dark={dark} />
+        <KidsSection colors={colors} dark={dark} />
 
         {/* ── PHOTO ── */}
         <div style={{ padding: "24px 32px 8px", maxWidth: 560, margin: "0 auto", width: "100%" }}>
