@@ -255,23 +255,43 @@ function ProjectModal({ project, phase, onClose, colors, dark }: {
 function FeedbackModal({ open, onClose, colors, dark }: {
   open: boolean; onClose: () => void; colors: ReturnType<typeof buildColors>; dark: boolean;
 }) {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
   const [msg, setMsg] = useState("");
   const [state, setState] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState("");
 
+  const canSend = name.trim().length > 0 && msg.trim().length > 0;
+
   const handleSend = async () => {
-    if (!msg.trim() || state === "sending") return;
+    if (!canSend || state === "sending") return;
     setState("sending");
     try {
       const res = await fetch("https://api.web3forms.com/submit", {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ access_key: "821b5a66-e7e4-4d4e-a046-506c051daf4a", subject: "Note from mehrankhan.net", message: msg, from_name: "Site visitor", botcheck: "" }),
+        body: JSON.stringify({
+          access_key: "821b5a66-e7e4-4d4e-a046-506c051daf4a",
+          subject: "Note from mehrankhan.net",
+          message: msg,
+          name: name,
+          email: email || "not provided",
+          from_name: name,
+          botcheck: "",
+        }),
       });
       const json = await res.json();
-      if (json.success) { setState("sent"); setTimeout(() => { setState("idle"); setMsg(""); onClose(); }, 2200); }
-      else { setErrorMsg(json.message || "Submission failed."); setState("error"); setTimeout(() => { setState("idle"); setErrorMsg(""); }, 4000); }
+      if (json.success) {
+        setState("sent");
+        setTimeout(() => { setState("idle"); setName(""); setEmail(""); setMsg(""); onClose(); }, 2200);
+      } else {
+        setErrorMsg(json.message || "Submission failed.");
+        setState("error");
+        setTimeout(() => { setState("idle"); setErrorMsg(""); }, 4000);
+      }
     } catch {
-      setErrorMsg("Network error — check your connection."); setState("error"); setTimeout(() => { setState("idle"); setErrorMsg(""); }, 4000);
+      setErrorMsg("Network error — check your connection.");
+      setState("error");
+      setTimeout(() => { setState("idle"); setErrorMsg(""); }, 4000);
     }
   };
 
@@ -291,11 +311,65 @@ function FeedbackModal({ open, onClose, colors, dark }: {
             <p style={{ fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase", color: colors.acc1, fontWeight: 600, marginBottom: 10 }}>Leave a note</p>
             <p style={{ fontSize: 18, fontWeight: 600, color: colors.text, marginBottom: 7, fontFamily: "'Playfair Display', Georgia, serif" }}>What do you think?</p>
             <p style={{ fontSize: 13.5, color: colors.text2, marginBottom: 22, lineHeight: 1.65 }}>Encouragement, a question, or a critique — Mehran reads every message.</p>
-            <textarea value={msg} onChange={e => setMsg(e.target.value)} onKeyDown={e => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) handleSend(); }} placeholder="Type something..." rows={4}
-              style={{ width: "100%", background: colors.bg, border: `1px solid ${msg ? colors.borderH : colors.border}`, borderRadius: 12, padding: "13px 15px", fontSize: 14, color: colors.text, resize: "none", outline: "none", fontFamily: "inherit", lineHeight: 1.6, marginBottom: 14, display: "block", transition: "border-color 0.2s" }}
-            />
+
+            {/* Name — required */}
+            <div style={{ marginBottom: 10 }}>
+              <label style={{ fontSize: 11, fontWeight: 600, color: colors.text3, letterSpacing: "0.06em", textTransform: "uppercase", display: "flex", alignItems: "center", gap: 4, marginBottom: 6 }}>
+                Name
+                <span style={{ color: colors.acc1, fontSize: 13, lineHeight: 1 }}>*</span>
+              </label>
+              <input
+                value={name}
+                onChange={e => setName(e.target.value)}
+                placeholder="Your name"
+                style={{ width: "100%", background: colors.bg, border: `1px solid ${name ? colors.borderH : colors.border}`, borderRadius: 12, padding: "11px 14px", fontSize: 14, color: colors.text, outline: "none", fontFamily: "inherit", transition: "border-color 0.2s", display: "block" }}
+                onFocus={e => e.currentTarget.style.boxShadow = "0 0 0 2px rgba(139,124,246,0.22)"}
+                onBlur={e => e.currentTarget.style.boxShadow = "none"}
+              />
+            </div>
+
+            {/* Email — optional */}
+            <div style={{ marginBottom: 10 }}>
+              <label style={{ fontSize: 11, fontWeight: 600, color: colors.text3, letterSpacing: "0.06em", textTransform: "uppercase", display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
+                Email
+                <span style={{ fontSize: 10, color: colors.text4, fontWeight: 400, textTransform: "none", letterSpacing: 0 }}>optional</span>
+              </label>
+              <input
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                placeholder="you@example.com"
+                type="email"
+                style={{ width: "100%", background: colors.bg, border: `1px solid ${email ? colors.borderH : colors.border}`, borderRadius: 12, padding: "11px 14px", fontSize: 14, color: colors.text, outline: "none", fontFamily: "inherit", transition: "border-color 0.2s", display: "block" }}
+                onFocus={e => e.currentTarget.style.boxShadow = "0 0 0 2px rgba(139,124,246,0.22)"}
+                onBlur={e => e.currentTarget.style.boxShadow = "none"}
+              />
+            </div>
+
+            {/* Message */}
+            <div style={{ marginBottom: 14 }}>
+              <label style={{ fontSize: 11, fontWeight: 600, color: colors.text3, letterSpacing: "0.06em", textTransform: "uppercase", display: "flex", alignItems: "center", gap: 4, marginBottom: 6 }}>
+                Message
+                <span style={{ color: colors.acc1, fontSize: 13, lineHeight: 1 }}>*</span>
+              </label>
+              <textarea
+                value={msg}
+                onChange={e => setMsg(e.target.value)}
+                onKeyDown={e => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) handleSend(); }}
+                placeholder="Type something..."
+                rows={4}
+                style={{ width: "100%", background: colors.bg, border: `1px solid ${msg ? colors.borderH : colors.border}`, borderRadius: 12, padding: "13px 15px", fontSize: 14, color: colors.text, resize: "none", outline: "none", fontFamily: "inherit", lineHeight: 1.6, display: "block", transition: "border-color 0.2s" }}
+                onFocus={e => e.currentTarget.style.boxShadow = "0 0 0 2px rgba(139,124,246,0.22)"}
+                onBlur={e => e.currentTarget.style.boxShadow = "none"}
+              />
+            </div>
+
             {state === "error" && <p style={{ fontSize: 12, color: "#EF4444", marginBottom: 10 }}>{errorMsg || "Something went wrong. Try again?"}</p>}
-            <button onClick={handleSend} disabled={!msg.trim() || state === "sending"} style={{ width: "100%", padding: "13px", borderRadius: 12, background: msg.trim() ? `linear-gradient(135deg, ${colors.acc1}, ${colors.acc2})` : colors.bg3, border: "none", color: msg.trim() ? "#fff" : colors.text3, fontSize: 14, fontWeight: 600, cursor: msg.trim() ? "pointer" : "not-allowed", transition: "all 0.2s", fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+
+            <button
+              onClick={handleSend}
+              disabled={!canSend || state === "sending"}
+              style={{ width: "100%", padding: "13px", borderRadius: 12, background: canSend ? `linear-gradient(135deg, ${colors.acc1}, ${colors.acc2})` : colors.bg3, border: "none", color: canSend ? "#fff" : colors.text3, fontSize: 14, fontWeight: 600, cursor: canSend ? "pointer" : "not-allowed", transition: "all 0.2s", fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}
+            >
               {Icons.send}{state === "sending" ? "Sending…" : "Send message"}<span style={{ fontSize: 11, opacity: 0.6 }}>⌘↵</span>
             </button>
           </>
