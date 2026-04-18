@@ -798,62 +798,124 @@ function KidsSection({ colors, dark }: { colors: ReturnType<typeof buildColors>;
   ];
 
   return (
-    <>
-      <style>{`
-        @keyframes kidOrbit {
-          from { transform: rotate(0deg); }
-          to   { transform: rotate(360deg); }
-        }
-        @keyframes kidOrbitR {
-          from { transform: rotate(0deg); }
-          to   { transform: rotate(-360deg); }
-        }
-        @keyframes kidAvatarFloat {
-          0%,100% { transform: translateY(0px); }
-          50%      { transform: translateY(-4px); }
-        }
-        @keyframes kidChipFloat {
-          0%,100% { transform: translateY(0px); opacity: 0.85; }
-          50%      { transform: translateY(-2px); opacity: 1; }
-        }
-        @keyframes kidLivePulse {
-          0%,100% { opacity: 0.7; }
-          50%      { opacity: 1; }
-        }
-        @keyframes kidCardGlow {
-          0%,100% { box-shadow: 0 4px 24px rgba(0,0,0,0.08); }
-          50%      { box-shadow: 0 8px 40px rgba(0,0,0,0.14); }
-        }
-      `}</style>
+    <div style={{ padding: "24px 32px 0", maxWidth: 680, margin: "0 auto", width: "100%" }}>
+      <div style={{
+        background: dark ? "rgba(22,22,30,0.9)" : "#ffffff",
+        borderRadius: 20,
+        border: `1px solid ${dark ? "rgba(139,124,246,0.18)" : "rgba(79,60,210,0.12)"}`,
+        padding: "0 0 20px",
+        boxShadow: dark ? "0 8px 40px rgba(0,0,0,0.4)" : "0 4px 24px rgba(0,0,0,0.07)",
+        overflow: "hidden",
+      }}>
 
-      <div style={{ padding: "24px 32px 0", maxWidth: 680, margin: "0 auto", width: "100%" }}>
+        {/* ── NEXT GENERATION BANNER ── */}
         <div style={{
-          background: dark ? "rgba(22,22,30,0.9)" : "#ffffff",
-          borderRadius: 20,
-          border: `1px solid ${dark ? "rgba(139,124,246,0.18)" : "rgba(79,60,210,0.12)"}`,
-          padding: "24px 26px 20px",
-          boxShadow: dark ? "0 8px 40px rgba(0,0,0,0.4)" : "0 4px 24px rgba(0,0,0,0.07)",
-          animation: "kidCardGlow 5s ease-in-out infinite",
+          position: "relative", overflow: "hidden",
+          background: "#0d0b1a", padding: "28px 24px 24px",
+          marginBottom: 28, display: "flex", alignItems: "center",
+          gap: 20, flexWrap: "wrap",
+          borderRadius: "20px 20px 0 0",
         }}>
+          {/* star-field canvas */}
+          <canvas
+            ref={el => {
+              if (!el) return;
+              const ctx = el.getContext("2d");
+              if (!ctx) return;
+              const resize = () => { el.width = el.offsetWidth; el.height = el.offsetHeight; };
+              resize();
+              const stars = Array.from({ length: 55 }, () => ({
+                x: Math.random(), y: Math.random(),
+                r: 0.4 + Math.random() * 1.1,
+                speed: 0.008 + Math.random() * 0.018,
+                phase: Math.random() * Math.PI * 2,
+                peak: 0.15 + Math.random() * 0.55,
+                col: Math.random() > 0.7 ? "167,139,250" : Math.random() > 0.5 ? "52,211,153" : "255,255,255",
+              }));
+              let t = 0;
+              const draw = () => {
+                ctx.clearRect(0, 0, el.width, el.height);
+                t += 0.012;
+                stars.forEach(s => {
+                  const o = s.peak * (0.5 + 0.5 * Math.sin(t * s.speed * 60 + s.phase));
+                  ctx.beginPath();
+                  ctx.arc(s.x * el.width, s.y * el.height, s.r, 0, Math.PI * 2);
+                  ctx.fillStyle = `rgba(${s.col},${o})`;
+                  ctx.fill();
+                });
+                requestAnimationFrame(draw);
+              };
+              draw();
+              window.addEventListener("resize", resize);
+            }}
+            style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none" }}
+          />
 
-          {/* Header */}
-          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
-            <span style={{
-              fontSize: 10, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase",
-              color: colors.text3, padding: "4px 12px", borderRadius: 20, border: `1px solid ${colors.border}`,
-            }}>next generation</span>
-            <div style={{ flex: 1, height: 1, background: colors.border }} />
+          {/* left: text */}
+          <div style={{ position: "relative", zIndex: 1, flex: 1, minWidth: 180 }}>
+            <div style={{
+              display: "inline-flex", alignItems: "center", gap: 7,
+              fontSize: 10, fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase",
+              color: "#a78bfa", padding: "4px 13px", borderRadius: 20,
+              border: "1px solid rgba(167,139,250,0.35)", background: "rgba(139,124,246,0.1)",
+              marginBottom: 12,
+            }}>
+              <span style={{ width: 5, height: 5, borderRadius: "50%", background: "#a78bfa", boxShadow: "0 0 6px #a78bfa", animation: "kidLivePulse 2s ease-in-out infinite" }} />
+              next generation
+            </div>
+            <div style={{
+              fontSize: "clamp(19px,3.2vw,26px)", fontWeight: 700, color: "#fff",
+              fontFamily: "'Cormorant Garamond', Georgia, serif",
+              fontStyle: "italic", lineHeight: 1.25, letterSpacing: "-0.02em",
+            }}>
+              While I build mine,<br />
+              <span style={{ color: "#a78bfa", fontStyle: "normal" }}>Hashim</span>
+              {" & "}
+              <span style={{ color: "#34d399", fontStyle: "normal" }}>Haziq</span>
+              {" are building "}
+              <em>theirs.</em>
+            </div>
+            <div style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", marginTop: 7, lineHeight: 1.6 }}>
+              12 &amp; 10 years old · Python · Streamlit · building in public from day one
+            </div>
           </div>
 
-          <p style={{
-            fontSize: 13, color: colors.text2, lineHeight: 1.7, marginBottom: 24,
-            paddingLeft: 14, borderLeft: `2px solid ${dark ? "rgba(139,124,246,0.5)" : "#8B7CF6"}`,
-            borderRadius: 0,
-          }}>
-            While I build my 22 apps, my two boys are learning Python and shipping their first Streamlit projects.
-            Hashim is 12, Haziq is 10 — building in public from day one.
-          </p>
+          {/* right: dual orbit */}
+          <div style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 8, flexShrink: 0 }}>
+            <div style={{ position: "relative", width: 80, height: 80 }}>
+              {/* outer ring — Hashim */}
+              <div style={{
+                position: "absolute", inset: 0, borderRadius: "50%",
+                border: "1px dashed rgba(167,139,250,0.4)",
+                animation: "kidOrbit 7s linear infinite",
+              }}>
+                <div style={{ position: "absolute", top: -3.5, left: "50%", marginLeft: -3.5, width: 7, height: 7, borderRadius: "50%", background: "#a78bfa", boxShadow: "0 0 8px #a78bfa" }} />
+              </div>
+              {/* inner ring — Haziq */}
+              <div style={{
+                position: "absolute", inset: 12, borderRadius: "50%",
+                border: "1px dashed rgba(52,211,153,0.35)",
+                animation: "kidOrbitR 11s linear infinite",
+              }}>
+                <div style={{ position: "absolute", top: -3.5, left: "50%", marginLeft: -3.5, width: 7, height: 7, borderRadius: "50%", background: "#34d399", boxShadow: "0 0 8px #34d399" }} />
+              </div>
+              {/* centre */}
+              <div style={{
+                position: "absolute", inset: 22, borderRadius: "50%",
+                background: "rgba(139,124,246,0.15)", border: "1px solid rgba(139,124,246,0.35)",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                fontSize: 13, fontWeight: 700, color: "#c4b5fd",
+              }}>MK</div>
+            </div>
+            <div style={{ display: "flex", gap: 6 }}>
+              <span style={{ fontSize: 10, fontWeight: 600, padding: "3px 9px", borderRadius: 20, background: "rgba(139,124,246,0.18)", color: "#c4b5fd", border: "1px solid rgba(139,124,246,0.3)" }}>Hashim 12</span>
+              <span style={{ fontSize: 10, fontWeight: 600, padding: "3px 9px", borderRadius: 20, background: "rgba(52,211,153,0.15)", color: "#34d399", border: "1px solid rgba(52,211,153,0.3)" }}>Haziq 10</span>
+            </div>
+          </div>
+        </div>
 
+        {/* ── KID CARDS ── */}
+        <div style={{ padding: "0 26px" }}>
           {kids.map((kid, i) => (
             <div key={kid.user} style={{ marginBottom: i < kids.length - 1 ? 28 : 0 }}>
               {i > 0 && <div style={{ height: 1, background: colors.border, margin: "0 0 28px" }} />}
@@ -863,26 +925,20 @@ function KidsSection({ colors, dark }: { colors: ReturnType<typeof buildColors>;
 
                 {/* Orbit avatar */}
                 <div style={{ position: "relative", width: 52, height: 52, flexShrink: 0 }}>
-                  {/* outer orbit ring */}
                   <div style={{
                     position: "absolute", inset: 0, borderRadius: "50%",
                     border: `1px dashed ${kid.accent}40`,
                     animation: `kidOrbit ${kid.orbitDur} linear infinite`,
                   }}>
-                    {/* orbit dot */}
                     <div style={{
                       position: "absolute", top: -3, left: "50%", marginLeft: -3,
                       width: 6, height: 6, borderRadius: "50%",
-                      background: kid.accent,
-                      boxShadow: `0 0 6px ${kid.accent}99`,
+                      background: kid.accent, boxShadow: `0 0 6px ${kid.accent}99`,
                     }} />
                   </div>
-                  {/* avatar */}
                   <div style={{
-                    position: "absolute", inset: 7,
-                    borderRadius: "50%",
-                    background: kid.avatarBg,
-                    border: `1px solid ${kid.accent}55`,
+                    position: "absolute", inset: 7, borderRadius: "50%",
+                    background: kid.avatarBg, border: `1px solid ${kid.accent}55`,
                     display: "flex", alignItems: "center", justifyContent: "center",
                     fontSize: 15, fontWeight: 700, color: kid.avatarColor,
                     animation: "kidAvatarFloat 3.5s ease-in-out infinite",
@@ -904,24 +960,18 @@ function KidsSection({ colors, dark }: { colors: ReturnType<typeof buildColors>;
                     <span style={{
                       fontSize: 10, fontWeight: 600, padding: "3px 10px", borderRadius: 20,
                       background: kid.avatarBg, color: kid.avatarColor,
-                      border: `1px solid ${kid.accent}44`,
-                      letterSpacing: "0.04em",
+                      border: `1px solid ${kid.accent}44`, letterSpacing: "0.04em",
                     }}>age {kid.age}</span>
                   </div>
-
                   <div style={{ fontSize: 11, color: colors.text3, marginTop: 3, lineHeight: 1.5 }}>
                     {kid.tagline}
                   </div>
-
-                  {/* Aim chips */}
                   <div style={{ display: "flex", flexWrap: "wrap", gap: 5, marginTop: 8 }}>
                     {kid.aims.map((aim, ai) => (
                       <span key={aim} style={{
                         fontSize: 10, fontWeight: 600, padding: "3px 9px", borderRadius: 20,
-                        background: kid.accent + "18",
-                        color: kid.accent,
-                        border: `1px solid ${kid.accent}44`,
-                        letterSpacing: "0.04em",
+                        background: kid.accent + "18", color: kid.accent,
+                        border: `1px solid ${kid.accent}44`, letterSpacing: "0.04em",
                         animation: `kidChipFloat ${2.6 + ai * 0.35}s ease-in-out ${ai * 0.3}s infinite`,
                       }}>{aim}</span>
                     ))}
@@ -935,9 +985,7 @@ function KidsSection({ colors, dark }: { colors: ReturnType<typeof buildColors>;
               </div>
 
               {/* GitHub link */}
-              <a
-                href={`https://github.com/${kid.user}`}
-                target="_blank" rel="noreferrer"
+              <a href={`https://github.com/${kid.user}`} target="_blank" rel="noreferrer"
                 style={{
                   display: "inline-flex", alignItems: "center", gap: 5,
                   fontSize: 11, color: colors.text3, marginTop: 10,
@@ -952,8 +1000,9 @@ function KidsSection({ colors, dark }: { colors: ReturnType<typeof buildColors>;
             </div>
           ))}
         </div>
+
       </div>
-    </>
+    </div>
   );
 }
 // ─── MAIN ──────────────────────────────────────────────────────────────────────
@@ -1356,6 +1405,11 @@ useEffect(() => {
         @keyframes pingDot { 0%{box-shadow:0 0 0 0 rgba(249,115,22,0.7)} 60%{box-shadow:0 0 0 7px rgba(249,115,22,0)} 100%{box-shadow:0 0 0 0 rgba(249,115,22,0)} }
         @keyframes pingGreen { 0%{box-shadow:0 0 0 0 rgba(16,185,129,0.7)} 60%{box-shadow:0 0 0 6px rgba(16,185,129,0)} 100%{box-shadow:0 0 0 0 rgba(16,185,129,0)} }
         @keyframes marquee { 0%{transform:translateX(0)} 100%{transform:translateX(-33.333%)} }
+       @keyframes kidOrbit { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+@keyframes kidOrbitR { from{transform:rotate(0deg)} to{transform:rotate(-360deg)} }
+@keyframes kidAvatarFloat { 0%,100%{transform:translateY(0px)} 50%{transform:translateY(-4px)} }
+@keyframes kidChipFloat { 0%,100%{transform:translateY(0px);opacity:0.85} 50%{transform:translateY(-2px);opacity:1} }
+@keyframes kidLivePulse { 0%,100%{opacity:0.6} 50%{opacity:1} }
         @keyframes marqueeReverse { 0%{transform:translateX(-33.333%)} 100%{transform:translateX(0)} }
         @keyframes spinDiamond { 0%{transform:rotate(0deg) scale(1)} 50%{transform:rotate(180deg) scale(1.5)} 100%{transform:rotate(360deg) scale(1)} }
         @keyframes photoGlow {
