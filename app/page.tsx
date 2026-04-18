@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
+import Image from "next/image";
 
 // ─── CONSTANTS ────────────────────────────────────────────────────────────────
 
@@ -778,7 +779,7 @@ function KidApps({ user, accent, colors }: { user: string; accent: string; color
 function KidsSection({ colors, dark }: { colors: ReturnType<typeof buildColors>; dark: boolean }) {
   const kids = [
     {
-      name: "Hashim", age: 12, user: "codebyhashimm",
+      name: "Hashim", age: 12, user: "codebyhashimm", photo: "/hashim.jpg",
       accent: "#8B7CF6",
       avatarBg: dark ? "rgba(139,124,246,0.18)" : "#EDE9FE",
       avatarColor: dark ? "#c4b5fd" : "#5b4fbe",
@@ -787,7 +788,7 @@ function KidsSection({ colors, dark }: { colors: ReturnType<typeof buildColors>;
       orbitDur: "8s",
     },
     {
-      name: "Haziq", age: 10, user: "codebyhaziq",
+      name: "Haziq", age: 10, user: "codebyhaziq", photo: "/haziq.jpg",
       accent: "#10B981",
       avatarBg: dark ? "rgba(16,185,129,0.18)" : "#D1FAE5",
       avatarColor: dark ? "#6ee7b7" : "#0a7a56",
@@ -899,7 +900,7 @@ function KidsSection({ colors, dark }: { colors: ReturnType<typeof buildColors>;
               }}>
                 <div style={{ position: "absolute", top: -3.5, left: "50%", marginLeft: -3.5, width: 7, height: 7, borderRadius: "50%", background: "#34d399", boxShadow: "0 0 8px #34d399" }} />
               </div>
-              {/* centre */}
+              {/* centre — MK */}
               <div style={{
                 position: "absolute", inset: 22, borderRadius: "50%",
                 background: "rgba(139,124,246,0.15)", border: "1px solid rgba(139,124,246,0.35)",
@@ -923,8 +924,9 @@ function KidsSection({ colors, dark }: { colors: ReturnType<typeof buildColors>;
               {/* Kid header */}
               <div style={{ display: "flex", alignItems: "flex-start", gap: 14, marginBottom: 14 }}>
 
-                {/* Orbit avatar */}
+                {/* Orbit avatar with photo */}
                 <div style={{ position: "relative", width: 52, height: 52, flexShrink: 0 }}>
+                  {/* spinning ring */}
                   <div style={{
                     position: "absolute", inset: 0, borderRadius: "50%",
                     border: `1px dashed ${kid.accent}40`,
@@ -936,14 +938,22 @@ function KidsSection({ colors, dark }: { colors: ReturnType<typeof buildColors>;
                       background: kid.accent, boxShadow: `0 0 6px ${kid.accent}99`,
                     }} />
                   </div>
+                  {/* photo container */}
                   <div style={{
                     position: "absolute", inset: 7, borderRadius: "50%",
-                    background: kid.avatarBg, border: `1px solid ${kid.accent}55`,
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    fontSize: 15, fontWeight: 700, color: kid.avatarColor,
+                    border: `1px solid ${kid.accent}55`,
                     animation: "kidAvatarFloat 3.5s ease-in-out infinite",
                     boxShadow: `0 0 12px ${kid.accent}33`,
-                  }}>{kid.name[0]}</div>
+                    overflow: "hidden",
+                  }}>
+                    <Image
+                      src={kid.photo}
+                      alt={kid.name}
+                      fill
+                      sizes="38px"
+                      style={{ objectFit: "cover", borderRadius: "50%" }}
+                    />
+                  </div>
                 </div>
 
                 {/* Name + tagline + aims */}
