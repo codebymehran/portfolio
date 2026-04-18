@@ -713,7 +713,7 @@ function KidApps({ user, accent, colors }: { user: string; accent: string; color
 
   return (
     <>
-      {repos.map(repo => {
+      {repos.filter(r => !r.fork).map(repo => {
         const liveUrl = repo.has_pages
           ? `https://${user}.github.io/${repo.name}`
           : repo.homepage || null;
@@ -724,11 +724,27 @@ function KidApps({ user, accent, colors }: { user: string; accent: string; color
 
         return (
           <a key={repo.name} href={target} target="_blank" rel="noreferrer"
-            style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 13px", borderRadius: 12, border: `1px solid ${colors.border}`, background: colors.card, textDecoration: "none", transition: "border-color 0.15s" }}
-            onMouseEnter={e => e.currentTarget.style.borderColor = accent + "55"}
-            onMouseLeave={e => e.currentTarget.style.borderColor = colors.border}
+            style={{
+              display: "flex", alignItems: "center", gap: 10,
+              padding: "10px 13px", borderRadius: 12,
+              border: `1px solid ${colors.border}`,
+              background: colors.card, textDecoration: "none",
+              transition: "border-color 0.2s, box-shadow 0.2s",
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.borderColor = accent + "66";
+              e.currentTarget.style.boxShadow = `0 0 14px ${accent}22`;
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.borderColor = colors.border;
+              e.currentTarget.style.boxShadow = "none";
+            }}
           >
-            <div style={{ width: 30, height: 30, borderRadius: 8, background: accent + "18", border: `1px solid ${accent}44`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            <div style={{
+              width: 30, height: 30, borderRadius: 8,
+              background: accent + "1a", border: `1px solid ${accent}44`,
+              display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+            }}>
               {isLive
                 ? <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke={accent} strokeWidth="1.2"/><path d="M7 1.5c-2 1.5-2 7.5 0 9M7 1.5c2 1.5 2 7.5 0 9M1.5 7h11" stroke={accent} strokeWidth="1" strokeLinecap="round"/></svg>
                 : <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="2" width="12" height="9" rx="2" stroke={accent} strokeWidth="1.2"/><path d="M1 5h12" stroke={accent} strokeWidth="1"/><path d="M4 8h3M4 10h2" stroke={accent} strokeWidth="1" strokeLinecap="round"/></svg>
@@ -736,9 +752,22 @@ function KidApps({ user, accent, colors }: { user: string; accent: string; color
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ fontSize: 12, fontWeight: 600, color: colors.text, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{repo.name}</div>
-              <div style={{ fontSize: 10, color: colors.text3, marginTop: 1, fontFamily: "'JetBrains Mono', monospace" }}>{isLive ? "live app" : "github"} · {when}</div>
+              <div style={{ fontSize: 10, color: colors.text3, marginTop: 1, fontFamily: "'JetBrains Mono', monospace" }}>
+                {isLive
+                  ? <span style={{ color: accent, fontWeight: 600 }}>live app</span>
+                  : "github"
+                } · {when}
+              </div>
             </div>
-            <span style={{ fontSize: 11, color: colors.text3 }}>↗</span>
+            {isLive && (
+              <span style={{
+                fontSize: 9, fontWeight: 600, padding: "2px 7px", borderRadius: 20,
+                background: accent + "18", color: accent,
+                border: `1px solid ${accent}44`, letterSpacing: "0.04em",
+                animation: "kidLivePulse 2.4s ease-in-out infinite",
+              }}>live</span>
+            )}
+            {!isLive && <span style={{ fontSize: 11, color: colors.text3 }}>↗</span>}
           </a>
         );
       })}
@@ -748,55 +777,183 @@ function KidApps({ user, accent, colors }: { user: string; accent: string; color
 
 function KidsSection({ colors, dark }: { colors: ReturnType<typeof buildColors>; dark: boolean }) {
   const kids = [
-    { name: "Hashim", age: 12, user: "codebyhashimm", accent: "#8B7CF6", avatarBg: dark ? "rgba(139,124,246,0.18)" : "#EDE9FE", avatarColor: dark ? "#c4b5fd" : "#5b4fbe" },
-    { name: "Haziq",  age: 10, user: "codebyhaziq",   accent: "#10B981", avatarBg: dark ? "rgba(16,185,129,0.18)"  : "#D1FAE5", avatarColor: dark ? "#6ee7b7" : "#0a7a56" },
+    {
+      name: "Hashim", age: 12, user: "codebyhashimm",
+      accent: "#8B7CF6",
+      avatarBg: dark ? "rgba(139,124,246,0.18)" : "#EDE9FE",
+      avatarColor: dark ? "#c4b5fd" : "#5b4fbe",
+      tagline: "thinks in loops · wants to build his own game engine",
+      aims: ["Python", "Streamlit", "game dev", "AI tools"],
+      orbitDur: "8s",
+    },
+    {
+      name: "Haziq", age: 10, user: "codebyhaziq",
+      accent: "#10B981",
+      avatarBg: dark ? "rgba(16,185,129,0.18)" : "#D1FAE5",
+      avatarColor: dark ? "#6ee7b7" : "#0a7a56",
+      tagline: "fearless debugger · wants to build apps that help people",
+      aims: ["Python", "Streamlit", "data apps", "problem solving"],
+      orbitDur: "11s",
+    },
   ];
 
   return (
-    <div style={{ padding: "24px 32px 0", maxWidth: 680, margin: "0 auto", width: "100%" }}>
-      <div style={{ background: dark ? "rgba(22,22,30,0.9)" : "#ffffff", borderRadius: 20, border: `1px solid ${dark ? "rgba(139,124,246,0.18)" : "rgba(79,60,210,0.12)"}`, padding: "24px 26px 20px", boxShadow: dark ? "0 8px 40px rgba(0,0,0,0.4)" : "0 4px 24px rgba(0,0,0,0.07)" }}>
+    <>
+      <style>{`
+        @keyframes kidOrbit {
+          from { transform: rotate(0deg); }
+          to   { transform: rotate(360deg); }
+        }
+        @keyframes kidOrbitR {
+          from { transform: rotate(0deg); }
+          to   { transform: rotate(-360deg); }
+        }
+        @keyframes kidAvatarFloat {
+          0%,100% { transform: translateY(0px); }
+          50%      { transform: translateY(-4px); }
+        }
+        @keyframes kidChipFloat {
+          0%,100% { transform: translateY(0px); opacity: 0.85; }
+          50%      { transform: translateY(-2px); opacity: 1; }
+        }
+        @keyframes kidLivePulse {
+          0%,100% { opacity: 0.7; }
+          50%      { opacity: 1; }
+        }
+        @keyframes kidCardGlow {
+          0%,100% { box-shadow: 0 4px 24px rgba(0,0,0,0.08); }
+          50%      { box-shadow: 0 8px 40px rgba(0,0,0,0.14); }
+        }
+      `}</style>
 
-        {/* Header */}
-        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
-          <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", color: colors.text3, padding: "4px 12px", borderRadius: 20, border: `1px solid ${colors.border}` }}>next generation</span>
-          <div style={{ flex: 1, height: 1, background: colors.border }} />
-        </div>
+      <div style={{ padding: "24px 32px 0", maxWidth: 680, margin: "0 auto", width: "100%" }}>
+        <div style={{
+          background: dark ? "rgba(22,22,30,0.9)" : "#ffffff",
+          borderRadius: 20,
+          border: `1px solid ${dark ? "rgba(139,124,246,0.18)" : "rgba(79,60,210,0.12)"}`,
+          padding: "24px 26px 20px",
+          boxShadow: dark ? "0 8px 40px rgba(0,0,0,0.4)" : "0 4px 24px rgba(0,0,0,0.07)",
+          animation: "kidCardGlow 5s ease-in-out infinite",
+        }}>
 
-        <p style={{ fontSize: 13, color: colors.text2, lineHeight: 1.7, marginBottom: 24, paddingLeft: 14, borderLeft: `2px solid ${dark ? "rgba(139,124,246,0.5)" : "#8B7CF6"}` }}>
-          While I build my 22 apps, my two boys are learning Python and shipping their first Streamlit projects. Hashim is 12, Haziq is 10 — building in public from day one.
-        </p>
-
-        {kids.map((kid, i) => (
-          <div key={kid.user} style={{ marginBottom: i < kids.length - 1 ? 24 : 0 }}>
-            {i > 0 && <div style={{ height: 1, background: colors.border, margin: "0 0 24px" }} />}
-
-            {/* Kid header */}
-            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
-              <div style={{ width: 36, height: 36, borderRadius: "50%", background: kid.avatarBg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 600, color: kid.avatarColor, flexShrink: 0 }}>{kid.name[0]}</div>
-              <div>
-                <div style={{ fontSize: 14, fontWeight: 600, color: colors.text }}>{kid.name}</div>
-                <div style={{ fontSize: 11, color: colors.text3, fontFamily: "'JetBrains Mono', monospace", marginTop: 1 }}>{kid.age} · {kid.user}</div>
-              </div>
-              <span style={{ marginLeft: "auto", fontSize: 10, fontWeight: 600, padding: "3px 10px", borderRadius: 20, background: kid.avatarBg, color: kid.avatarColor, letterSpacing: "0.04em" }}>Python · Streamlit</span>
-            </div>
-
-            {/* App grid */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 8 }}>
-              <KidApps user={kid.user} accent={kid.accent} colors={colors} />
-            </div>
-
-            {/* GitHub link */}
-            <a href={`https://github.com/${kid.user}`} target="_blank" rel="noreferrer"
-              style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 11, color: colors.text3, marginTop: 10, fontFamily: "'JetBrains Mono', monospace", textDecoration: "none", transition: "color 0.2s" }}
-              onMouseEnter={e => e.currentTarget.style.color = kid.accent}
-              onMouseLeave={e => e.currentTarget.style.color = colors.text3}
-            >
-              {Icons.github} github.com/{kid.user}
-            </a>
+          {/* Header */}
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
+            <span style={{
+              fontSize: 10, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase",
+              color: colors.text3, padding: "4px 12px", borderRadius: 20, border: `1px solid ${colors.border}`,
+            }}>next generation</span>
+            <div style={{ flex: 1, height: 1, background: colors.border }} />
           </div>
-        ))}
+
+          <p style={{
+            fontSize: 13, color: colors.text2, lineHeight: 1.7, marginBottom: 24,
+            paddingLeft: 14, borderLeft: `2px solid ${dark ? "rgba(139,124,246,0.5)" : "#8B7CF6"}`,
+            borderRadius: 0,
+          }}>
+            While I build my 22 apps, my two boys are learning Python and shipping their first Streamlit projects.
+            Hashim is 12, Haziq is 10 — building in public from day one.
+          </p>
+
+          {kids.map((kid, i) => (
+            <div key={kid.user} style={{ marginBottom: i < kids.length - 1 ? 28 : 0 }}>
+              {i > 0 && <div style={{ height: 1, background: colors.border, margin: "0 0 28px" }} />}
+
+              {/* Kid header */}
+              <div style={{ display: "flex", alignItems: "flex-start", gap: 14, marginBottom: 14 }}>
+
+                {/* Orbit avatar */}
+                <div style={{ position: "relative", width: 52, height: 52, flexShrink: 0 }}>
+                  {/* outer orbit ring */}
+                  <div style={{
+                    position: "absolute", inset: 0, borderRadius: "50%",
+                    border: `1px dashed ${kid.accent}40`,
+                    animation: `kidOrbit ${kid.orbitDur} linear infinite`,
+                  }}>
+                    {/* orbit dot */}
+                    <div style={{
+                      position: "absolute", top: -3, left: "50%", marginLeft: -3,
+                      width: 6, height: 6, borderRadius: "50%",
+                      background: kid.accent,
+                      boxShadow: `0 0 6px ${kid.accent}99`,
+                    }} />
+                  </div>
+                  {/* avatar */}
+                  <div style={{
+                    position: "absolute", inset: 7,
+                    borderRadius: "50%",
+                    background: kid.avatarBg,
+                    border: `1px solid ${kid.accent}55`,
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    fontSize: 15, fontWeight: 700, color: kid.avatarColor,
+                    animation: "kidAvatarFloat 3.5s ease-in-out infinite",
+                    boxShadow: `0 0 12px ${kid.accent}33`,
+                  }}>{kid.name[0]}</div>
+                </div>
+
+                {/* Name + tagline + aims */}
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                    <div style={{
+                      fontSize: 17, fontWeight: 700, color: colors.text,
+                      fontFamily: "'Cormorant Garamond', Georgia, serif",
+                      letterSpacing: "-0.02em",
+                    }}>
+                      {kid.name.slice(0, -2)}
+                      <span style={{ color: kid.accent }}>{kid.name.slice(-2)}</span>
+                    </div>
+                    <span style={{
+                      fontSize: 10, fontWeight: 600, padding: "3px 10px", borderRadius: 20,
+                      background: kid.avatarBg, color: kid.avatarColor,
+                      border: `1px solid ${kid.accent}44`,
+                      letterSpacing: "0.04em",
+                    }}>age {kid.age}</span>
+                  </div>
+
+                  <div style={{ fontSize: 11, color: colors.text3, marginTop: 3, lineHeight: 1.5 }}>
+                    {kid.tagline}
+                  </div>
+
+                  {/* Aim chips */}
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 5, marginTop: 8 }}>
+                    {kid.aims.map((aim, ai) => (
+                      <span key={aim} style={{
+                        fontSize: 10, fontWeight: 600, padding: "3px 9px", borderRadius: 20,
+                        background: kid.accent + "18",
+                        color: kid.accent,
+                        border: `1px solid ${kid.accent}44`,
+                        letterSpacing: "0.04em",
+                        animation: `kidChipFloat ${2.6 + ai * 0.35}s ease-in-out ${ai * 0.3}s infinite`,
+                      }}>{aim}</span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* App grid */}
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 8 }}>
+                <KidApps user={kid.user} accent={kid.accent} colors={colors} />
+              </div>
+
+              {/* GitHub link */}
+              <a
+                href={`https://github.com/${kid.user}`}
+                target="_blank" rel="noreferrer"
+                style={{
+                  display: "inline-flex", alignItems: "center", gap: 5,
+                  fontSize: 11, color: colors.text3, marginTop: 10,
+                  fontFamily: "'JetBrains Mono', monospace",
+                  textDecoration: "none", transition: "color 0.2s",
+                }}
+                onMouseEnter={e => e.currentTarget.style.color = kid.accent}
+                onMouseLeave={e => e.currentTarget.style.color = colors.text3}
+              >
+                {Icons.github} github.com/{kid.user}
+              </a>
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 // ─── MAIN ──────────────────────────────────────────────────────────────────────
