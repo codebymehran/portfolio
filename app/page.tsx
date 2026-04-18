@@ -300,33 +300,42 @@ function FeedbackModal({ open, onClose, colors, dark }: {
     <div onClick={onClose} style={{ position: "fixed", inset: 0, zIndex: 200, background: "rgba(0,0,0,0.6)", backdropFilter: "blur(10px)", display: "flex", alignItems: "center", justifyContent: "center", padding: 24, animation: "fadeIn 0.15s ease" }}>
       <div onClick={e => e.stopPropagation()} style={{ background: colors.card, border: `1px solid ${colors.border}`, borderRadius: 24, padding: "36px 32px", width: "100%", maxWidth: 420, boxShadow: "0 24px 80px rgba(0,0,0,0.4)", position: "relative", animation: "slideUp 0.2s cubic-bezier(.4,0,.2,1)" }}>
         <button onClick={onClose} style={{ position: "absolute", top: 14, right: 14, width: 30, height: 30, borderRadius: "50%", background: colors.bg3, border: `1px solid ${colors.border}`, color: colors.text3, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "inherit" }}>{Icons.close}</button>
-        {state === "sent" ? (
-          <div style={{ textAlign: "center", padding: "12px 0" }}>
-            <div style={{ width: 56, height: 56, borderRadius: "50%", background: "rgba(16,185,129,0.1)", border: "1px solid rgba(16,185,129,0.3)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 18px", color: "#10B981" }}>{Icons.check}</div>
-            <p style={{ fontSize: 18, fontWeight: 600, color: colors.text, marginBottom: 6 }}>Sent.</p>
-            <p style={{ fontSize: 13.5, color: colors.text2 }}>Mehran will see this.</p>
-          </div>
-        ) : (
-          <>
-            <p style={{ fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase", color: colors.acc1, fontWeight: 600, marginBottom: 10 }}>Leave a note</p>
-            <p style={{ fontSize: 18, fontWeight: 600, color: colors.text, marginBottom: 7, fontFamily: "'Playfair Display', Georgia, serif" }}>What do you think?</p>
-            <p style={{ fontSize: 13.5, color: colors.text2, marginBottom: 22, lineHeight: 1.65 }}>Encouragement, a question, or a critique — Mehran reads every message.</p>
-
-            {/* Name — required */}
-            <div style={{ marginBottom: 10 }}>
-              <label style={{ fontSize: 11, fontWeight: 600, color: colors.text3, letterSpacing: "0.06em", textTransform: "uppercase", display: "flex", alignItems: "center", gap: 4, marginBottom: 6 }}>
-                Name
-                <span style={{ color: colors.acc1, fontSize: 13, lineHeight: 1 }}>*</span>
-              </label>
-              <input
-                value={name}
-                onChange={e => setName(e.target.value)}
-                placeholder="Your name"
-                style={{ width: "100%", background: colors.bg, border: `1px solid ${name ? colors.borderH : colors.border}`, borderRadius: 12, padding: "11px 14px", fontSize: 14, color: colors.text, outline: "none", fontFamily: "inherit", transition: "border-color 0.2s", display: "block" }}
-                onFocus={e => e.currentTarget.style.boxShadow = "0 0 0 2px rgba(139,124,246,0.22)"}
-                onBlur={e => e.currentTarget.style.boxShadow = "none"}
-              />
-            </div>
+       {state === "sent" ? (
+  <div style={{ textAlign: "center", padding: "12px 0" }}>
+    <div style={{ fontSize: 64, marginBottom: 8, animation: "wowBounce 0.6s cubic-bezier(.22,.68,0,1.4)" }}>🎉</div>
+    <div style={{ display: "flex", justifyContent: "center", gap: 6, marginBottom: 16 }}>
+      {["✦", "✦", "✦"].map((s, i) => (
+        <span key={i} style={{ color: colors.acc1, fontSize: 14, animation: `starPulse 1.2s ease-in-out ${i * 0.15}s infinite` }}>{s}</span>
+      ))}
+    </div>
+    <p style={{ fontSize: 28, fontWeight: 700, color: colors.text, marginBottom: 8, fontFamily: "'Cormorant Garamond', Georgia, serif", letterSpacing: "-0.02em", lineHeight: 1.1 }}>
+      Message sent.
+    </p>
+    <p style={{ fontSize: 13.5, color: colors.text2, lineHeight: 1.7, maxWidth: 260, margin: "0 auto" }}>
+      Mehran reads every single one.<br/>
+      <span style={{ color: colors.acc1, fontWeight: 500 }}>He'll see yours.</span>
+    </p>
+  </div>
+) : (
+  <>
+    <p style={{ fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase", color: colors.acc1, fontWeight: 600, marginBottom: 10 }}>Leave a note</p>
+    <p style={{ fontSize: 18, fontWeight: 600, color: colors.text, marginBottom: 7, fontFamily: "'Playfair Display', Georgia, serif" }}>What do you think?</p>
+    <p style={{ fontSize: 13.5, color: colors.text2, marginBottom: 22, lineHeight: 1.65 }}>Encouragement, a question, or a critique — Mehran reads every message.</p>
+    {/* Name — required */}
+    <div style={{ marginBottom: 10 }}>
+      <label style={{ fontSize: 11, fontWeight: 600, color: colors.text3, letterSpacing: "0.06em", textTransform: "uppercase", display: "flex", alignItems: "center", gap: 4, marginBottom: 6 }}>
+        Name
+        <span style={{ color: colors.acc1, fontSize: 13, lineHeight: 1 }}>*</span>
+      </label>
+      <input
+        value={name}
+        onChange={e => setName(e.target.value)}
+        placeholder="Your name"
+        style={{ width: "100%", background: colors.bg, border: `1px solid ${name ? colors.borderH : colors.border}`, borderRadius: 12, padding: "11px 14px", fontSize: 14, color: colors.text, outline: "none", fontFamily: "inherit", transition: "border-color 0.2s", display: "block" }}
+        onFocus={e => e.currentTarget.style.boxShadow = "0 0 0 2px rgba(139,124,246,0.22)"}
+        onBlur={e => e.currentTarget.style.boxShadow = "none"}
+      />
+    </div>
 
             {/* Email — optional */}
             <div style={{ marginBottom: 10 }}>
