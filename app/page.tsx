@@ -927,7 +927,7 @@ function KidsSection({ colors, dark }: { colors: ReturnType<typeof buildColors>;
 
               {/* centre — Mehran photo with MK fallback */}
               <div style={{
-                position: "absolute", inset: 26, borderRadius: "50%",
+                position: "absolute", inset: 16, borderRadius: "50%",
                 border: "1.5px solid rgba(139,124,246,0.6)",
                 overflow: "hidden",
                 boxShadow: "0 0 14px rgba(139,124,246,0.5)",
