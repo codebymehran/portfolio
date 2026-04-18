@@ -935,18 +935,13 @@ function KidsSection({ colors, dark }: { colors: ReturnType<typeof buildColors>;
                 display: "flex", alignItems: "center", justifyContent: "center",
                 fontSize: 11, fontWeight: 700, color: "#c4b5fd",
               }}>
-               <img
+              <span style={{ position: "absolute", zIndex: 1, fontSize: 11, fontWeight: 700, color: "#c4b5fd" }}>MK</span>
+<img
   src="/mehran.png"
   alt="Mehran"
-  id="mehran-photo"
-  style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", borderRadius: "50%", display: "block" }}
-  onLoad={e => {
-    const span = e.currentTarget.parentElement?.querySelector("span");
-    if (span) span.style.display = "none";
-  }}
+  style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", borderRadius: "50%", display: "block", zIndex: 2 }}
   onError={e => { e.currentTarget.style.display = "none"; }}
 />
-<span style={{ position: "relative", zIndex: 1, fontSize: 11, fontWeight: 700, color: "#c4b5fd" }}>MK</span>
               </div>
             </div>
 
