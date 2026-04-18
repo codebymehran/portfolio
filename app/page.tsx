@@ -207,7 +207,7 @@ function ProjectModal({ project, phase, onClose, colors, dark }: {
 
   return (
     <div onClick={onClose} style={{ position: "fixed", inset: 0, zIndex: 200, background: "rgba(0,0,0,0.65)", backdropFilter: "blur(12px)", display: "flex", alignItems: "center", justifyContent: "center", padding: "24px 16px", animation: "fadeIn 0.18s ease" }}>
-      <div onClick={e => e.stopPropagation()} style={{ background: colors.card, border: `1px solid ${phase.colorBorder}`, borderRadius: 28, width: "100%", maxWidth: 480, boxShadow: `0 32px 80px ${phase.color}22, 0 8px 24px rgba(0,0,0,0.3)`, position: "relative", overflow: "hidden", animation: "slideUp 0.22s cubic-bezier(.4,0,.2,1)" }}>
+      <div onClick={e => e.stopPropagation()} style={{ background: colors.card, border: `1px solid ${phase.colorBorder}`, borderRadius: 28, width: "100%", maxWidth: 480, boxShadow: `0 32px 80px ${phase.color}22, 0 8px 24px rgba(0,0,0,0.3)`, position: "relative", overflow: "hidden", animation: "slideUp 0.22s cubic-bezier(.4,0,.2,1)",  overflowY: "auto", maxHeight: "90vh"}}>
         <div style={{ height: 3, background: `linear-gradient(90deg, ${phase.color}, ${phase.color}44)` }} />
         <div style={{ padding: "28px 28px 0" }}>
           <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 20 }}>
@@ -315,6 +315,7 @@ function FeedbackModal({ open, onClose, colors, dark }: {
       Mehran reads every single one.<br/>
       <span style={{ color: colors.acc1, fontWeight: 500 }}>He'll see yours.</span>
     </p>
+    <button onClick={onClose} style={{ marginTop: 20, fontSize: 12, color: colors.text4, background: "none", border: "none", cursor: "pointer", fontFamily: "inherit" }}>close</button>
   </div>
 ) : (
   <>
@@ -331,6 +332,7 @@ function FeedbackModal({ open, onClose, colors, dark }: {
         value={name}
         onChange={e => setName(e.target.value)}
         placeholder="Your name"
+        maxLength={60}
         style={{ width: "100%", background: colors.bg, border: `1px solid ${name ? colors.borderH : colors.border}`, borderRadius: 12, padding: "11px 14px", fontSize: 14, color: colors.text, outline: "none", fontFamily: "inherit", transition: "border-color 0.2s", display: "block" }}
         onFocus={e => e.currentTarget.style.boxShadow = "0 0 0 2px rgba(139,124,246,0.22)"}
         onBlur={e => e.currentTarget.style.boxShadow = "none"}
@@ -364,7 +366,7 @@ function FeedbackModal({ open, onClose, colors, dark }: {
                 value={msg}
                 onChange={e => setMsg(e.target.value)}
                 onKeyDown={e => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) handleSend(); }}
-                placeholder="Type something..."
+                placeholder="What's on your mind…"
                 rows={4}
                 style={{ width: "100%", background: colors.bg, border: `1px solid ${msg ? colors.borderH : colors.border}`, borderRadius: 12, padding: "13px 15px", fontSize: 14, color: colors.text, resize: "none", outline: "none", fontFamily: "inherit", lineHeight: 1.6, display: "block", transition: "border-color 0.2s" }}
                 onFocus={e => e.currentTarget.style.boxShadow = "0 0 0 2px rgba(139,124,246,0.22)"}
