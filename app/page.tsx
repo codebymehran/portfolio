@@ -1177,7 +1177,10 @@ useEffect(() => {
         {/* ── NAV ── */}
         <nav style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0 32px", height: 60, borderBottom: `1px solid ${colors.border}`, background: colors.navBg, backdropFilter: "blur(20px)", position: "sticky", top: 0, zIndex: 100 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <div style={{ width: 28, height: 28, borderRadius: 7, background: `linear-gradient(135deg, ${colors.acc1}, ${colors.acc2})`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, color: "#fff", flexShrink: 0 }}>MK</div>
+            {/* <div style={{ width: 28, height: 28, borderRadius: 7, background: `linear-gradient(135deg, ${colors.acc1}, ${colors.acc2})`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, color: "#fff", flexShrink: 0 }}>MK</div> */}
+            <div style={{ width: 28, height: 28, borderRadius: 7, overflow: "hidden", flexShrink: 0, border: `1px solid ${colors.border}` }}>
+  <img src="/mehran.png" alt="MK" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+</div>
             <span style={{ fontSize: 13, fontWeight: 500, letterSpacing: "-0.01em", display: "none" }} className="nav-domain">mehrankhan.net</span>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
@@ -1209,7 +1212,10 @@ useEffect(() => {
         {/* ── HERO ── */}
         <div style={{ padding: "72px 32px 48px", textAlign: "center", opacity: mounted ? 1 : 0, transform: mounted ? "none" : "translateY(14px)", transition: "opacity 0.75s ease, transform 0.75s ease" }}>
           <div style={{ position: "relative", display: "inline-block", marginBottom: 26 }}>
-            <div style={{ width: 86, height: 86, borderRadius: "50%", background: `linear-gradient(135deg, ${colors.acc1}, ${colors.acc2})`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 26, fontWeight: 700, color: "#fff", boxShadow: `0 0 0 8px ${dark ? "rgba(139,124,246,0.08)" : "rgba(90,76,200,0.07)"}, 0 8px 40px ${colors.acc1}28` }}>MK</div>
+            {/* <div style={{ width: 86, height: 86, borderRadius: "50%", background: `linear-gradient(135deg, ${colors.acc1}, ${colors.acc2})`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 26, fontWeight: 700, color: "#fff", boxShadow: `0 0 0 8px ${dark ? "rgba(139,124,246,0.08)" : "rgba(90,76,200,0.07)"}, 0 8px 40px ${colors.acc1}28` }}>MK</div> */}
+            <div style={{ width: 86, height: 86, borderRadius: "50%", overflow: "hidden", boxShadow: `0 0 0 8px ${dark ? "rgba(139,124,246,0.08)" : "rgba(90,76,200,0.07)"}, 0 8px 40px ${colors.acc1}28`, flexShrink: 0 }}>
+  <img src="/mehran.png" alt="Mehran Khan" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+</div>
             <span style={{ position: "absolute", bottom: 4, right: 4, width: 14, height: 14, borderRadius: "50%", background: "linear-gradient(135deg, #f97316, #fbbf24)", border: `2.5px solid ${colors.bg}`, boxShadow: "0 0 8px rgba(249,115,22,0.6)", animation: "pingDot 2s cubic-bezier(0.4,0,0.6,1) infinite" }} />
           </div>
 
