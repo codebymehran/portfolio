@@ -691,7 +691,7 @@ function RocketVisual({ done, total, dark, colors, mounted }: {
 }
 // ─── KIDS SECTION ─────────────────────────────────────────────────────────────
 
-type KidRepo = { name: string; html_url: string; homepage: string | null; has_pages: boolean; pushed_at: string };
+type KidRepo = { name: string; html_url: string; homepage: string | null; has_pages: boolean; pushed_at: string; fork: boolean };
 
 function KidApps({ user, accent, colors }: { user: string; accent: string; colors: ReturnType<typeof buildColors> }) {
   const [repos, setRepos] = useState<KidRepo[] | null>(null);
