@@ -786,82 +786,150 @@ type LogEntry = {
   createdAt: number;
 };
 
-const MOOD_META: Record<LogEntry["mood"], { label: string; color: string; emoji: string }> = {
-  built:    { label: "built something",     color: "#10B981", emoji: "🔨" },
-  skipped:  { label: "skipped today",       color: "#F59E0B", emoji: "💤" },
-  thinking: { label: "thinking / planning", color: "#8B7CF6", emoji: "💭" },
-  blocked:  { label: "blocked",             color: "#EF4444", emoji: "🧱" },
+const MOOD_META: Record<LogEntry["mood"], {
+  label: string; color: string; bg: string; border: string;
+  darkColor: string; darkBg: string; darkBorder: string;
+  emoji: string; glyph: string;
+}> = {
+  built:    { label: "built",     emoji: "🔨", glyph: "◆", color: "#059669", bg: "rgba(5,150,105,0.08)",   border: "rgba(5,150,105,0.25)",   darkColor: "#34d399", darkBg: "rgba(52,211,153,0.1)",  darkBorder: "rgba(52,211,153,0.28)"  },
+  skipped:  { label: "skipped",   emoji: "💤", glyph: "◇", color: "#b45309", bg: "rgba(180,83,9,0.08)",    border: "rgba(180,83,9,0.25)",    darkColor: "#fbbf24", darkBg: "rgba(251,191,36,0.1)",  darkBorder: "rgba(251,191,36,0.28)"  },
+  thinking: { label: "thinking",  emoji: "💭", glyph: "○", color: "#6d28d9", bg: "rgba(109,40,217,0.08)",  border: "rgba(109,40,217,0.25)",  darkColor: "#a78bfa", darkBg: "rgba(167,139,250,0.1)", darkBorder: "rgba(167,139,250,0.28)" },
+  blocked:  { label: "blocked",   emoji: "🧱", glyph: "✕", color: "#be123c", bg: "rgba(190,18,60,0.08)",   border: "rgba(190,18,60,0.25)",   darkColor: "#fb7185", darkBg: "rgba(251,113,133,0.1)", darkBorder: "rgba(251,113,133,0.28)" },
 };
 
 const TRUNCATE_AT = 200;
 const PAGE_SIZE = 5;
 
-function EntryCard({ entry, colors, dark }: {
-  entry: LogEntry;
-  colors: ReturnType<typeof buildColors>;
-  dark: boolean;
+const LOG_GLYPHS = ["◆","◇","○","●","▲","△","■","□","✦","✧"];
+
+function EntryCard({ entry, colors, dark, index }: {
+  entry: LogEntry; colors: ReturnType<typeof buildColors>; dark: boolean; index: number;
 }) {
   const [expanded, setExpanded] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [pwd, setPwd] = useState("");
+  const [deleting, setDeleting] = useState(false);
+  const [hov, setHov] = useState(false);
+
   const meta = MOOD_META[entry.mood];
+  const mc = dark ? meta.darkColor : meta.color;
+  const mb = dark ? meta.darkBg : meta.bg;
+  const mbd = dark ? meta.darkBorder : meta.border;
+
   const isLong = entry.body.length > TRUNCATE_AT;
   const bodyText = isLong && !expanded
     ? entry.body.slice(0, TRUNCATE_AT).trimEnd() + "…"
     : entry.body;
 
   const deleteEntry = async () => {
-    const pwd = prompt("Enter your password to delete:");
-    if (!pwd) return;
+    if (!pwd.trim()) return;
+    setDeleting(true);
     await fetch("/api/devlog", {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id: entry.id, password: pwd }),
     });
+    setDeleting(false);
+    setConfirmDelete(false);
     window.location.reload();
   };
 
+  const glyph = LOG_GLYPHS[index % LOG_GLYPHS.length];
+  const dayOfWeek = new Date(entry.date).toLocaleDateString("en-US", { weekday: "short" });
+  const [year, month, day] = entry.date.split("-");
+  const monthShort = new Date(entry.date).toLocaleDateString("en-US", { month: "short" });
+
   return (
-    <div style={{
-      padding: "14px 16px",
-      borderRadius: 12,
-      background: dark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.025)",
-      border: `1px solid ${dark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.07)"}`,
-      borderLeft: `3px solid ${meta.color}`,
-    }}>
-      {/* Top row */}
-      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: entry.body ? 6 : 0, flexWrap: "wrap" }}>
-        <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 9px", borderRadius: 20, background: `${meta.color}18`, color: meta.color, border: `1px solid ${meta.color}44` }}>
-          {meta.emoji} {meta.label}
-        </span>
-        <span style={{ fontSize: 11, color: colors.text3, fontFamily: "'JetBrains Mono', monospace" }}>
-          {entry.date}
-        </span>
-        <span style={{ flex: 1, fontSize: 13, fontWeight: 600, color: colors.text }}>
-          {entry.title}
-        </span>
-        <button
-          onClick={deleteEntry}
-          style={{ width: 22, height: 22, borderRadius: "50%", background: "transparent", border: `1px solid ${colors.border}`, color: colors.text4, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "inherit", fontSize: 10, flexShrink: 0, transition: "all 0.15s" }}
-          onMouseEnter={e => { e.currentTarget.style.color = "#EF4444"; e.currentTarget.style.borderColor = "#EF4444"; }}
-          onMouseLeave={e => { e.currentTarget.style.color = colors.text4; e.currentTarget.style.borderColor = colors.border; }}
-        >✕</button>
+    <div
+      onMouseEnter={() => setHov(true)}
+      onMouseLeave={() => setHov(false)}
+      style={{
+        display: "grid",
+        gridTemplateColumns: "64px 1fr",
+        gap: 0,
+        borderRadius: 16,
+        overflow: "hidden",
+        border: `1px solid ${hov ? mbd : (dark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.07)")}`,
+        background: hov ? mb : (dark ? "rgba(255,255,255,0.02)" : "rgba(0,0,0,0.015)"),
+        transition: "all 0.22s ease",
+        transform: hov ? "translateX(3px)" : "none",
+      }}
+    >
+      {/* Date column */}
+      <div style={{
+        background: mb,
+        borderRight: `1px solid ${mbd}`,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "16px 8px",
+        gap: 2,
+        flexShrink: 0,
+      }}>
+        <span style={{ fontSize: 9, fontWeight: 700, color: mc, letterSpacing: "0.12em", textTransform: "uppercase", fontFamily: "'JetBrains Mono', monospace" }}>{dayOfWeek}</span>
+        <span style={{ fontSize: 22, fontWeight: 700, color: mc, lineHeight: 1, fontFamily: "'Cormorant Garamond', Georgia, serif" }}>{day}</span>
+        <span style={{ fontSize: 9, color: mc, opacity: 0.7, letterSpacing: "0.08em", textTransform: "uppercase", fontFamily: "'JetBrains Mono', monospace" }}>{monthShort} {year.slice(2)}</span>
+        <span style={{ fontSize: 11, marginTop: 4, color: mc, opacity: 0.5 }}>{glyph}</span>
       </div>
 
-      {/* Body */}
-      {entry.body && (
-        <>
-          <p style={{ fontSize: 12.5, color: colors.text2, lineHeight: 1.65, margin: 0 }}>
-            {bodyText}
-          </p>
-          {isLong && (
+      {/* Content column */}
+      <div style={{ padding: "14px 16px", minWidth: 0 }}>
+        {/* Top row */}
+        <div style={{ display: "flex", alignItems: "flex-start", gap: 8, marginBottom: 6 }}>
+          <span style={{
+            fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 6,
+            background: mb, color: mc, border: `1px solid ${mbd}`,
+            letterSpacing: "0.06em", textTransform: "uppercase", flexShrink: 0,
+            fontFamily: "'JetBrains Mono', monospace",
+          }}>
+            {meta.glyph} {meta.label}
+          </span>
+          <span style={{ flex: 1, fontSize: 13.5, fontWeight: 600, color: colors.text, lineHeight: 1.35, letterSpacing: "-0.01em" }}>
+            {entry.title}
+          </span>
+          {/* Delete button */}
+          {!confirmDelete ? (
             <button
-              onClick={() => setExpanded(v => !v)}
-              style={{ marginTop: 6, fontSize: 11, color: meta.color, background: "none", border: "none", cursor: "pointer", fontFamily: "inherit", padding: 0, fontWeight: 600 }}
-            >
-              {expanded ? "show less ↑" : "read more ↓"}
-            </button>
+              onClick={() => setConfirmDelete(true)}
+              style={{ width: 20, height: 20, borderRadius: "50%", background: "transparent", border: `1px solid transparent`, color: colors.text4, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "inherit", fontSize: 9, flexShrink: 0, opacity: hov ? 1 : 0, transition: "all 0.15s" }}
+              onMouseEnter={e => { e.currentTarget.style.color = "#fb7185"; e.currentTarget.style.borderColor = "#fb718544"; e.currentTarget.style.background = "#fb71851a"; }}
+              onMouseLeave={e => { e.currentTarget.style.color = colors.text4; e.currentTarget.style.borderColor = "transparent"; e.currentTarget.style.background = "transparent"; }}
+            >✕</button>
+          ) : (
+            <div style={{ display: "flex", alignItems: "center", gap: 5, flexShrink: 0 }}>
+              <input
+                value={pwd}
+                onChange={e => setPwd(e.target.value)}
+                type="password"
+                placeholder="password"
+                autoFocus
+                onKeyDown={e => { if (e.key === "Enter") deleteEntry(); if (e.key === "Escape") { setConfirmDelete(false); setPwd(""); } }}
+                style={{ width: 80, padding: "2px 7px", borderRadius: 6, border: `1px solid ${colors.border}`, background: colors.bg, color: colors.text, fontSize: 10, outline: "none", fontFamily: "inherit" }}
+              />
+              <button onClick={deleteEntry} disabled={deleting} style={{ fontSize: 10, padding: "2px 8px", borderRadius: 6, background: "#fb71851a", border: "1px solid #fb718544", color: "#fb7185", cursor: "pointer", fontFamily: "inherit", fontWeight: 700 }}>{deleting ? "…" : "del"}</button>
+              <button onClick={() => { setConfirmDelete(false); setPwd(""); }} style={{ fontSize: 10, padding: "2px 8px", borderRadius: 6, background: "transparent", border: `1px solid ${colors.border}`, color: colors.text3, cursor: "pointer", fontFamily: "inherit" }}>esc</button>
+            </div>
           )}
-        </>
-      )}
+        </div>
+
+        {/* Body */}
+        {entry.body && (
+          <>
+            <p style={{ fontSize: 12.5, color: colors.text2, lineHeight: 1.7, margin: 0, fontStyle: "italic" }}>
+              {bodyText}
+            </p>
+            {isLong && (
+              <button
+                onClick={() => setExpanded(v => !v)}
+                style={{ marginTop: 5, fontSize: 11, color: mc, background: "none", border: "none", cursor: "pointer", fontFamily: "inherit", padding: 0, fontWeight: 600, letterSpacing: "0.02em" }}
+              >
+                {expanded ? "↑ collapse" : "↓ read more"}
+              </button>
+            )}
+          </>
+        )}
+      </div>
     </div>
   );
 }
@@ -875,6 +943,8 @@ function DevLog({ colors, dark }: { colors: ReturnType<typeof buildColors>; dark
   const [form, setForm] = useState({ mood: "built" as LogEntry["mood"], title: "", body: "", password: "" });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [saved, setSaved] = useState(false);
+  const { ref: sectionRef, visible: sectionVisible } = useScrollReveal();
 
   useEffect(() => {
     fetch("/api/devlog")
@@ -883,7 +953,6 @@ function DevLog({ colors, dark }: { colors: ReturnType<typeof buildColors>; dark
       .catch(() => setLoading(false));
   }, []);
 
-  // Reset visible count when filter changes
   useEffect(() => { setVisibleCount(PAGE_SIZE); }, [filter]);
 
   const saveEntry = async () => {
@@ -901,6 +970,8 @@ function DevLog({ colors, dark }: { colors: ReturnType<typeof buildColors>; dark
       setEntries(prev => [entry, ...prev]);
       setForm({ mood: "built", title: "", body: "", password: "" });
       setComposing(false);
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2500);
     } catch { setError("Something went wrong."); }
     setSaving(false);
   };
@@ -909,137 +980,243 @@ function DevLog({ colors, dark }: { colors: ReturnType<typeof buildColors>; dark
   const visible = filtered.slice(0, visibleCount);
   const remaining = filtered.length - visibleCount;
 
+  const streak = (() => {
+    if (!entries.length) return 0;
+    const dates = [...new Set(entries.map(e => e.date))].sort().reverse();
+    let s = 0;
+    const today = new Date().toISOString().slice(0, 10);
+    for (let i = 0; i < dates.length; i++) {
+      const expected = new Date(Date.now() - i * 86400000).toISOString().slice(0, 10);
+      if (dates[i] === expected) s++;
+      else break;
+    }
+    return s;
+  })();
+
+  const builtCount = entries.filter(e => e.mood === "built").length;
+
   return (
-    <div style={{ padding: "24px 32px 0", maxWidth: 680, margin: "0 auto", width: "100%" }}>
+    <div
+      ref={sectionRef}
+      style={{
+        padding: "32px 32px 0",
+        maxWidth: 680,
+        margin: "0 auto",
+        width: "100%",
+        opacity: sectionVisible ? 1 : 0,
+        transform: sectionVisible ? "none" : "translateY(24px)",
+        transition: "opacity 0.7s ease, transform 0.7s ease",
+      }}
+    >
+      {/* Outer card */}
       <div style={{
-        background: dark ? "rgba(22,22,30,0.9)" : "#ffffff",
-        borderRadius: 20,
-        border: `1px solid ${dark ? "rgba(139,124,246,0.18)" : "rgba(79,60,210,0.12)"}`,
-        padding: "24px 26px 20px",
-        boxShadow: dark ? "0 8px 40px rgba(0,0,0,0.4)" : "0 4px 24px rgba(0,0,0,0.07)",
+        borderRadius: 24,
+        overflow: "hidden",
+        border: `1px solid ${dark ? "rgba(139,124,246,0.2)" : "rgba(79,60,210,0.13)"}`,
+        boxShadow: dark ? "0 12px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(139,124,246,0.08)" : "0 8px 40px rgba(79,60,210,0.08)",
       }}>
 
-        {/* Header */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 18, flexWrap: "wrap", gap: 10 }}>
-          <div>
-            <div style={{ fontSize: 13, fontWeight: 600, color: colors.text, letterSpacing: "-0.01em", marginBottom: 2 }}>
-              Dev diary
+        {/* ── HEADER BANNER ── */}
+        <div style={{
+          position: "relative",
+          overflow: "hidden",
+          background: dark
+            ? "linear-gradient(135deg, #0d0b1a 0%, #110d1f 50%, #0a0f1a 100%)"
+            : "linear-gradient(135deg, #faf9ff 0%, #f3f0ff 50%, #f7fbff 100%)",
+          padding: "28px 28px 24px",
+          borderBottom: `1px solid ${dark ? "rgba(139,124,246,0.15)" : "rgba(79,60,210,0.1)"}`,
+        }}>
+          {/* Background grid */}
+          <svg style={{ position: "absolute", inset: 0, width: "100%", height: "100%", opacity: dark ? 0.12 : 0.06, pointerEvents: "none" }} viewBox="0 0 400 120" preserveAspectRatio="xMidYMid slice">
+            {Array.from({ length: 10 }).map((_, i) => (
+              <line key={`v${i}`} x1={i * 44} y1="0" x2={i * 44} y2="120" stroke={dark ? "#8B7CF6" : "#4f3cd2"} strokeWidth="0.5" />
+            ))}
+            {Array.from({ length: 4 }).map((_, i) => (
+              <line key={`h${i}`} x1="0" y1={i * 40} x2="400" y2={i * 40} stroke={dark ? "#8B7CF6" : "#4f3cd2"} strokeWidth="0.5" />
+            ))}
+          </svg>
+
+          {/* Glow blobs */}
+          <div style={{ position: "absolute", top: -40, left: -20, width: 180, height: 180, borderRadius: "50%", background: dark ? "rgba(139,124,246,0.15)" : "rgba(109,40,217,0.07)", filter: "blur(40px)", pointerEvents: "none" }} />
+          <div style={{ position: "absolute", bottom: -30, right: 40, width: 120, height: 120, borderRadius: "50%", background: dark ? "rgba(16,185,129,0.1)" : "rgba(5,150,105,0.06)", filter: "blur(30px)", pointerEvents: "none" }} />
+
+          <div style={{ position: "relative", display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
+            <div>
+              {/* Label */}
+              <div style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 10, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: dark ? "#a78bfa" : "#6d28d9", padding: "4px 12px", borderRadius: 20, background: dark ? "rgba(167,139,250,0.12)" : "rgba(109,40,217,0.07)", border: `1px solid ${dark ? "rgba(167,139,250,0.25)" : "rgba(109,40,217,0.15)"}`, marginBottom: 14 }}>
+                <span style={{ width: 5, height: 5, borderRadius: "50%", background: "currentColor", animation: "pingDot 2s cubic-bezier(0.4,0,0.6,1) infinite" }} />
+                building in public
+              </div>
+
+              {/* Title */}
+              <div style={{ fontSize: "clamp(22px,4vw,32px)", fontWeight: 700, fontFamily: "'Cormorant Garamond', Georgia, serif", color: dark ? "#eeeaf8" : "#0f0e1a", letterSpacing: "-0.02em", lineHeight: 1.15, marginBottom: 6 }}>
+                Dev <span style={{ fontStyle: "italic", color: dark ? "#a78bfa" : "#6d28d9" }}>diary</span>
+              </div>
+              <div style={{ fontSize: 13, color: dark ? "rgba(238,234,248,0.45)" : "#6e6b82", lineHeight: 1.6 }}>
+                Raw log of what gets built, skipped, or mulled over.
+              </div>
             </div>
-            <div style={{ fontSize: 11, color: colors.text3, fontFamily: "'JetBrains Mono', monospace" }}>
-              {loading ? "loading…" : `${entries.length} ${entries.length === 1 ? "entry" : "entries"} · public`}
+
+            {/* Stats cluster */}
+            <div style={{ display: "flex", gap: 10, flexShrink: 0, flexWrap: "wrap" }}>
+              {[
+                { n: entries.length, label: "entries", color: dark ? "#a78bfa" : "#6d28d9" },
+                { n: builtCount,     label: "built",   color: dark ? "#34d399" : "#059669" },
+                { n: streak,         label: "streak",  color: dark ? "#fbbf24" : "#b45309" },
+              ].map(s => (
+                <div key={s.label} style={{ textAlign: "center", padding: "10px 14px", borderRadius: 12, background: dark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.03)", border: `1px solid ${dark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.07)"}` }}>
+                  <div style={{ fontSize: 22, fontWeight: 300, color: s.color, lineHeight: 1, fontFamily: "'Cormorant Garamond', Georgia, serif" }}>{s.n}</div>
+                  <div style={{ fontSize: 9.5, color: dark ? "rgba(238,234,248,0.35)" : "#9996ab", marginTop: 2, letterSpacing: "0.08em", textTransform: "uppercase", fontFamily: "'JetBrains Mono', monospace" }}>{s.label}</div>
+                </div>
+              ))}
             </div>
           </div>
-          <button
-            onClick={() => setComposing(v => !v)}
-            style={{ padding: "7px 16px", borderRadius: 20, fontSize: 12, fontWeight: 600, fontFamily: "inherit", cursor: "pointer", border: `1.5px solid ${colors.acc1}`, background: composing ? `${colors.acc1}22` : "transparent", color: colors.acc1, transition: "all 0.18s" }}
-          >
-            {composing ? "✕ cancel" : "+ new entry"}
-          </button>
         </div>
 
-        {/* Compose form */}
-        {composing && (
-          <div style={{ background: dark ? "rgba(139,124,246,0.06)" : "rgba(79,60,210,0.04)", border: `1px solid ${dark ? "rgba(139,124,246,0.2)" : "rgba(79,60,210,0.14)"}`, borderRadius: 14, padding: "18px 16px", marginBottom: 18 }}>
-            {/* Mood picker */}
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 12 }}>
-              {(Object.keys(MOOD_META) as LogEntry["mood"][]).map(m => {
-                const meta = MOOD_META[m];
-                const active = form.mood === m;
+        {/* ── BODY ── */}
+        <div style={{ background: dark ? "rgba(13,11,26,0.95)" : "#fefefe", padding: "20px 20px 20px" }}>
+
+          {/* Action bar */}
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16, flexWrap: "wrap", gap: 10 }}>
+            {/* Filter pills */}
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+              {(["all", ...Object.keys(MOOD_META)] as Array<"all" | LogEntry["mood"]>).map(f => {
+                const count = f === "all" ? entries.length : entries.filter(e => e.mood === f).length;
+                if (f !== "all" && count === 0) return null;
+                const meta = f === "all" ? null : MOOD_META[f];
+                const mc2 = meta ? (dark ? meta.darkColor : meta.color) : (dark ? "#a78bfa" : "#6d28d9");
+                const mb2 = meta ? (dark ? meta.darkBg : meta.bg) : (dark ? "rgba(167,139,250,0.1)" : "rgba(109,40,217,0.07)");
+                const mbd2 = meta ? (dark ? meta.darkBorder : meta.border) : (dark ? "rgba(167,139,250,0.25)" : "rgba(109,40,217,0.15)");
+                const active = filter === f;
                 return (
-                  <button key={m} onClick={() => setForm(f => ({ ...f, mood: m }))}
-                    style={{ padding: "5px 12px", borderRadius: 20, fontSize: 11, fontWeight: 600, fontFamily: "inherit", cursor: "pointer", border: `1.5px solid ${active ? meta.color : colors.border}`, background: active ? `${meta.color}22` : "transparent", color: active ? meta.color : colors.text3, transition: "all 0.15s" }}>
-                    {meta.emoji} {meta.label}
+                  <button key={f} onClick={() => setFilter(f)} style={{ padding: "4px 11px", borderRadius: 20, fontSize: 11, fontWeight: 600, fontFamily: "inherit", cursor: "pointer", border: `1px solid ${active ? mbd2 : (dark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)")}`, background: active ? mb2 : "transparent", color: active ? mc2 : (dark ? "rgba(238,234,248,0.35)" : "#9996ab"), transition: "all 0.15s", letterSpacing: "0.02em" }}>
+                    {f === "all" ? `all · ${count}` : `${meta?.glyph} ${meta?.label} · ${count}`}
                   </button>
                 );
               })}
             </div>
-            <input
-              value={form.title}
-              onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
-              placeholder="What happened today?"
-              maxLength={120}
-              style={{ width: "100%", background: colors.bg, border: `1px solid ${form.title ? colors.borderH : colors.border}`, borderRadius: 10, padding: "10px 13px", fontSize: 14, color: colors.text, outline: "none", fontFamily: "inherit", marginBottom: 8, display: "block" }}
-            />
-            <textarea
-              value={form.body}
-              onChange={e => setForm(f => ({ ...f, body: e.target.value }))}
-              onKeyDown={e => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) saveEntry(); }}
-              placeholder="Details, thoughts, what you skipped… (optional)"
-              rows={3}
-              style={{ width: "100%", background: colors.bg, border: `1px solid ${form.body ? colors.borderH : colors.border}`, borderRadius: 10, padding: "10px 13px", fontSize: 13, color: colors.text, resize: "vertical", outline: "none", fontFamily: "inherit", lineHeight: 1.6, display: "block", marginBottom: 8 }}
-            />
-            <input
-              value={form.password}
-              onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
-              type="password"
-              placeholder="Your password"
-              style={{ width: "100%", background: colors.bg, border: `1px solid ${colors.border}`, borderRadius: 10, padding: "10px 13px", fontSize: 13, color: colors.text, outline: "none", fontFamily: "inherit", marginBottom: 8, display: "block" }}
-            />
-            {error && <p style={{ fontSize: 12, color: "#EF4444", marginBottom: 8 }}>{error}</p>}
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <span style={{ fontSize: 11, color: colors.text4, fontFamily: "'JetBrains Mono', monospace" }}>
-                {new Date().toISOString().slice(0, 10)}
-              </span>
-              <button
-                onClick={saveEntry}
-                disabled={!form.title.trim() || saving}
-                style={{ padding: "9px 20px", borderRadius: 10, background: form.title.trim() ? `linear-gradient(135deg, ${colors.acc1}, ${colors.acc2})` : colors.bg3, border: "none", color: form.title.trim() ? "#fff" : colors.text3, fontSize: 13, fontWeight: 600, cursor: form.title.trim() ? "pointer" : "not-allowed", fontFamily: "inherit" }}
-              >
-                {saving ? "saving…" : "save entry ⌘↵"}
-              </button>
-            </div>
-          </div>
-        )}
 
-        {/* Filter pills */}
-        {entries.length > 0 && (
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 14 }}>
-            {(["all", ...Object.keys(MOOD_META)] as Array<"all" | LogEntry["mood"]>).map(f => {
-              const count = f === "all" ? entries.length : entries.filter(e => e.mood === f).length;
-              if (f !== "all" && count === 0) return null;
-              const meta = f === "all" ? null : MOOD_META[f];
-              const active = filter === f;
-              return (
-                <button key={f} onClick={() => setFilter(f)}
-                  style={{ padding: "4px 12px", borderRadius: 20, fontSize: 11, fontWeight: 600, fontFamily: "inherit", cursor: "pointer", border: `1px solid ${active ? (meta?.color ?? colors.acc1) : colors.border}`, background: active ? `${(meta?.color ?? colors.acc1)}18` : "transparent", color: active ? (meta?.color ?? colors.acc1) : colors.text3, transition: "all 0.15s" }}>
-                  {f === "all" ? `all (${count})` : `${meta?.emoji} ${count}`}
+            {/* New entry button */}
+            <button
+              onClick={() => setComposing(v => !v)}
+              style={{ padding: "7px 16px", borderRadius: 20, fontSize: 12, fontWeight: 700, fontFamily: "inherit", cursor: "pointer", border: `1.5px solid ${composing ? (dark ? "rgba(167,139,250,0.4)" : "rgba(109,40,217,0.3)") : (dark ? "rgba(167,139,250,0.35)" : "rgba(109,40,217,0.25)")}`, background: composing ? (dark ? "rgba(167,139,250,0.12)" : "rgba(109,40,217,0.07)") : "transparent", color: dark ? "#a78bfa" : "#6d28d9", transition: "all 0.18s", letterSpacing: "0.02em", display: "flex", alignItems: "center", gap: 6 }}
+            >
+              <span style={{ fontSize: 14, lineHeight: 1, transform: composing ? "rotate(45deg)" : "none", transition: "transform 0.2s", display: "inline-block" }}>+</span>
+              {composing ? "cancel" : "new entry"}
+            </button>
+          </div>
+
+          {/* ── COMPOSE FORM ── */}
+          {composing && (
+            <div style={{
+              borderRadius: 16,
+              border: `1px solid ${dark ? "rgba(167,139,250,0.2)" : "rgba(109,40,217,0.14)"}`,
+              background: dark ? "rgba(167,139,250,0.04)" : "rgba(109,40,217,0.025)",
+              padding: "18px",
+              marginBottom: 16,
+              animation: "slideUp 0.2s cubic-bezier(.4,0,.2,1)",
+            }}>
+              {/* Mood picker */}
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 14 }}>
+                {(Object.keys(MOOD_META) as LogEntry["mood"][]).map(m => {
+                  const meta = MOOD_META[m];
+                  const mc2 = dark ? meta.darkColor : meta.color;
+                  const mb2 = dark ? meta.darkBg : meta.bg;
+                  const mbd2 = dark ? meta.darkBorder : meta.border;
+                  const active = form.mood === m;
+                  return (
+                    <button key={m} onClick={() => setForm(f => ({ ...f, mood: m }))} style={{ padding: "6px 13px", borderRadius: 10, fontSize: 11, fontWeight: 700, fontFamily: "inherit", cursor: "pointer", border: `1.5px solid ${active ? mbd2 : (dark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)")}`, background: active ? mb2 : "transparent", color: active ? mc2 : (dark ? "rgba(238,234,248,0.4)" : "#9996ab"), transition: "all 0.15s", letterSpacing: "0.04em" }}>
+                      {meta.glyph} {meta.label}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Title input */}
+              <div style={{ position: "relative", marginBottom: 8 }}>
+                <input
+                  value={form.title}
+                  onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
+                  placeholder="What happened today?"
+                  maxLength={120}
+                  style={{ width: "100%", background: dark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.025)", border: `1px solid ${form.title ? (dark ? "rgba(167,139,250,0.4)" : "rgba(109,40,217,0.3)") : (dark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)")}`, borderRadius: 10, padding: "11px 14px", fontSize: 14, fontWeight: 500, color: dark ? "#eeeaf8" : "#0f0e1a", outline: "none", fontFamily: "'Cormorant Garamond', Georgia, serif", letterSpacing: "-0.01em", display: "block", transition: "border-color 0.2s" }}
+                />
+              </div>
+
+              {/* Body textarea */}
+              <textarea
+                value={form.body}
+                onChange={e => setForm(f => ({ ...f, body: e.target.value }))}
+                onKeyDown={e => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) saveEntry(); }}
+                placeholder="Details, thoughts, what you skipped… (optional)"
+                rows={3}
+                style={{ width: "100%", background: dark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.025)", border: `1px solid ${form.body ? (dark ? "rgba(167,139,250,0.4)" : "rgba(109,40,217,0.3)") : (dark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)")}`, borderRadius: 10, padding: "11px 14px", fontSize: 13, color: dark ? "rgba(238,234,248,0.8)" : "#3a384f", resize: "vertical", outline: "none", fontFamily: "inherit", lineHeight: 1.65, display: "block", marginBottom: 8, transition: "border-color 0.2s" }}
+              />
+
+              {/* Password + submit row */}
+              <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+                <input
+                  value={form.password}
+                  onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
+                  type="password"
+                  placeholder="password"
+                  onKeyDown={e => { if (e.key === "Enter") saveEntry(); }}
+                  style={{ flex: 1, minWidth: 120, background: dark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.025)", border: `1px solid ${dark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)"}`, borderRadius: 10, padding: "10px 14px", fontSize: 13, color: dark ? "#eeeaf8" : "#0f0e1a", outline: "none", fontFamily: "inherit" }}
+                />
+                <span style={{ fontSize: 10, color: dark ? "rgba(238,234,248,0.25)" : "#c4c2d0", fontFamily: "'JetBrains Mono', monospace", flexShrink: 0 }}>
+                  {new Date().toISOString().slice(0, 10)}
+                </span>
+                <button
+                  onClick={saveEntry}
+                  disabled={!form.title.trim() || saving}
+                  style={{ padding: "10px 20px", borderRadius: 10, background: form.title.trim() ? `linear-gradient(135deg, ${dark ? "#8B7CF6" : "#6d28d9"}, ${dark ? "#10B981" : "#059669"})` : (dark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.05)"), border: "none", color: form.title.trim() ? "#fff" : (dark ? "rgba(238,234,248,0.25)" : "#c4c2d0"), fontSize: 12, fontWeight: 700, cursor: form.title.trim() ? "pointer" : "not-allowed", fontFamily: "inherit", letterSpacing: "0.04em", transition: "all 0.2s", flexShrink: 0 }}
+                >
+                  {saving ? "saving…" : saved ? "✓ saved" : "save  ⌘↵"}
                 </button>
-              );
-            })}
-          </div>
-        )}
+              </div>
 
-        {/* Entries */}
-        {loading && (
-          <div style={{ textAlign: "center", padding: "24px 0", color: colors.text4, fontSize: 13 }}>
-            loading entries…
-          </div>
-        )}
-        {!loading && visible.length === 0 && (
-          <div style={{ textAlign: "center", padding: "32px 0", color: colors.text4, fontSize: 13 }}>
-            {entries.length === 0 ? "No entries yet." : "No entries match this filter."}
-          </div>
-        )}
+              {error && (
+                <p style={{ fontSize: 12, color: dark ? "#fb7185" : "#be123c", marginTop: 8, marginBottom: 0 }}>{error}</p>
+              )}
+            </div>
+          )}
 
-        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          {visible.map(entry => (
-            <EntryCard key={entry.id} entry={entry} colors={colors} dark={dark} />
-          ))}
+          {/* ── ENTRIES ── */}
+          {loading && (
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, padding: "32px 0", color: dark ? "rgba(238,234,248,0.25)" : "#c4c2d0", fontSize: 12, fontFamily: "'JetBrains Mono', monospace" }}>
+              <span style={{ animation: "pingDot 1s ease-in-out infinite" }}>◆</span> loading entries…
+            </div>
+          )}
+
+          {!loading && visible.length === 0 && (
+            <div style={{ textAlign: "center", padding: "40px 0" }}>
+              <div style={{ fontSize: 32, marginBottom: 10, opacity: 0.3 }}>◇</div>
+              <div style={{ fontSize: 13, color: dark ? "rgba(238,234,248,0.28)" : "#c4c2d0" }}>
+                {entries.length === 0 ? "No entries yet. The journey starts with the first log." : "No entries match this filter."}
+              </div>
+            </div>
+          )}
+
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {visible.map((entry, i) => (
+              <EntryCard key={entry.id} entry={entry} colors={colors} dark={dark} index={i} />
+            ))}
+          </div>
+
+          {/* Load more */}
+          {remaining > 0 && (
+            <button
+              onClick={() => setVisibleCount(v => v + PAGE_SIZE)}
+              style={{ width: "100%", marginTop: 12, padding: "11px", borderRadius: 12, background: "transparent", border: `1px dashed ${dark ? "rgba(167,139,250,0.2)" : "rgba(109,40,217,0.15)"}`, color: dark ? "rgba(167,139,250,0.6)" : "rgba(109,40,217,0.5)", fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", transition: "all 0.18s", letterSpacing: "0.04em" }}
+              onMouseEnter={e => { e.currentTarget.style.borderStyle = "solid"; e.currentTarget.style.color = dark ? "#a78bfa" : "#6d28d9"; e.currentTarget.style.background = dark ? "rgba(167,139,250,0.06)" : "rgba(109,40,217,0.04)"; }}
+              onMouseLeave={e => { e.currentTarget.style.borderStyle = "dashed"; e.currentTarget.style.color = dark ? "rgba(167,139,250,0.6)" : "rgba(109,40,217,0.5)"; e.currentTarget.style.background = "transparent"; }}
+            >
+              ↓ show {Math.min(remaining, PAGE_SIZE)} more
+              <span style={{ opacity: 0.5, marginLeft: 6, fontWeight: 400 }}>({remaining} remaining)</span>
+            </button>
+          )}
+
         </div>
-
-        {/* Load more */}
-        {remaining > 0 && (
-          <button
-            onClick={() => setVisibleCount(v => v + PAGE_SIZE)}
-            style={{ width: "100%", marginTop: 14, padding: "10px", borderRadius: 12, background: "transparent", border: `1px solid ${colors.border}`, color: colors.text3, fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", transition: "all 0.18s" }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = colors.acc1; e.currentTarget.style.color = colors.acc1; }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = colors.border; e.currentTarget.style.color = colors.text3; }}
-          >
-            show {Math.min(remaining, PAGE_SIZE)} more
-            <span style={{ opacity: 0.5, marginLeft: 6 }}>({remaining} remaining)</span>
-          </button>
-        )}
-
       </div>
     </div>
   );
