@@ -274,7 +274,7 @@ function FeedbackModal({ open, onClose, colors, dark }: {
           subject: "Note from mehrankhan.net",
           message: msg,
           name: name,
-          email: email || "not provided",
+          email: email || `anonymous-${Date.now()}@mehrankhan.net`,
           from_name: name,
           botcheck: "",
         }),
@@ -867,9 +867,15 @@ const monthShort = dateObj.toLocaleDateString("en-US", { month: "short" }).toUpp
   flexShrink: 0,
   minWidth: 64,
 }}>
-  <span style={{ fontSize: 9, fontWeight: 700, color: mc, letterSpacing: "0.14em", fontFamily: "'JetBrains Mono', monospace", opacity: 0.7 }}>{monthShort}</span>
-  <span style={{ fontSize: 28, fontWeight: 700, color: mc, lineHeight: 1, fontFamily: "'JetBrains Mono', monospace" }}>{day}</span>
-  <span style={{ fontSize: 10, marginTop: 6, color: mc, opacity: 0.4 }}>{meta.glyph}</span>
+<span style={{ fontSize: 9, fontWeight: 700, color: mc, letterSpacing: "0.14em", fontFamily: "'JetBrains Mono', monospace", opacity: 0.7 }}>{monthShort}</span>
+<span style={{ fontSize: 28, fontWeight: 700, color: mc, lineHeight: 1, fontFamily: "'JetBrains Mono', monospace" }}>{day}</span>
+<span style={{ fontSize: 9, fontWeight: 600, color: mc, opacity: 0.45, fontFamily: "'JetBrains Mono', monospace", letterSpacing: "0.06em" }}>{dateObj.getFullYear()}</span>
+<svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ marginTop: 5, opacity: 0.5 }}>
+  {entry.mood === "built"    && <path d="M2 10L5 4l3 4 2-3 2 5" stroke={mc} strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>}
+  {entry.mood === "skipped"  && <path d="M7 2v5M7 9.5v1" stroke={mc} strokeWidth="1.5" strokeLinecap="round"/>}
+  {entry.mood === "thinking" && <><circle cx="7" cy="6" r="3.5" stroke={mc} strokeWidth="1.3"/><path d="M7 11v1.5" stroke={mc} strokeWidth="1.5" strokeLinecap="round"/></>}
+  {entry.mood === "blocked"  && <path d="M3 3l8 8M11 3L3 11" stroke={mc} strokeWidth="1.4" strokeLinecap="round"/>}
+</svg>
 </div>
 
       {/* Content column */}
@@ -1518,6 +1524,92 @@ function KidsSection({ colors, dark }: { colors: ReturnType<typeof buildColors>;
     </div>
   );
 }
+// ─── READ NUDGE ───────────────────────────────────────────────────────────────
+
+function ReadNudge({ colors, dark, onOpen }: {
+  colors: ReturnType<typeof buildColors>; dark: boolean; onOpen: () => void;
+}) {
+  const [visible, setVisible] = useState(false);
+  const [dismissed, setDismissed] = useState(false);
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastActivity = useRef(Date.now());
+
+  useEffect(() => {
+    if (dismissed) return;
+
+    const onActivity = () => {
+      lastActivity.current = Date.now();
+      setVisible(false);
+      if (timer.current) clearTimeout(timer.current);
+      timer.current = setTimeout(() => {
+        setVisible(true);
+      }, 12000); // 12s of inactivity
+    };
+
+    const events = ["mousemove", "scroll", "keydown", "touchmove"];
+    events.forEach(e => window.addEventListener(e, onActivity, { passive: true }));
+
+    // Start the first timer on mount
+    timer.current = setTimeout(() => setVisible(true), 12000);
+
+    return () => {
+      events.forEach(e => window.removeEventListener(e, onActivity));
+      if (timer.current) clearTimeout(timer.current);
+    };
+  }, [dismissed]);
+
+  if (dismissed) return null;
+
+  return (
+    <div style={{
+      position: "fixed",
+      bottom: 28,
+      right: 28,
+      zIndex: 150,
+      maxWidth: 260,
+      opacity: visible ? 1 : 0,
+      transform: visible ? "translateY(0) scale(1)" : "translateY(12px) scale(0.96)",
+      transition: "opacity 0.35s cubic-bezier(.4,0,.2,1), transform 0.35s cubic-bezier(.4,0,.2,1)",
+      pointerEvents: visible ? "auto" : "none",
+    }}>
+      <div style={{
+        background: dark ? "rgba(17,17,24,0.96)" : "rgba(255,255,255,0.97)",
+        border: `1px solid ${dark ? "rgba(139,124,246,0.3)" : "rgba(79,60,210,0.2)"}`,
+        borderRadius: 16,
+        padding: "14px 16px",
+        boxShadow: dark
+          ? "0 8px 40px rgba(0,0,0,0.6), 0 0 0 1px rgba(139,124,246,0.1)"
+          : "0 8px 40px rgba(79,60,210,0.12), 0 2px 8px rgba(0,0,0,0.08)",
+        backdropFilter: "blur(20px)",
+      }}>
+        {/* Dismiss */}
+        <button
+          onClick={() => { setVisible(false); setDismissed(true); }}
+          style={{ position: "absolute", top: 10, right: 10, width: 18, height: 18, borderRadius: "50%", background: "transparent", border: "none", color: dark ? "rgba(238,234,248,0.3)" : "#c4c2d0", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9, fontFamily: "inherit", padding: 0 }}
+        >✕</button>
+
+        {/* Pulse dot */}
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+          <span style={{ width: 7, height: 7, borderRadius: "50%", background: dark ? "#a78bfa" : "#6d28d9", boxShadow: dark ? "0 0 0 0 rgba(167,139,250,0.7)" : "0 0 0 0 rgba(109,40,217,0.5)", animation: "pingDot 2s cubic-bezier(0.4,0,0.6,1) infinite", flexShrink: 0 }} />
+          <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: dark ? "#a78bfa" : "#6d28d9", fontFamily: "'JetBrains Mono', monospace" }}>still reading?</span>
+        </div>
+
+        <p style={{ fontSize: 13, color: dark ? "rgba(238,234,248,0.75)" : "#3a384f", lineHeight: 1.6, margin: "0 0 12px", fontFamily: "'Instrument Sans', system-ui, sans-serif" }}>
+          Mehran reads every note. Leave a thought — encouragement, a question, anything.
+        </p>
+
+        <button
+          onClick={() => { onOpen(); setVisible(false); setDismissed(true); }}
+          style={{ width: "100%", padding: "9px", borderRadius: 10, background: `linear-gradient(135deg, ${dark ? "#8B7CF6" : "#6d28d9"}, ${dark ? "#10B981" : "#059669"})`, border: "none", color: "#fff", fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", letterSpacing: "0.04em", transition: "opacity 0.2s" }}
+          onMouseEnter={e => e.currentTarget.style.opacity = "0.88"}
+          onMouseLeave={e => e.currentTarget.style.opacity = "1"}
+        >
+          ✦ leave a note
+        </button>
+      </div>
+    </div>
+  );
+}
 // ─── MAIN ──────────────────────────────────────────────────────────────────────
 
 export default function Home() {
@@ -1914,6 +2006,7 @@ useEffect(() => {
 
       {activeProject && <ProjectModal project={activeProject.project} phase={activeProject.phase} onClose={() => setActiveProject(null)} colors={colors} dark={dark} />}
       <FeedbackModal open={feedbackOpen} onClose={() => setFeedbackOpen(false)} colors={colors} dark={dark} />
+      <ReadNudge colors={colors} dark={dark} onOpen={() => setFeedbackOpen(true)} />
       {confetti && <Confetti key={confetti.id} x={confetti.x} y={confetti.y} color={confetti.color} onDone={() => setConfetti(null)} />}
 
       <style>{`
