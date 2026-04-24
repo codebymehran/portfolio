@@ -1524,90 +1524,378 @@ function KidsSection({ colors, dark }: { colors: ReturnType<typeof buildColors>;
     </div>
   );
 }
+function RatedEmailCapture({ starRating, colors, dark }: {
+  starRating: number; colors: ReturnType<typeof buildColors>; dark: boolean;
+}) {
+  const [email, setEmail] = useState("");
+  const [sent, setSent] = useState(false);
+  const [sending, setSending] = useState(false);
+
+  const handleSend = async () => {
+    if (!email.trim() || sending) return;
+    setSending(true);
+    try {
+      await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          access_key: "821b5a66-e7e4-4d4e-a046-506c051daf4a",
+          subject: `${starRating}★ rating + email — mehrankhan.net`,
+          message: `Someone rated the site ${starRating}/5 and wants to be reached out to.`,
+          name: "Star rater",
+          email: email.trim(),
+          from_name: "Star Rating Widget",
+          botcheck: "",
+        }),
+      });
+      setSent(true);
+    } catch {}
+    setSending(false);
+  };
+
+  if (sent) return (
+    <p style={{ fontSize: 12, color: dark ? "#34d399" : "#059669", margin: 0, fontWeight: 600 }}>
+      ✓ Got it — Mehran will be in touch.
+    </p>
+  );
+
+  return (
+    <div style={{ textAlign: "left" }}>
+      <p style={{ fontSize: 11.5, color: dark ? "rgba(238,234,248,0.55)" : "#6e6b82", marginBottom: 8, lineHeight: 1.5 }}>
+        Want Mehran to reach out?
+      </p>
+      <div style={{ display: "flex", gap: 6 }}>
+        <input
+          value={email}
+          onChange={e => setEmail(e.target.value)}
+          onKeyDown={e => { if (e.key === "Enter") handleSend(); }}
+          type="email"
+          placeholder="your@email.com"
+          autoFocus
+          style={{ flex: 1, minWidth: 0, padding: "8px 11px", borderRadius: 9, border: `1px solid ${dark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}`, background: dark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.03)", color: dark ? "#eeeaf8" : "#0f0e1a", fontSize: 12, outline: "none", fontFamily: "inherit" }}
+        />
+        <button
+          onClick={handleSend}
+          disabled={!email.trim() || sending}
+          style={{ padding: "8px 14px", borderRadius: 9, background: email.trim() ? `linear-gradient(135deg, ${dark ? "#8B7CF6" : "#6d28d9"}, ${dark ? "#10B981" : "#059669"})` : (dark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.05)"), border: "none", color: email.trim() ? "#fff" : (dark ? "rgba(238,234,248,0.25)" : "#c4c2d0"), fontSize: 12, fontWeight: 700, cursor: email.trim() ? "pointer" : "not-allowed", fontFamily: "inherit", flexShrink: 0, transition: "all 0.2s" }}
+        >
+          {sending ? "…" : "→"}
+        </button>
+      </div>
+      <button
+        onClick={() => setSent(true)}
+        style={{ marginTop: 7, background: "none", border: "none", color: dark ? "rgba(238,234,248,0.2)" : "#c4c2d0", fontSize: 10, cursor: "pointer", fontFamily: "inherit", padding: 0 }}
+      >
+        no thanks
+      </button>
+    </div>
+  );
+}
 // ─── READ NUDGE ───────────────────────────────────────────────────────────────
+
+const NUDGE_MESSAGES = [
+  {
+    heading: "still reading?",
+    body: "Mehran reads every single note. A word of encouragement goes a long way.",
+    cta: "✦ leave a note",
+  },
+  {
+    heading: "enjoying the build?",
+    body: "Tell him what you think — takes 20 seconds and means more than you'd expect.",
+    cta: "→ drop a message",
+  },
+  {
+    heading: "you've been here a while",
+    body: "Something caught your eye? Let him know — good feedback is rare and valuable.",
+    cta: "✉ send a thought",
+  },
+  {
+    heading: "one quick thing",
+    body: "Building in public is scary. A note from a stranger makes it worth it.",
+    cta: "↗ say something",
+  },
+  {
+    heading: "before you go",
+    body: "Even 'looks good' matters more than silence. Mehran is listening.",
+    cta: "◆ leave a note",
+  },
+];
+
+const STAR_MESSAGES = {
+  heading: "how's it looking?",
+  body: "Rate the site or the idea — one tap, done.",
+};
+
+function StarRating({ onRate, colors, dark }: {
+  onRate: (n: number) => void;
+  colors: ReturnType<typeof buildColors>;
+  dark: boolean;
+}) {
+  const [hovered, setHovered] = useState(0);
+  const [rated, setRated] = useState(0);
+
+const handleRate = async (n: number) => {
+  setStarRating(n);
+  setMode("rated");
+  if (hideTimer.current) clearTimeout(hideTimer.current);
+  hideTimer.current = setTimeout(() => setVisible(false), 2500);
+
+  // Send to Web3Forms
+  try {
+    await fetch("https://api.web3forms.com/submit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        access_key: "821b5a66-e7e4-4d4e-a046-506c051daf4a",
+        subject: `${n}★ rating — mehrankhan.net`,
+        message: `Someone rated the site ${n} out of 5 stars.`,
+        name: "Anonymous visitor",
+        email: `rating-${n}stars-${Date.now()}@mehrankhan.net`,
+        from_name: "Star Rating Widget",
+        botcheck: "",
+      }),
+    });
+  } catch {}
+};
+
+  return (
+    <div style={{ display: "flex", gap: 6, justifyContent: "center", margin: "10px 0 4px" }}>
+      {[1, 2, 3, 4, 5].map(n => (
+        <button
+          key={n}
+          onMouseEnter={() => setHovered(n)}
+          onMouseLeave={() => setHovered(0)}
+          onClick={() => handleRate(n)}
+          style={{
+            background: "none", border: "none", cursor: "pointer", padding: "4px",
+            fontSize: 22, lineHeight: 1,
+            transform: hovered >= n || rated >= n ? "scale(1.25)" : "scale(1)",
+            transition: "transform 0.15s cubic-bezier(.34,1.56,.64,1)",
+            filter: hovered >= n || rated >= n ? "none" : "grayscale(1) opacity(0.35)",
+          }}
+        >★</button>
+      ))}
+    </div>
+  );
+}
 
 function ReadNudge({ colors, dark, onOpen }: {
   colors: ReturnType<typeof buildColors>; dark: boolean; onOpen: () => void;
 }) {
   const [visible, setVisible] = useState(false);
   const [dismissed, setDismissed] = useState(false);
+  const [msgIndex, setMsgIndex] = useState(0);
+  const [mode, setMode] = useState<"nudge" | "stars" | "rated" | "exit">("nudge");
+  const [starRating, setStarRating] = useState(0);
+  const [showCount, setShowCount] = useState(0);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const lastActivity = useRef(Date.now());
+  const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const INTERVALS = [8000, 20000, 35000, 55000]; // gets less frequent
+
+  const show = useCallback((index: number) => {
+    setMsgIndex(index % NUDGE_MESSAGES.length);
+    setMode(index % 3 === 2 ? "stars" : "nudge"); // every 3rd show = star rating
+    setVisible(true);
+    setShowCount(c => c + 1);
+    // Auto-hide after 8 seconds
+    if (hideTimer.current) clearTimeout(hideTimer.current);
+    hideTimer.current = setTimeout(() => setVisible(false), 8000);
+  }, []);
+
+  const scheduleNext = useCallback((index: number) => {
+    if (timer.current) clearTimeout(timer.current);
+    const delay = INTERVALS[Math.min(index, INTERVALS.length - 1)];
+    timer.current = setTimeout(() => {
+      show(index);
+      scheduleNext(index + 1);
+    }, delay);
+  }, [show]);
 
   useEffect(() => {
     if (dismissed) return;
-
-    const onActivity = () => {
-      lastActivity.current = Date.now();
-      setVisible(false);
-      if (timer.current) clearTimeout(timer.current);
-      timer.current = setTimeout(() => {
-        setVisible(true);
-      }, 12000); // 12s of inactivity
-    };
-
-    const events = ["mousemove", "scroll", "keydown", "touchmove"];
-    events.forEach(e => window.addEventListener(e, onActivity, { passive: true }));
-
-    // Start the first timer on mount
-    timer.current = setTimeout(() => setVisible(true), 12000);
-
+    scheduleNext(0);
     return () => {
-      events.forEach(e => window.removeEventListener(e, onActivity));
       if (timer.current) clearTimeout(timer.current);
+      if (hideTimer.current) clearTimeout(hideTimer.current);
     };
+  }, [dismissed, scheduleNext]);
+
+  // Exit intent — desktop
+  useEffect(() => {
+    if (dismissed) return;
+    const onMouseLeave = (e: MouseEvent) => {
+      if (e.clientY <= 10) {
+        if (hideTimer.current) clearTimeout(hideTimer.current);
+        setMode("exit");
+        setVisible(true);
+      }
+    };
+    document.addEventListener("mouseleave", onMouseLeave);
+    return () => document.removeEventListener("mouseleave", onMouseLeave);
   }, [dismissed]);
+
+  // Exit intent — mobile (back button / visibilitychange)
+  useEffect(() => {
+    if (dismissed) return;
+    const onVisibility = () => {
+      if (document.visibilityState === "hidden") {
+        setMode("exit");
+        setVisible(true);
+      }
+    };
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => document.removeEventListener("visibilitychange", onVisibility);
+  }, [dismissed]);
+
+  const handleRate = (n: number) => {
+    setStarRating(n);
+    setMode("rated");
+    if (hideTimer.current) clearTimeout(hideTimer.current);
+    hideTimer.current = setTimeout(() => {
+      setVisible(false);
+    }, 2500);
+  };
+
+  const handleCTA = () => {
+    setVisible(false);
+    setTimeout(onOpen, 200);
+  };
+
+  const handleDismiss = () => {
+    setVisible(false);
+    if (hideTimer.current) clearTimeout(hideTimer.current);
+    // Don't set dismissed — let it try again later
+  };
+
+  const handleNeverShow = () => {
+    setVisible(false);
+    setDismissed(true);
+  };
 
   if (dismissed) return null;
 
+  const msg = NUDGE_MESSAGES[msgIndex];
+  const isExit = mode === "exit";
+  const isStars = mode === "stars";
+  const isRated = mode === "rated";
+
   return (
-    <div style={{
-      position: "fixed",
-      bottom: 28,
-      right: 28,
-      zIndex: 150,
-      maxWidth: 260,
-      opacity: visible ? 1 : 0,
-      transform: visible ? "translateY(0) scale(1)" : "translateY(12px) scale(0.96)",
-      transition: "opacity 0.35s cubic-bezier(.4,0,.2,1), transform 0.35s cubic-bezier(.4,0,.2,1)",
-      pointerEvents: visible ? "auto" : "none",
-    }}>
+    <>
+      {/* Backdrop blur on exit intent */}
+      {isExit && visible && (
+        <div
+          onClick={handleDismiss}
+          style={{
+            position: "fixed", inset: 0, zIndex: 149,
+            background: "rgba(0,0,0,0.25)",
+            backdropFilter: "blur(2px)",
+            animation: "fadeIn 0.2s ease",
+          }}
+        />
+      )}
+
       <div style={{
-        background: dark ? "rgba(17,17,24,0.96)" : "rgba(255,255,255,0.97)",
-        border: `1px solid ${dark ? "rgba(139,124,246,0.3)" : "rgba(79,60,210,0.2)"}`,
-        borderRadius: 16,
-        padding: "14px 16px",
-        boxShadow: dark
-          ? "0 8px 40px rgba(0,0,0,0.6), 0 0 0 1px rgba(139,124,246,0.1)"
-          : "0 8px 40px rgba(79,60,210,0.12), 0 2px 8px rgba(0,0,0,0.08)",
-        backdropFilter: "blur(20px)",
+        position: "fixed",
+        bottom: isExit ? "50%" : 24,
+        right: isExit ? "50%" : 24,
+        transform: isExit
+          ? visible ? "translate(50%, 50%) scale(1)" : "translate(50%, 50%) scale(0.92)"
+          : visible ? "translateY(0) scale(1)" : "translateY(16px) scale(0.94)",
+        zIndex: 150,
+        width: isExit ? "min(320px, 90vw)" : "min(270px, calc(100vw - 48px))",
+        opacity: visible ? 1 : 0,
+        transition: "opacity 0.3s cubic-bezier(.4,0,.2,1), transform 0.3s cubic-bezier(.4,0,.2,1), bottom 0.3s ease, right 0.3s ease",
+        pointerEvents: visible ? "auto" : "none",
       }}>
-        {/* Dismiss */}
-        <button
-          onClick={() => { setVisible(false); setDismissed(true); }}
-          style={{ position: "absolute", top: 10, right: 10, width: 18, height: 18, borderRadius: "50%", background: "transparent", border: "none", color: dark ? "rgba(238,234,248,0.3)" : "#c4c2d0", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9, fontFamily: "inherit", padding: 0 }}
-        >✕</button>
+        <div style={{
+          background: dark ? "rgba(15,14,26,0.97)" : "rgba(255,255,255,0.98)",
+          border: `1px solid ${dark ? "rgba(139,124,246,0.35)" : "rgba(79,60,210,0.22)"}`,
+          borderRadius: isExit ? 20 : 16,
+          padding: isExit ? "22px 22px 18px" : "14px 16px 14px",
+          boxShadow: dark
+            ? "0 24px 60px rgba(0,0,0,0.7), 0 0 0 1px rgba(139,124,246,0.12)"
+            : "0 16px 50px rgba(79,60,210,0.16), 0 2px 8px rgba(0,0,0,0.08)",
+          backdropFilter: "blur(24px)",
+          position: "relative",
+        }}>
 
-        {/* Pulse dot */}
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
-          <span style={{ width: 7, height: 7, borderRadius: "50%", background: dark ? "#a78bfa" : "#6d28d9", boxShadow: dark ? "0 0 0 0 rgba(167,139,250,0.7)" : "0 0 0 0 rgba(109,40,217,0.5)", animation: "pingDot 2s cubic-bezier(0.4,0,0.6,1) infinite", flexShrink: 0 }} />
-          <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: dark ? "#a78bfa" : "#6d28d9", fontFamily: "'JetBrains Mono', monospace" }}>still reading?</span>
-        </div>
+          {/* Dismiss X */}
+          <button
+            onClick={handleDismiss}
+            style={{ position: "absolute", top: 10, right: 10, width: 20, height: 20, borderRadius: "50%", background: "transparent", border: "none", color: dark ? "rgba(238,234,248,0.3)" : "#c4c2d0", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9, fontFamily: "inherit", padding: 0, zIndex: 1 }}
+          >✕</button>
 
-        <p style={{ fontSize: 13, color: dark ? "rgba(238,234,248,0.75)" : "#3a384f", lineHeight: 1.6, margin: "0 0 12px", fontFamily: "'Instrument Sans', system-ui, sans-serif" }}>
-          Mehran reads every note. Leave a thought — encouragement, a question, anything.
-        </p>
-
-        <button
-          onClick={() => { onOpen(); setVisible(false); setDismissed(true); }}
-          style={{ width: "100%", padding: "9px", borderRadius: 10, background: `linear-gradient(135deg, ${dark ? "#8B7CF6" : "#6d28d9"}, ${dark ? "#10B981" : "#059669"})`, border: "none", color: "#fff", fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", letterSpacing: "0.04em", transition: "opacity 0.2s" }}
-          onMouseEnter={e => e.currentTarget.style.opacity = "0.88"}
-          onMouseLeave={e => e.currentTarget.style.opacity = "1"}
-        >
-          ✦ leave a note
-        </button>
-      </div>
+         {isRated ? (
+  <div style={{ textAlign: "center", padding: "4px 0" }}>
+    <div style={{ fontSize: 28, marginBottom: 6 }}>
+      {starRating >= 4 ? "🙏" : starRating >= 3 ? "👍" : "💪"}
     </div>
+    <div style={{ fontSize: 13, fontWeight: 600, color: dark ? "#eeeaf8" : "#0f0e1a", marginBottom: 4 }}>
+      {starRating >= 4 ? "Thank you so much!" : starRating >= 3 ? "Appreciate it!" : "Noted — will do better!"}
+    </div>
+    <div style={{ display: "flex", justifyContent: "center", gap: 3, marginBottom: starRating >= 4 ? 12 : 0 }}>
+      {[1,2,3,4,5].map(n => (
+        <span key={n} style={{ fontSize: 14, filter: n <= starRating ? "none" : "grayscale(1) opacity(0.3)" }}>★</span>
+      ))}
+    </div>
+
+    {/* Only for 4-5 stars */}
+    {starRating >= 4 && <RatedEmailCapture starRating={starRating} colors={colors} dark={dark} />}
+  </div>
+) : (
+            <>
+              {/* Header */}
+              <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 9 }}>
+                <span style={{ width: 6, height: 6, borderRadius: "50%", background: dark ? "#a78bfa" : "#6d28d9", flexShrink: 0, animation: "pingDot 2s cubic-bezier(0.4,0,0.6,1) infinite" }} />
+                <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: dark ? "#a78bfa" : "#6d28d9", fontFamily: "'JetBrains Mono', monospace" }}>
+                  {isExit ? "before you go" : isStars ? STAR_MESSAGES.heading : msg.heading}
+                </span>
+              </div>
+
+              <p style={{ fontSize: 13, color: dark ? "rgba(238,234,248,0.72)" : "#3a384f", lineHeight: 1.6, margin: "0 0 12px", paddingRight: 12 }}>
+                {isExit
+                  ? "Leaving already? Drop Mehran a quick note — a question, a thought, or just 'nice work'. Takes 20 seconds."
+                  : isStars
+                  ? STAR_MESSAGES.body
+                  : msg.body}
+              </p>
+
+              {isStars ? (
+                <>
+                  <StarRating onRate={handleRate} colors={colors} dark={dark} />
+                  <button
+                    onClick={handleCTA}
+                    style={{ width: "100%", marginTop: 10, padding: "8px", borderRadius: 10, background: "transparent", border: `1px solid ${dark ? "rgba(167,139,250,0.25)" : "rgba(109,40,217,0.18)"}`, color: dark ? "rgba(167,139,250,0.7)" : "rgba(109,40,217,0.6)", fontSize: 11, cursor: "pointer", fontFamily: "inherit", fontWeight: 600, letterSpacing: "0.04em" }}
+                  >
+                    or leave a written note →
+                  </button>
+                </>
+              ) : (
+                <button
+                  onClick={handleCTA}
+                  style={{ width: "100%", padding: isExit ? "11px" : "9px", borderRadius: 10, background: `linear-gradient(135deg, ${dark ? "#8B7CF6" : "#6d28d9"}, ${dark ? "#10B981" : "#059669"})`, border: "none", color: "#fff", fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", letterSpacing: "0.04em", transition: "opacity 0.2s" }}
+                  onMouseEnter={e => e.currentTarget.style.opacity = "0.88"}
+                  onMouseLeave={e => e.currentTarget.style.opacity = "1"}
+                >
+                  {isExit ? "✦ leave a quick note" : msg.cta}
+                </button>
+              )}
+
+              {/* Never show again */}
+              {showCount >= 2 && !isExit && (
+                <button
+                  onClick={handleNeverShow}
+                  style={{ display: "block", width: "100%", marginTop: 8, background: "none", border: "none", color: dark ? "rgba(238,234,248,0.2)" : "#d4d2de", fontSize: 10, cursor: "pointer", fontFamily: "inherit", letterSpacing: "0.04em", textAlign: "center", padding: "2px 0" }}
+                >
+                  don't show again
+                </button>
+              )}
+            </>
+          )}
+        </div>
+      </div>
+    </>
   );
 }
 // ─── MAIN ──────────────────────────────────────────────────────────────────────
