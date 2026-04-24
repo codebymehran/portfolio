@@ -1065,7 +1065,7 @@ function DevLog({ colors, dark }: { colors: ReturnType<typeof buildColors>; dark
                 { n: streak,         label: "streak",  color: dark ? "#fbbf24" : "#b45309" },
               ].map(s => (
                 <div key={s.label} style={{ textAlign: "center", padding: "10px 14px", borderRadius: 12, background: dark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.03)", border: `1px solid ${dark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.07)"}` }}>
-                  <div style={{ fontSize: 22, fontWeight: 300, color: s.color, lineHeight: 1, fontFamily: "'Cormorant Garamond', Georgia, serif" }}>{s.n}</div>
+                  <div style={{ fontSize: 20, fontWeight: 600, color: s.color, lineHeight: 1, fontFamily: "'JetBrains Mono', monospace" }}>{s.n}</div>
                   <div style={{ fontSize: 9.5, color: dark ? "rgba(238,234,248,0.35)" : "#9996ab", marginTop: 2, letterSpacing: "0.08em", textTransform: "uppercase", fontFamily: "'JetBrains Mono', monospace" }}>{s.label}</div>
                 </div>
               ))}
