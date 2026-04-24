@@ -1871,12 +1871,12 @@ const handleRate = async (n: number) => {
                   onMouseEnter={e => e.currentTarget.style.opacity = "0.88"}
                   onMouseLeave={e => e.currentTarget.style.opacity = "1"}
                 >
-                  {isExit ? "✦ leave a quick note" : msg.cta}
+                  {isExit ? "✦ leave a note" : msg.cta}
                 </button>
               )}
 
               {/* Never show again */}
-             // ADD this
+             
 {!isExit && (
   <button
     onClick={handleDismiss}
