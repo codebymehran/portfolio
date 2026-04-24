@@ -1689,16 +1689,13 @@ function StarRating({ onRate, colors, dark }: {
                     <stop offset="100%" stopColor={starColor} />
                   </linearGradient>
                 </defs>
-                <path
-                  d="M12 2l2.9 6.1L22 9.3l-5.1 4.8 1.2 6.9L12 17.8l-6.1 3.2 1.2-6.9L2 9.3l7.1-1.2L12 2z"
-                  fill={active ? `url(#sg${n})` : "none"}
-                  stroke={starColor}
-                  strokeWidth={active ? "0" : "1.5"}
-                  strokeLinejoin="round"
-                  style={{
-                    transition: "fill 0.2s ease, stroke 0.2s ease",
-                  }}
-                />
+               <path
+  d="M12 2l2.9 6.1L22 9.3l-5.1 4.8 1.2 6.9L12 17.8l-6.1 3.2 1.2-6.9L2 9.3l7.1-1.2L12 2z"
+  fill={active ? `url(#sg${n})` : (dark ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.1)")}
+  stroke={active ? "none" : (dark ? "rgba(255,255,255,0.25)" : "rgba(0,0,0,0.2)")}
+  strokeWidth="1.5"
+  strokeLinejoin="round"
+/>
               </svg>
             </button>
           </div>
