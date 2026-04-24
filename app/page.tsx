@@ -1884,7 +1884,6 @@ const handleRate = async (n: number) => {
   maybe later
 </button>
 </>
-            </>
           )}
         </div>
       </div>
