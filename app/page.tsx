@@ -1876,14 +1876,15 @@ const handleRate = async (n: number) => {
               )}
 
               {/* Never show again */}
-              {showCount >= 2 && !isExit && (
-                <button
-                  onClick={handleNeverShow}
-                  style={{ display: "block", width: "100%", marginTop: 8, background: "none", border: "none", color: dark ? "rgba(238,234,248,0.2)" : "#d4d2de", fontSize: 10, cursor: "pointer", fontFamily: "inherit", letterSpacing: "0.04em", textAlign: "center", padding: "2px 0" }}
-                >
-                  don't show again
-                </button>
-              )}
+             // ADD this
+{!isExit && (
+  <button
+    onClick={handleDismiss}
+    style={{ display: "block", width: "100%", marginTop: 8, background: "none", border: "none", color: dark ? "rgba(238,234,248,0.2)" : "#c4c2d0", fontSize: 10, cursor: "pointer", fontFamily: "inherit", letterSpacing: "0.04em", textAlign: "center", padding: "2px 0" }}
+  >
+    maybe later
+  </button>
+)}
             </>
           )}
         </div>
