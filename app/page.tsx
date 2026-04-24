@@ -834,10 +834,9 @@ function EntryCard({ entry, colors, dark, index }: {
     window.location.reload();
   };
 
-  const glyph = LOG_GLYPHS[index % LOG_GLYPHS.length];
-  const dayOfWeek = new Date(entry.date).toLocaleDateString("en-US", { weekday: "short" });
-  const [year, month, day] = entry.date.split("-");
-  const monthShort = new Date(entry.date).toLocaleDateString("en-US", { month: "short" });
+const dateObj = new Date(entry.date + "T12:00:00");
+const day = dateObj.getDate();
+const monthShort = dateObj.toLocaleDateString("en-US", { month: "short" }).toUpperCase();
 
   return (
     <div
@@ -856,22 +855,22 @@ function EntryCard({ entry, colors, dark, index }: {
       }}
     >
       {/* Date column */}
-      <div style={{
-        background: mb,
-        borderRight: `1px solid ${mbd}`,
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: "16px 8px",
-        gap: 2,
-        flexShrink: 0,
-      }}>
-        <span style={{ fontSize: 9, fontWeight: 700, color: mc, letterSpacing: "0.12em", textTransform: "uppercase", fontFamily: "'JetBrains Mono', monospace" }}>{dayOfWeek}</span>
-        <span style={{ fontSize: 22, fontWeight: 700, color: mc, lineHeight: 1, fontFamily: "'Cormorant Garamond', Georgia, serif" }}>{day}</span>
-        <span style={{ fontSize: 9, color: mc, opacity: 0.7, letterSpacing: "0.08em", textTransform: "uppercase", fontFamily: "'JetBrains Mono', monospace" }}>{monthShort} {year.slice(2)}</span>
-        <span style={{ fontSize: 11, marginTop: 4, color: mc, opacity: 0.5 }}>{glyph}</span>
-      </div>
+<div style={{
+  background: mb,
+  borderRight: `1px solid ${mbd}`,
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "center",
+  padding: "16px 10px",
+  gap: 1,
+  flexShrink: 0,
+  minWidth: 64,
+}}>
+  <span style={{ fontSize: 9, fontWeight: 700, color: mc, letterSpacing: "0.14em", fontFamily: "'JetBrains Mono', monospace", opacity: 0.7 }}>{monthShort}</span>
+  <span style={{ fontSize: 28, fontWeight: 700, color: mc, lineHeight: 1, fontFamily: "'JetBrains Mono', monospace" }}>{day}</span>
+  <span style={{ fontSize: 10, marginTop: 6, color: mc, opacity: 0.4 }}>{meta.glyph}</span>
+</div>
 
       {/* Content column */}
       <div style={{ padding: "14px 16px", minWidth: 0 }}>
