@@ -1748,14 +1748,7 @@ function ReadNudge({ colors, dark, onOpen }: {
     return () => document.removeEventListener("visibilitychange", onVisibility);
   }, [dismissed]);
 
-  const handleRate = (n: number) => {
-    setStarRating(n);
-    setMode("rated");
-    if (hideTimer.current) clearTimeout(hideTimer.current);
-    hideTimer.current = setTimeout(() => {
-      setVisible(false);
-    }, 2500);
-  };
+
 
   const handleCTA = () => {
     setVisible(false);
