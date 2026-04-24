@@ -775,6 +775,275 @@ function RocketVisual({ done, total, dark, colors, mounted }: {
     </div>
   );
 }
+// ─── DEV LOG ─────────────────────────────────────────────────────────────────
+
+type LogEntry = {
+  id: string;
+  date: string;
+  mood: "built" | "skipped" | "thinking" | "blocked";
+  title: string;
+  body: string;
+  createdAt: number;
+};
+
+const MOOD_META: Record<LogEntry["mood"], { label: string; color: string; emoji: string }> = {
+  built:    { label: "built something",     color: "#10B981", emoji: "🔨" },
+  skipped:  { label: "skipped today",       color: "#F59E0B", emoji: "💤" },
+  thinking: { label: "thinking / planning", color: "#8B7CF6", emoji: "💭" },
+  blocked:  { label: "blocked",             color: "#EF4444", emoji: "🧱" },
+};
+
+const TRUNCATE_AT = 200;
+const PAGE_SIZE = 5;
+
+function EntryCard({ entry, colors, dark }: {
+  entry: LogEntry;
+  colors: ReturnType<typeof buildColors>;
+  dark: boolean;
+}) {
+  const [expanded, setExpanded] = useState(false);
+  const meta = MOOD_META[entry.mood];
+  const isLong = entry.body.length > TRUNCATE_AT;
+  const bodyText = isLong && !expanded
+    ? entry.body.slice(0, TRUNCATE_AT).trimEnd() + "…"
+    : entry.body;
+
+  const deleteEntry = async () => {
+    const pwd = prompt("Enter your password to delete:");
+    if (!pwd) return;
+    await fetch("/api/devlog", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: entry.id, password: pwd }),
+    });
+    window.location.reload();
+  };
+
+  return (
+    <div style={{
+      padding: "14px 16px",
+      borderRadius: 12,
+      background: dark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.025)",
+      border: `1px solid ${dark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.07)"}`,
+      borderLeft: `3px solid ${meta.color}`,
+    }}>
+      {/* Top row */}
+      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: entry.body ? 6 : 0, flexWrap: "wrap" }}>
+        <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 9px", borderRadius: 20, background: `${meta.color}18`, color: meta.color, border: `1px solid ${meta.color}44` }}>
+          {meta.emoji} {meta.label}
+        </span>
+        <span style={{ fontSize: 11, color: colors.text3, fontFamily: "'JetBrains Mono', monospace" }}>
+          {entry.date}
+        </span>
+        <span style={{ flex: 1, fontSize: 13, fontWeight: 600, color: colors.text }}>
+          {entry.title}
+        </span>
+        <button
+          onClick={deleteEntry}
+          style={{ width: 22, height: 22, borderRadius: "50%", background: "transparent", border: `1px solid ${colors.border}`, color: colors.text4, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "inherit", fontSize: 10, flexShrink: 0, transition: "all 0.15s" }}
+          onMouseEnter={e => { e.currentTarget.style.color = "#EF4444"; e.currentTarget.style.borderColor = "#EF4444"; }}
+          onMouseLeave={e => { e.currentTarget.style.color = colors.text4; e.currentTarget.style.borderColor = colors.border; }}
+        >✕</button>
+      </div>
+
+      {/* Body */}
+      {entry.body && (
+        <>
+          <p style={{ fontSize: 12.5, color: colors.text2, lineHeight: 1.65, margin: 0 }}>
+            {bodyText}
+          </p>
+          {isLong && (
+            <button
+              onClick={() => setExpanded(v => !v)}
+              style={{ marginTop: 6, fontSize: 11, color: meta.color, background: "none", border: "none", cursor: "pointer", fontFamily: "inherit", padding: 0, fontWeight: 600 }}
+            >
+              {expanded ? "show less ↑" : "read more ↓"}
+            </button>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
+
+function DevLog({ colors, dark }: { colors: ReturnType<typeof buildColors>; dark: boolean }) {
+  const [entries, setEntries] = useState<LogEntry[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [composing, setComposing] = useState(false);
+  const [filter, setFilter] = useState<LogEntry["mood"] | "all">("all");
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const [form, setForm] = useState({ mood: "built" as LogEntry["mood"], title: "", body: "", password: "" });
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    fetch("/api/devlog")
+      .then(r => r.json())
+      .then(data => { setEntries(data); setLoading(false); })
+      .catch(() => setLoading(false));
+  }, []);
+
+  // Reset visible count when filter changes
+  useEffect(() => { setVisibleCount(PAGE_SIZE); }, [filter]);
+
+  const saveEntry = async () => {
+    if (!form.title.trim() || saving) return;
+    setSaving(true);
+    setError("");
+    try {
+      const res = await fetch("/api/devlog", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+      if (res.status === 401) { setError("Wrong password."); setSaving(false); return; }
+      const entry = await res.json();
+      setEntries(prev => [entry, ...prev]);
+      setForm({ mood: "built", title: "", body: "", password: "" });
+      setComposing(false);
+    } catch { setError("Something went wrong."); }
+    setSaving(false);
+  };
+
+  const filtered = filter === "all" ? entries : entries.filter(e => e.mood === filter);
+  const visible = filtered.slice(0, visibleCount);
+  const remaining = filtered.length - visibleCount;
+
+  return (
+    <div style={{ padding: "24px 32px 0", maxWidth: 680, margin: "0 auto", width: "100%" }}>
+      <div style={{
+        background: dark ? "rgba(22,22,30,0.9)" : "#ffffff",
+        borderRadius: 20,
+        border: `1px solid ${dark ? "rgba(139,124,246,0.18)" : "rgba(79,60,210,0.12)"}`,
+        padding: "24px 26px 20px",
+        boxShadow: dark ? "0 8px 40px rgba(0,0,0,0.4)" : "0 4px 24px rgba(0,0,0,0.07)",
+      }}>
+
+        {/* Header */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 18, flexWrap: "wrap", gap: 10 }}>
+          <div>
+            <div style={{ fontSize: 13, fontWeight: 600, color: colors.text, letterSpacing: "-0.01em", marginBottom: 2 }}>
+              Dev diary
+            </div>
+            <div style={{ fontSize: 11, color: colors.text3, fontFamily: "'JetBrains Mono', monospace" }}>
+              {loading ? "loading…" : `${entries.length} ${entries.length === 1 ? "entry" : "entries"} · public`}
+            </div>
+          </div>
+          <button
+            onClick={() => setComposing(v => !v)}
+            style={{ padding: "7px 16px", borderRadius: 20, fontSize: 12, fontWeight: 600, fontFamily: "inherit", cursor: "pointer", border: `1.5px solid ${colors.acc1}`, background: composing ? `${colors.acc1}22` : "transparent", color: colors.acc1, transition: "all 0.18s" }}
+          >
+            {composing ? "✕ cancel" : "+ new entry"}
+          </button>
+        </div>
+
+        {/* Compose form */}
+        {composing && (
+          <div style={{ background: dark ? "rgba(139,124,246,0.06)" : "rgba(79,60,210,0.04)", border: `1px solid ${dark ? "rgba(139,124,246,0.2)" : "rgba(79,60,210,0.14)"}`, borderRadius: 14, padding: "18px 16px", marginBottom: 18 }}>
+            {/* Mood picker */}
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 12 }}>
+              {(Object.keys(MOOD_META) as LogEntry["mood"][]).map(m => {
+                const meta = MOOD_META[m];
+                const active = form.mood === m;
+                return (
+                  <button key={m} onClick={() => setForm(f => ({ ...f, mood: m }))}
+                    style={{ padding: "5px 12px", borderRadius: 20, fontSize: 11, fontWeight: 600, fontFamily: "inherit", cursor: "pointer", border: `1.5px solid ${active ? meta.color : colors.border}`, background: active ? `${meta.color}22` : "transparent", color: active ? meta.color : colors.text3, transition: "all 0.15s" }}>
+                    {meta.emoji} {meta.label}
+                  </button>
+                );
+              })}
+            </div>
+            <input
+              value={form.title}
+              onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
+              placeholder="What happened today?"
+              maxLength={120}
+              style={{ width: "100%", background: colors.bg, border: `1px solid ${form.title ? colors.borderH : colors.border}`, borderRadius: 10, padding: "10px 13px", fontSize: 14, color: colors.text, outline: "none", fontFamily: "inherit", marginBottom: 8, display: "block" }}
+            />
+            <textarea
+              value={form.body}
+              onChange={e => setForm(f => ({ ...f, body: e.target.value }))}
+              onKeyDown={e => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) saveEntry(); }}
+              placeholder="Details, thoughts, what you skipped… (optional)"
+              rows={3}
+              style={{ width: "100%", background: colors.bg, border: `1px solid ${form.body ? colors.borderH : colors.border}`, borderRadius: 10, padding: "10px 13px", fontSize: 13, color: colors.text, resize: "vertical", outline: "none", fontFamily: "inherit", lineHeight: 1.6, display: "block", marginBottom: 8 }}
+            />
+            <input
+              value={form.password}
+              onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
+              type="password"
+              placeholder="Your password"
+              style={{ width: "100%", background: colors.bg, border: `1px solid ${colors.border}`, borderRadius: 10, padding: "10px 13px", fontSize: 13, color: colors.text, outline: "none", fontFamily: "inherit", marginBottom: 8, display: "block" }}
+            />
+            {error && <p style={{ fontSize: 12, color: "#EF4444", marginBottom: 8 }}>{error}</p>}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <span style={{ fontSize: 11, color: colors.text4, fontFamily: "'JetBrains Mono', monospace" }}>
+                {new Date().toISOString().slice(0, 10)}
+              </span>
+              <button
+                onClick={saveEntry}
+                disabled={!form.title.trim() || saving}
+                style={{ padding: "9px 20px", borderRadius: 10, background: form.title.trim() ? `linear-gradient(135deg, ${colors.acc1}, ${colors.acc2})` : colors.bg3, border: "none", color: form.title.trim() ? "#fff" : colors.text3, fontSize: 13, fontWeight: 600, cursor: form.title.trim() ? "pointer" : "not-allowed", fontFamily: "inherit" }}
+              >
+                {saving ? "saving…" : "save entry ⌘↵"}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Filter pills */}
+        {entries.length > 0 && (
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 14 }}>
+            {(["all", ...Object.keys(MOOD_META)] as Array<"all" | LogEntry["mood"]>).map(f => {
+              const count = f === "all" ? entries.length : entries.filter(e => e.mood === f).length;
+              if (f !== "all" && count === 0) return null;
+              const meta = f === "all" ? null : MOOD_META[f];
+              const active = filter === f;
+              return (
+                <button key={f} onClick={() => setFilter(f)}
+                  style={{ padding: "4px 12px", borderRadius: 20, fontSize: 11, fontWeight: 600, fontFamily: "inherit", cursor: "pointer", border: `1px solid ${active ? (meta?.color ?? colors.acc1) : colors.border}`, background: active ? `${(meta?.color ?? colors.acc1)}18` : "transparent", color: active ? (meta?.color ?? colors.acc1) : colors.text3, transition: "all 0.15s" }}>
+                  {f === "all" ? `all (${count})` : `${meta?.emoji} ${count}`}
+                </button>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Entries */}
+        {loading && (
+          <div style={{ textAlign: "center", padding: "24px 0", color: colors.text4, fontSize: 13 }}>
+            loading entries…
+          </div>
+        )}
+        {!loading && visible.length === 0 && (
+          <div style={{ textAlign: "center", padding: "32px 0", color: colors.text4, fontSize: 13 }}>
+            {entries.length === 0 ? "No entries yet." : "No entries match this filter."}
+          </div>
+        )}
+
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          {visible.map(entry => (
+            <EntryCard key={entry.id} entry={entry} colors={colors} dark={dark} />
+          ))}
+        </div>
+
+        {/* Load more */}
+        {remaining > 0 && (
+          <button
+            onClick={() => setVisibleCount(v => v + PAGE_SIZE)}
+            style={{ width: "100%", marginTop: 14, padding: "10px", borderRadius: 12, background: "transparent", border: `1px solid ${colors.border}`, color: colors.text3, fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", transition: "all 0.18s" }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = colors.acc1; e.currentTarget.style.color = colors.acc1; }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = colors.border; e.currentTarget.style.color = colors.text3; }}
+          >
+            show {Math.min(remaining, PAGE_SIZE)} more
+            <span style={{ opacity: 0.5, marginLeft: 6 }}>({remaining} remaining)</span>
+          </button>
+        )}
+
+      </div>
+    </div>
+  );
+}
 // ─── KIDS SECTION ─────────────────────────────────────────────────────────────
 
 // Photos: hashim.jpg, haziq.jpg, mehran.png — all in /public
@@ -1327,8 +1596,9 @@ useEffect(() => {
         <RocketVisual done={DONE} total={TOTAL} dark={dark} colors={colors} mounted={mounted} />
 
         {/* ── BUILD STREAK GRID ── */}
-        <BuildStreakGrid colors={colors} dark={dark} />
-        <KidsSection colors={colors} dark={dark} />
+<BuildStreakGrid colors={colors} dark={dark} />
+<DevLog colors={colors} dark={dark} />
+<KidsSection colors={colors} dark={dark} />
 
         {/* ── PHOTO ── */}
         <div style={{ padding: "24px 32px 8px", maxWidth: 560, margin: "0 auto", width: "100%" }}>
