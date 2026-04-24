@@ -1634,29 +1634,10 @@ function StarRating({ onRate, colors, dark }: {
   const [hovered, setHovered] = useState(0);
   const [rated, setRated] = useState(0);
 
-const handleRate = async (n: number) => {
-  setStarRating(n);
-  setMode("rated");
-  if (hideTimer.current) clearTimeout(hideTimer.current);
-  hideTimer.current = setTimeout(() => setVisible(false), 2500);
-
-  // Send to Web3Forms
-  try {
-    await fetch("https://api.web3forms.com/submit", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        access_key: "821b5a66-e7e4-4d4e-a046-506c051daf4a",
-        subject: `${n}★ rating — mehrankhan.net`,
-        message: `Someone rated the site ${n} out of 5 stars.`,
-        name: "Anonymous visitor",
-        email: `rating-${n}stars-${Date.now()}@mehrankhan.net`,
-        from_name: "Star Rating Widget",
-        botcheck: "",
-      }),
-    });
-  } catch {}
-};
+  const handleClick = (n: number) => {
+    setRated(n);
+    onRate(n);
+  };
 
   return (
     <div style={{ display: "flex", gap: 6, justifyContent: "center", margin: "10px 0 4px" }}>
@@ -1665,7 +1646,7 @@ const handleRate = async (n: number) => {
           key={n}
           onMouseEnter={() => setHovered(n)}
           onMouseLeave={() => setHovered(0)}
-          onClick={() => handleRate(n)}
+          onClick={() => handleClick(n)}
           style={{
             background: "none", border: "none", cursor: "pointer", padding: "4px",
             fontSize: 22, lineHeight: 1,
@@ -1765,7 +1746,27 @@ function ReadNudge({ colors, dark, onOpen }: {
     setVisible(false);
     setDismissed(true);
   };
-
+const handleRate = async (n: number) => {
+  setStarRating(n);
+  setMode("rated");
+  if (hideTimer.current) clearTimeout(hideTimer.current);
+  hideTimer.current = setTimeout(() => setVisible(false), 2500);
+  try {
+    await fetch("https://api.web3forms.com/submit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        access_key: "821b5a66-e7e4-4d4e-a046-506c051daf4a",
+        subject: `${n}★ rating — mehrankhan.net`,
+        message: `Someone rated the site ${n} out of 5 stars.`,
+        name: "Anonymous visitor",
+        email: `rating-${n}stars-${Date.now()}@mehrankhan.net`,
+        from_name: "Star Rating Widget",
+        botcheck: "",
+      }),
+    });
+  } catch {}
+};
   if (dismissed) return null;
 
   const msg = NUDGE_MESSAGES[msgIndex];
