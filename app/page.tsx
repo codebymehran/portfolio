@@ -1633,29 +1633,84 @@ function StarRating({ onRate, colors, dark }: {
 }) {
   const [hovered, setHovered] = useState(0);
   const [rated, setRated] = useState(0);
+  const [burst, setBurst] = useState(0);
 
   const handleClick = (n: number) => {
     setRated(n);
+    setBurst(n);
     onRate(n);
   };
 
   return (
-    <div style={{ display: "flex", gap: 6, justifyContent: "center", margin: "10px 0 4px" }}>
-      {[1, 2, 3, 4, 5].map(n => (
-        <button
-          key={n}
-          onMouseEnter={() => setHovered(n)}
-          onMouseLeave={() => setHovered(0)}
-          onClick={() => handleClick(n)}
-          style={{
-            background: "none", border: "none", cursor: "pointer", padding: "4px",
-            fontSize: 22, lineHeight: 1,
-            transform: hovered >= n || rated >= n ? "scale(1.25)" : "scale(1)",
-            transition: "transform 0.15s cubic-bezier(.34,1.56,.64,1)",
-            filter: hovered >= n || rated >= n ? "none" : "grayscale(1) opacity(0.35)",
-          }}
-        >★</button>
-      ))}
+    <div style={{ display: "flex", gap: 8, justifyContent: "center", margin: "10px 0 6px", position: "relative" }}>
+      {[1, 2, 3, 4, 5].map(n => {
+        const active = hovered >= n || rated >= n;
+        const isBurst = burst === n;
+        const starColor = active
+          ? n <= 2 ? "#fb923c" : n <= 4 ? "#f59e0b" : "#fbbf24"
+          : dark ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.12)";
+
+        return (
+          <div key={n} style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            {/* Burst particles */}
+            {isBurst && Array.from({ length: 6 }).map((_, i) => {
+              const angle = (i / 6) * Math.PI * 2;
+              return (
+                <div key={i} style={{
+                  position: "absolute",
+                  width: 4, height: 4,
+                  borderRadius: "50%",
+                  background: starColor,
+                  animation: "starBurst 0.5s cubic-bezier(.22,.68,0,1.2) forwards",
+                  "--bx": `${Math.cos(angle) * 18}px`,
+                  "--by": `${Math.sin(angle) * 18}px`,
+                  pointerEvents: "none",
+                } as React.CSSProperties} />
+              );
+            })}
+
+            <button
+              onMouseEnter={() => setHovered(n)}
+              onMouseLeave={() => setHovered(0)}
+              onClick={() => handleClick(n)}
+              style={{
+                background: "none", border: "none", cursor: "pointer",
+                padding: "6px", lineHeight: 1, display: "flex",
+                alignItems: "center", justifyContent: "center",
+                transform: hovered === n ? "scale(1.35) translateY(-3px)" : rated >= n ? "scale(1.1)" : "scale(1)",
+                transition: "transform 0.18s cubic-bezier(.34,1.56,.64,1), filter 0.15s ease",
+                filter: active ? `drop-shadow(0 0 6px ${starColor}88)` : "none",
+              }}
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24">
+                <defs>
+                  <linearGradient id={`sg${n}`} x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stopColor={active ? "#fff9c4" : (dark ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.15)")} />
+                    <stop offset="100%" stopColor={starColor} />
+                  </linearGradient>
+                </defs>
+                <path
+                  d="M12 2l2.9 6.1L22 9.3l-5.1 4.8 1.2 6.9L12 17.8l-6.1 3.2 1.2-6.9L2 9.3l7.1-1.2L12 2z"
+                  fill={active ? `url(#sg${n})` : "none"}
+                  stroke={starColor}
+                  strokeWidth={active ? "0" : "1.5"}
+                  strokeLinejoin="round"
+                  style={{
+                    transition: "fill 0.2s ease, stroke 0.2s ease",
+                  }}
+                />
+              </svg>
+            </button>
+          </div>
+        );
+      })}
+
+      <style>{`
+        @keyframes starBurst {
+          0%   { transform: translate(0, 0) scale(1); opacity: 1; }
+          100% { transform: translate(var(--bx), var(--by)) scale(0); opacity: 0; }
+        }
+      `}</style>
     </div>
   );
 }
@@ -1848,11 +1903,7 @@ const handleRate = async (n: number) => {
               </div>
 
               <p style={{ fontSize: 13, color: dark ? "rgba(238,234,248,0.72)" : "#3a384f", lineHeight: 1.6, margin: "0 0 12px", paddingRight: 12 }}>
-                {isExit
-                  ? "Leaving already? Drop Mehran a quick note — a question, a thought, or just 'nice work'. Takes 20 seconds."
-                  : isStars
-                  ? STAR_MESSAGES.body
-                  : msg.body}
+                {isExit ? "A quick note means a lot. Takes 20 seconds." : isStars ? STAR_MESSAGES.body : msg.body}
               </p>
 
               {isStars ? (
