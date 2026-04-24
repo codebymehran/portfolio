@@ -1877,14 +1877,13 @@ const handleRate = async (n: number) => {
 
               {/* Never show again */}
              
-{!isExit && (
-  <button
-    onClick={handleDismiss}
-    style={{ display: "block", width: "100%", marginTop: 8, background: "none", border: "none", color: dark ? "rgba(238,234,248,0.2)" : "#c4c2d0", fontSize: 10, cursor: "pointer", fontFamily: "inherit", letterSpacing: "0.04em", textAlign: "center", padding: "2px 0" }}
-  >
-    maybe later
-  </button>
-)}
+<button
+  onClick={isExit ? handleNeverShow : handleDismiss}
+  style={{ display: "block", width: "100%", marginTop: 8, background: "none", border: "none", color: dark ? "rgba(238,234,248,0.2)" : "#c4c2d0", fontSize: 10, cursor: "pointer", fontFamily: "inherit", letterSpacing: "0.04em", textAlign: "center", padding: "2px 0" }}
+>
+  maybe later
+</button>
+</>
             </>
           )}
         </div>
