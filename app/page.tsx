@@ -921,9 +921,13 @@ const monthShort = dateObj.toLocaleDateString("en-US", { month: "short" }).toUpp
         {/* Body */}
         {entry.body && (
           <>
-            <p style={{ fontSize: 12.5, color: colors.text2, lineHeight: 1.7, margin: 0, fontStyle: "italic" }}>
-              {bodyText}
-            </p>
+           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+  {bodyText.split("\n").filter(p => p.trim()).map((para, i) => (
+    <p key={i} style={{ fontSize: 12.5, color: colors.text2, lineHeight: 1.7, margin: 0 }}>
+      {para}
+    </p>
+  ))}
+</div>
             {isLong && (
               <button
                 onClick={() => setExpanded(v => !v)}
