@@ -29,26 +29,74 @@ const LINES = [
   `Either way, I'm not rushing.`,
 ];
 
+function RedCross({ drawn }: { drawn: boolean }) {
+  const [size, setSize] = useState({ w: 0, h: 0 });
+
+  useEffect(() => {
+    const update = () => setSize({ w: window.innerWidth, h: window.innerHeight });
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
+
+  if (size.w === 0) return null;
+
+  const { w, h } = size;
+  const diag = Math.hypot(w, h);
+  const strokeWidth = Math.max(6, Math.min(w, h) * 0.012); // scales with screen, min 6px
+
+  return (
+    <svg
+      width={w}
+      height={h}
+      viewBox={`0 0 ${w} ${h}`}
+      style={{ position: "absolute", inset: 0, pointerEvents: "none" }}
+    >
+      <line
+        x1={0} y1={0} x2={w} y2={h}
+        stroke="#e11d2e"
+        strokeWidth={strokeWidth}
+        strokeLinecap="round"
+        style={{
+          strokeDasharray: diag,
+          strokeDashoffset: drawn ? 0 : diag,
+          transition: "stroke-dashoffset 0.7s cubic-bezier(.4,0,.2,1)",
+          filter: "drop-shadow(0 0 10px rgba(225,29,46,0.7))",
+        }}
+      />
+      <line
+        x1={w} y1={0} x2={0} y2={h}
+        stroke="#e11d2e"
+        strokeWidth={strokeWidth}
+        strokeLinecap="round"
+        style={{
+          strokeDasharray: diag,
+          strokeDashoffset: drawn ? 0 : diag,
+          transition: "stroke-dashoffset 0.7s cubic-bezier(.4,0,.2,1) 0.15s",
+          filter: "drop-shadow(0 0 10px rgba(225,29,46,0.7))",
+        }}
+      />
+    </svg>
+  );
+}
+
 export default function Home() {
   const [crossDrawn, setCrossDrawn] = useState(false);
   const [lineIdx, setLineIdx] = useState(0);
   const [charIdx, setCharIdx] = useState(0);
   const [doneTyping, setDoneTyping] = useState(false);
 
-  // Trigger cross draw-in on mount
   useEffect(() => {
     const t = setTimeout(() => setCrossDrawn(true), 150);
     return () => clearTimeout(t);
   }, []);
 
-  // Start typing after cross finishes drawing
   useEffect(() => {
     if (!crossDrawn) return;
     const delay = setTimeout(() => setLineIdx(0), 900);
     return () => clearTimeout(delay);
   }, [crossDrawn]);
 
-  // Typewriter logic — line by line
   useEffect(() => {
     if (!crossDrawn || lineIdx >= LINES.length) {
       if (lineIdx >= LINES.length && crossDrawn) setDoneTyping(true);
@@ -81,41 +129,8 @@ export default function Home() {
         fontFamily: "'JetBrains Mono', monospace",
       }}
     >
-      {/* ── BIG RED CROSS ── */}
-      <svg
-        viewBox="0 0 100 100"
-        preserveAspectRatio="none"
-        style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none" }}
-      >
-        <line
-          x1="2" y1="2" x2="98" y2="98"
-          stroke="#e11d2e"
-          strokeWidth="1.6"
-          strokeLinecap="round"
-          vectorEffect="non-scaling-stroke"
-          style={{
-            strokeDasharray: 140,
-            strokeDashoffset: crossDrawn ? 0 : 140,
-            transition: "stroke-dashoffset 0.7s cubic-bezier(.4,0,.2,1)",
-            filter: "drop-shadow(0 0 10px rgba(225,29,46,0.7))",
-          }}
-        />
-        <line
-          x1="98" y1="2" x2="2" y2="98"
-          stroke="#e11d2e"
-          strokeWidth="1.6"
-          strokeLinecap="round"
-          vectorEffect="non-scaling-stroke"
-          style={{
-            strokeDasharray: 140,
-            strokeDashoffset: crossDrawn ? 0 : 140,
-            transition: "stroke-dashoffset 0.7s cubic-bezier(.4,0,.2,1) 0.15s",
-            filter: "drop-shadow(0 0 10px rgba(225,29,46,0.7))",
-          }}
-        />
-      </svg>
+      <RedCross drawn={crossDrawn} />
 
-      {/* faint red glow wash */}
       <div
         style={{
           position: "absolute",
@@ -127,7 +142,6 @@ export default function Home() {
         }}
       />
 
-      {/* ── TEXT ── */}
       <div
         style={{
           position: "relative",
