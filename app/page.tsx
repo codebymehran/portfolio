@@ -162,6 +162,41 @@ export default function Home() {
         </div>
 
         {/* footer signature + progress chip */}
+        {/* quote */}
+<div
+  style={{
+    marginTop: 42,
+    opacity: stage >= 4 ? 1 : 0,
+    transition: "opacity .8s ease .3s",
+    textAlign: "center",
+  }}
+>
+  <p
+    style={{
+      margin: 0,
+      fontFamily: "'Cormorant Garamond', Georgia, serif",
+      fontStyle: "italic",
+      fontSize: "clamp(15px,1.5vw,18px)",
+      color: "rgba(255,255,255,0.42)",
+      letterSpacing: "0.01em",
+    }}
+  >
+    “Find what you love and let it kill you.”
+  </p>
+
+  <p
+    style={{
+      marginTop: 8,
+      fontSize: 10,
+      letterSpacing: "0.18em",
+      textTransform: "uppercase",
+      color: "rgba(255,255,255,0.22)",
+      fontFamily: "'JetBrains Mono', monospace",
+    }}
+  >
+    — Charles Bukowski
+  </p>
+</div>
         <div
           style={{
             marginTop: 40,
