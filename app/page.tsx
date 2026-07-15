@@ -11,6 +11,9 @@ const PARAGRAPHS = [
   `Bookmark it, or don't. Either way, I'm not rushing.`,
 ];
 
+const FOOTNOTE_QUESTION = "Does God exist?";
+const FOOTNOTE_ANSWER = `I can help you understand — through psychology, logic, and modern science.`;
+
 function Starfield() {
   const ref = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
@@ -47,6 +50,138 @@ function Starfield() {
     return () => { cancelAnimationFrame(raf); window.removeEventListener("resize", resize); };
   }, []);
   return <canvas ref={ref} style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />;
+}
+
+function Footnote() {
+  const [open, setOpen] = useState(false);
+  const [typed, setTyped] = useState("");
+  const [answerVisible, setAnswerVisible] = useState(false);
+  const reduceMotion = useRef(false);
+
+  useEffect(() => {
+    reduceMotion.current = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  }, []);
+
+  useEffect(() => {
+    if (!open) {
+      setTyped("");
+      setAnswerVisible(false);
+      return;
+    }
+    if (reduceMotion.current) {
+      setTyped(FOOTNOTE_QUESTION);
+      setAnswerVisible(true);
+      return;
+    }
+    let i = 0;
+    const interval = setInterval(() => {
+      i += 1;
+      setTyped(FOOTNOTE_QUESTION.slice(0, i));
+      if (i >= FOOTNOTE_QUESTION.length) {
+        clearInterval(interval);
+        setTimeout(() => setAnswerVisible(true), 350);
+      }
+    }, 55);
+    return () => clearInterval(interval);
+  }, [open]);
+
+  return (
+    <span style={{ position: "relative", display: "inline-block" }}>
+      <button
+        onClick={() => setOpen(v => !v)}
+        aria-expanded={open}
+        aria-label="Read footnote"
+        style={{
+          background: "none",
+          border: "none",
+          padding: 0,
+          marginLeft: 3,
+          cursor: "pointer",
+          font: "inherit",
+          fontSize: 10,
+          verticalAlign: "super",
+          color: open ? "#a78bfa" : "rgba(255,255,255,0.35)",
+          transition: "color 0.3s ease",
+        }}
+      >
+        [1]
+      </button>
+
+      <div
+        style={{
+          position: "absolute",
+          left: 0,
+          top: "calc(100% + 14px)",
+          width: "min(420px, 82vw)",
+          maxHeight: open ? 260 : 0,
+          opacity: open ? 1 : 0,
+          overflow: "hidden",
+          transition: "max-height 0.5s cubic-bezier(.22,.68,0,1.1), opacity 0.4s ease",
+          background: "rgba(20,16,31,0.92)",
+          backdropFilter: "blur(10px)",
+          border: "1px solid rgba(167,139,250,0.25)",
+          borderRadius: 10,
+          padding: open ? "18px 20px" : "0 20px",
+          boxShadow: "0 12px 40px rgba(0,0,0,0.45)",
+          zIndex: 10,
+        }}
+      >
+        <div
+          style={{
+            fontFamily: "'JetBrains Mono', monospace",
+            fontSize: 10,
+            letterSpacing: "0.14em",
+            textTransform: "uppercase",
+            color: "rgba(255,255,255,0.3)",
+            marginBottom: 10,
+          }}
+        >
+          footnote · 01
+        </div>
+
+        <p
+          style={{
+            fontFamily: "'Cormorant Garamond', Georgia, serif",
+            fontStyle: "italic",
+            fontWeight: 600,
+            fontSize: "clamp(18px, 2.2vw, 22px)",
+            color: "#f2f0ff",
+            margin: 0,
+            minHeight: "1.4em",
+          }}
+        >
+          {typed}
+          <span
+            style={{
+              display: "inline-block",
+              width: 2,
+              height: "1em",
+              background: "#a78bfa",
+              marginLeft: 3,
+              verticalAlign: "text-bottom",
+              opacity: typed.length < FOOTNOTE_QUESTION.length ? 1 : 0,
+              animation: typed.length < FOOTNOTE_QUESTION.length ? "blink 0.9s step-end infinite" : "none",
+            }}
+          />
+        </p>
+
+        <p
+          style={{
+            fontFamily: "'Instrument Sans', system-ui, sans-serif",
+            fontSize: 13.5,
+            lineHeight: 1.7,
+            color: "rgba(238,234,248,0.75)",
+            margin: "12px 0 0",
+            opacity: answerVisible ? 1 : 0,
+            transform: answerVisible ? "translateY(0)" : "translateY(6px)",
+            transition: "opacity 0.6s ease, transform 0.6s ease",
+          }}
+        >
+          {FOOTNOTE_ANSWER}
+        </p>
+      </div>
+    </span>
+  );
 }
 
 export default function Home() {
@@ -161,42 +296,43 @@ export default function Home() {
           ))}
         </div>
 
-        {/* footer signature + progress chip */}
         {/* quote */}
-<div
-  style={{
-    marginTop: 42,
-    opacity: stage >= 4 ? 1 : 0,
-    transition: "opacity .8s ease .3s",
-    textAlign: "center",
-  }}
->
-  <p
-    style={{
-      margin: 0,
-      fontFamily: "'Cormorant Garamond', Georgia, serif",
-      fontStyle: "italic",
-      fontSize: "clamp(15px,1.5vw,18px)",
-      color: "rgba(255,255,255,0.42)",
-      letterSpacing: "0.01em",
-    }}
-  >
-    “Find what you love and let it kill you.”
-  </p>
+        <div
+          style={{
+            marginTop: 42,
+            opacity: stage >= 4 ? 1 : 0,
+            transition: "opacity .8s ease .3s",
+            textAlign: "center",
+          }}
+        >
+          <p
+            style={{
+              margin: 0,
+              fontFamily: "'Cormorant Garamond', Georgia, serif",
+              fontStyle: "italic",
+              fontSize: "clamp(15px,1.5vw,18px)",
+              color: "rgba(255,255,255,0.42)",
+              letterSpacing: "0.01em",
+            }}
+          >
+            “Find what you love and let it kill you.”
+          </p>
 
-  <p
-    style={{
-      marginTop: 8,
-      fontSize: 10,
-      letterSpacing: "0.18em",
-      textTransform: "uppercase",
-      color: "rgba(255,255,255,0.22)",
-      fontFamily: "'JetBrains Mono', monospace",
-    }}
-  >
-    — Charles Bukowski
-  </p>
-</div>
+          <p
+            style={{
+              marginTop: 8,
+              fontSize: 10,
+              letterSpacing: "0.18em",
+              textTransform: "uppercase",
+              color: "rgba(255,255,255,0.22)",
+              fontFamily: "'JetBrains Mono', monospace",
+            }}
+          >
+            — Charles Bukowski
+          </p>
+        </div>
+
+        {/* footer signature + progress chip */}
         <div
           style={{
             marginTop: 40,
@@ -216,6 +352,7 @@ export default function Home() {
           <span style={{ fontSize: 10, color: "rgba(255,255,255,0.2)" }}>·</span>
           <span style={{ fontSize: 11, letterSpacing: "0.1em", color: "rgba(255,255,255,0.28)", fontFamily: "'JetBrains Mono', monospace" }}>
             developer · philosopher · historian
+            <Footnote />
           </span>
           <span
             style={{
@@ -240,6 +377,7 @@ export default function Home() {
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,600&family=Instrument+Sans:wght@400;500&family=JetBrains+Mono:wght@400;500;600&display=swap');
         @keyframes pingDot { 0%{box-shadow:0 0 0 0 rgba(167,139,250,0.7)} 60%{box-shadow:0 0 0 7px rgba(167,139,250,0)} 100%{box-shadow:0 0 0 0 rgba(167,139,250,0)} }
         @keyframes orbFloat { 0%,100%{transform:translate(0,0)} 50%{transform:translate(20px,-20px)} }
+        @keyframes blink { 50% { opacity: 0; } }
         * { box-sizing: border-box; }
       `}</style>
     </main>
