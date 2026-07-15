@@ -108,22 +108,38 @@ function Footnote() {
       </button>
 
       <div
+        onClick={() => setOpen(false)}
         style={{
-          position: "absolute",
-          left: 0,
-          top: "calc(100% + 14px)",
-          width: "min(420px, 82vw)",
-          maxHeight: open ? 260 : 0,
+          position: "fixed",
+          inset: 0,
+          background: "rgba(0,0,0,0.55)",
           opacity: open ? 1 : 0,
-          overflow: "hidden",
-          transition: "max-height 0.5s cubic-bezier(.22,.68,0,1.1), opacity 0.4s ease",
-          background: "rgba(20,16,31,0.92)",
+          pointerEvents: open ? "auto" : "none",
+          transition: "opacity 0.4s ease",
+          zIndex: 40,
+        }}
+      />
+
+      <div
+        style={{
+          position: "fixed",
+          left: "50%",
+          bottom: "auto",
+          top: "50%",
+          transform: open ? "translate(-50%, -50%)" : "translate(-50%, -46%)",
+          width: "min(420px, calc(100vw - 40px))",
+          maxHeight: open ? "min(320px, 70vh)" : 0,
+          opacity: open ? 1 : 0,
+          overflow: "auto",
+          pointerEvents: open ? "auto" : "none",
+          transition: "opacity 0.4s ease, transform 0.4s cubic-bezier(.22,.68,0,1.1)",
+          background: "rgba(20,16,31,0.96)",
           backdropFilter: "blur(10px)",
           border: "1px solid rgba(167,139,250,0.25)",
           borderRadius: 10,
-          padding: open ? "18px 20px" : "0 20px",
-          boxShadow: "0 12px 40px rgba(0,0,0,0.45)",
-          zIndex: 10,
+          padding: "18px 20px",
+          boxShadow: "0 12px 40px rgba(0,0,0,0.5)",
+          zIndex: 50,
         }}
       >
         <div
@@ -197,6 +213,7 @@ export default function Home() {
 
   return (
     <main
+      className="hero-main"
       style={{
         position: "fixed",
         inset: 0,
@@ -204,8 +221,8 @@ export default function Home() {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        padding: "48px 32px",
-        overflow: "hidden",
+        overflowY: "auto",
+        overflowX: "hidden",
       }}
     >
       <Starfield />
@@ -334,6 +351,7 @@ export default function Home() {
 
         {/* footer signature + progress chip */}
         <div
+          className="hero-footer"
           style={{
             marginTop: 40,
             display: "flex",
@@ -355,6 +373,7 @@ export default function Home() {
             <Footnote />
           </span>
           <span
+            className="hero-badge"
             style={{
               fontSize: 10,
               fontWeight: 700,
@@ -379,6 +398,20 @@ export default function Home() {
         @keyframes orbFloat { 0%,100%{transform:translate(0,0)} 50%{transform:translate(20px,-20px)} }
         @keyframes blink { 50% { opacity: 0; } }
         * { box-sizing: border-box; }
+
+        .hero-main { padding: 48px 32px; }
+        .hero-footer { row-gap: 10px; }
+        .hero-badge { margin-left: auto; }
+
+        @media (max-width: 640px) {
+          .hero-main { padding: 32px 20px; }
+          .hero-footer { gap: 10px 14px; }
+          .hero-badge { margin-left: 0; width: 100%; text-align: center; }
+        }
+
+        @media (max-width: 380px) {
+          .hero-main { padding: 24px 16px; }
+        }
       `}</style>
     </main>
   );
