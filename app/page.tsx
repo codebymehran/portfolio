@@ -2,13 +2,13 @@
 
 import { useState, useEffect, useRef } from "react";
 
-const HEADLINE = ["Patience", "is", "not", "the", "absence", "of", "ambition."];
+const HEADLINE = ["Quiet", "is", "not", "the", "same", "as", "idle."];
 
 const PARAGRAPHS = [
-  `To the developers, recruiters, and strangers messaging me about my "first project" — I see you, and I appreciate the interest.`,
-  `But I don't owe anyone a shipping schedule for work I'm doing on my own time, with my own hands, for reasons that are mine. I'm a developer by trade, but a philosopher and historian by habit — and both have taught me that anything worth building is built at someone else's pace only if you let it be.`,
-  `I'm not chasing anyone's deadline but my own. Twenty-two apps, real stack, real users, built the hard way. It'll be done when it's done right — not when it's convenient for your inbox.`,
-  `Bookmark it, or don't. Either way, I'm not rushing.`,
+  `Yes, I promised this in public. And yes, I haven't shown it yet. That's on me, and I'd rather tell you straight than go silent and hope you forget.`,
+  `Here's what happened: AI rewired the software industry while I was building. I could have shipped on schedule and been outdated on arrival. Instead I went deep into how LLMs actually work, and into embeddings, retrieval, RAG and the machinery under the hype.`,
+  `The work is still happening, and it's getting sharper. What I'm learning is changing how I build, and I think you'll see that when it lands.`,
+  `You get one life, and it's going to kill us all eventually. I'm not spending mine at half strength. Stay tuned.`,
 ];
 
 const FOOTNOTE_QUESTION = "Does God exist?";
@@ -257,7 +257,7 @@ export default function Home() {
           }}
         >
           <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#a78bfa", boxShadow: "0 0 8px #a78bfa", animation: "pingDot 2s cubic-bezier(0.4,0,0.6,1) infinite" }} />
-          a note, before you ask
+          a progress note, not an excuse
         </div>
 
         {/* headline — word by word */}
@@ -283,7 +283,7 @@ export default function Home() {
                 opacity: stage >= 2 ? 1 : 0,
                 transform: stage >= 2 ? "translateY(0)" : "translateY(14px)",
                 transition: `opacity 0.5s ease ${i * 90}ms, transform 0.5s cubic-bezier(.22,.68,0,1.1) ${i * 90}ms`,
-                color: word === "ambition." ? "#8B7CF6" : undefined,
+                color: word === "idle." ? "#8B7CF6" : undefined,
               }}
             >
               {word}
@@ -387,7 +387,7 @@ export default function Home() {
               marginLeft: "auto",
             }}
           >
-            0 / 22 — and that's fine
+            still building — stay tuned
           </span>
         </div>
       </div>
