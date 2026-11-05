@@ -2,8 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 
-// TODO: replace with your real link (X, GitHub, or mailto:you@example.com)
-const FOLLOW_URL = "https://x.com/yourhandle";
+const FOLLOW_URL = "https://github.com/codebymehran";
 const FOLLOW_LABEL = "Follow the build";
 
 const HEADLINE = ["Quiet", "is", "not", "the", "same", "as", "idle."];
@@ -174,7 +173,7 @@ export default function Home() {
           }}
         >
           <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#fbbf24", boxShadow: "0 0 8px #fbbf24", animation: "pingDot 2s cubic-bezier(0.4,0,0.6,1) infinite" }} />
-          a progress note, not an excuse
+          status: in development
         </div>
 
         {/* headline */}
@@ -393,6 +392,7 @@ export default function Home() {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
+            marginTop: "clamp(8px, 2.5vh, 26px)",
             gap: "4px 14px",
             flexWrap: "wrap",
             opacity: stage >= 4 ? 1 : 0,
@@ -405,7 +405,7 @@ export default function Home() {
           </span>
           <span style={{ fontSize: 11, color: "rgba(255,255,255,0.45)" }}>·</span>
           <span style={{ fontSize: 11.5, letterSpacing: "0.1em", color: "rgba(255,255,255,0.68)", fontFamily: "'JetBrains Mono', monospace" }}>
-            Full-Stack · AI engineer · RAG
+            Full-Stack · AI Engineer · LLM Developer
           </span>
         </div>
       </div>
