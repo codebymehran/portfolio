@@ -2,22 +2,17 @@
 
 import { useState, useEffect, useRef } from "react";
 
+// TODO: replace with your real link (X, GitHub, or mailto:you@example.com)
+const FOLLOW_URL = "https://x.com/yourhandle";
+const FOLLOW_LABEL = "Follow the build";
+
 const HEADLINE = ["Quiet", "is", "not", "the", "same", "as", "idle."];
 
-const TOPICS = ["Transformers", "Attention", "Embeddings", "Vector search", "RAG", "Reranking", "Agents", "Tool use", "MCP", "LoRA", "Evals"];
+const INTRO = `I promised this in public and haven't shown it yet. That's on me. While I built, AI rewired the industry, so I went deep on how LLMs really work, and what I'm learning is changing how I build.`;
 
-const PARAGRAPHS = [
-  `Yes, I promised this in public. And yes, I haven't shown it yet. That's on me, and I'd rather tell you straight than go silent and hope you forget.`,
-  `Here's what happened: AI rewired the software industry while I was building. I could have shipped on schedule and been outdated on arrival. Instead I went deep into how LLMs actually work, from transformers, attention and tokenization to embeddings, vector search, chunking strategies, reranking and production RAG pipelines. Now I'm into agents, tool use, MCP, fine-tuning with LoRA and evals, because the machinery under the hype is where the real leverage is.`,
-  `The work is still happening, and it's getting sharper. What I'm learning is changing how I build, and I think you'll see that when it lands.`,
-];
+const TOPICS = ["Transformers", "Embeddings", "RAG", "Agents", "MCP", "LoRA", "Evals"];
 
-const MANIFESTO = [
-  "You get one life.",
-  "It ends either way.",
-  "So I'm not spending mine at half strength.",
-  "I'm going all in, until it's built.",
-];
+const MANIFESTO = ["You get one life. It ends either way.", "I'm not spending mine at half strength."];
 
 function Gear({ size, reverse, duration }: { size: number; reverse?: boolean; duration: number }) {
   return (
@@ -111,8 +106,8 @@ export default function Home() {
   useEffect(() => {
     const t1 = setTimeout(() => setStage(1), 250);   // badge
     const t2 = setTimeout(() => setStage(2), 700);   // headline
-    const t3 = setTimeout(() => setStage(3), 1900);  // paragraphs
-    const t4 = setTimeout(() => setStage(4), 3600);  // footer
+    const t3 = setTimeout(() => setStage(3), 1700);  // intro, topics, manifesto
+    const t4 = setTimeout(() => setStage(4), 3000);  // stay tuned, quote, footer
     return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); clearTimeout(t4); };
   }, []);
 
@@ -127,8 +122,7 @@ export default function Home() {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        overflowY: "auto",
-        overflowX: "hidden",
+        overflow: "hidden",
       }}
     >
       <Starfield />
@@ -146,16 +140,26 @@ export default function Home() {
       <div style={{ position: "absolute", left: 0, top: 0, width: 440, height: 440, marginLeft: -220, marginTop: -220, borderRadius: "50%", background: "radial-gradient(circle, rgba(251,191,36,0.11) 0%, transparent 65%)", pointerEvents: "none", transform: "translate3d(var(--mx, 50vw), var(--my, 40vh), 0)", transition: "transform 0.4s ease-out", willChange: "transform" }} />
 
       {/* content */}
-      <div style={{ position: "relative", zIndex: 2, maxWidth: 720, width: "100%" }}>
-
+      <div
+        style={{
+          position: "relative",
+          zIndex: 2,
+          maxWidth: 680,
+          width: "100%",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          textAlign: "center",
+          gap: "clamp(8px, 2vh, 20px)",
+        }}
+      >
         {/* eyebrow badge */}
         <div
           style={{
             display: "flex",
-            width: "fit-content",
             alignItems: "center",
             gap: 8,
-            fontSize: 11.5,
+            fontSize: "clamp(10px, 1.5vh, 11.5px)",
             letterSpacing: "0.16em",
             textTransform: "uppercase",
             color: "#fde68a",
@@ -163,7 +167,6 @@ export default function Home() {
             borderRadius: 20,
             border: "1px solid rgba(251,191,36,0.35)",
             background: "rgba(245,158,11,0.08)",
-            margin: "0 auto 30px",
             fontFamily: "'JetBrains Mono', monospace",
             opacity: stage >= 1 ? 1 : 0,
             transform: stage >= 1 ? "translateY(0)" : "translateY(8px)",
@@ -174,19 +177,18 @@ export default function Home() {
           a progress note, not an excuse
         </div>
 
-        {/* headline — word by word */}
+        {/* headline */}
         <h1
           className="headline"
           style={{
             fontFamily: "'Cormorant Garamond', Georgia, serif",
             fontStyle: "italic",
             fontWeight: 600,
-            fontSize: "clamp(30px, 5.2vw, 52px)",
-            lineHeight: 1.2,
+            fontSize: "clamp(28px, min(5.4vw, 7.4vh), 54px)",
+            lineHeight: 1.15,
             letterSpacing: "-0.02em",
             color: "#fff8ea",
-            margin: "0 0 34px",
-            textAlign: "center",
+            margin: 0,
             textShadow: "0 0 40px rgba(245,158,11,0.2)",
           }}
         >
@@ -207,45 +209,41 @@ export default function Home() {
           ))}
         </h1>
 
-        {/* paragraphs */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
-          {PARAGRAPHS.map((p, i) => (
-            <p
-              key={i}
-              style={{
-                fontFamily: "'Instrument Sans', system-ui, sans-serif",
-                fontSize: "clamp(16px, 1.8vw, 18px)",
-                lineHeight: 1.75,
-                color: "rgba(255,249,238,0.94)",
-                                margin: 0,
-                opacity: stage >= 3 ? 1 : 0,
-                transform: stage >= 3 ? "translateY(0)" : "translateY(12px)",
-                filter: stage >= 3 ? "blur(0px)" : "blur(6px)",
-                transition: `opacity 0.8s ease ${i * 180}ms, transform 0.8s ease ${i * 180}ms, filter 0.8s ease ${i * 180}ms`,
-              }}
-            >
-              {p}
-            </p>
-          ))}
-        </div>
+        {/* intro */}
+        <p
+          style={{
+            fontFamily: "'Instrument Sans', system-ui, sans-serif",
+            fontSize: "clamp(13.5px, min(1.8vw, 2.5vh), 17px)",
+            lineHeight: 1.6,
+            color: "rgba(255,249,238,0.92)",
+            margin: 0,
+            maxWidth: 600,
+            opacity: stage >= 3 ? 1 : 0,
+            transform: stage >= 3 ? "translateY(0)" : "translateY(12px)",
+            filter: stage >= 3 ? "blur(0px)" : "blur(6px)",
+            transition: "opacity 0.8s ease, transform 0.8s ease, filter 0.8s ease",
+          }}
+        >
+          {INTRO}
+        </p>
 
         {/* topics */}
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 26 }}>
+        <div className="topics" style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 6 }}>
           {TOPICS.map((t, i) => (
             <span
               key={t}
               style={{
                 fontFamily: "'JetBrains Mono', monospace",
-                fontSize: 11,
+                fontSize: "clamp(10px, 1.5vh, 11px)",
                 letterSpacing: "0.06em",
                 color: "#fde68a",
-                padding: "4px 10px",
+                padding: "3px 9px",
                 borderRadius: 6,
                 border: "1px solid rgba(251,191,36,0.35)",
                 background: "rgba(245,158,11,0.08)",
                 opacity: stage >= 3 ? 1 : 0,
                 transform: stage >= 3 ? "translateY(0)" : "translateY(8px)",
-                transition: `opacity 0.5s ease ${900 + i * 70}ms, transform 0.5s ease ${900 + i * 70}ms`,
+                transition: `opacity 0.5s ease ${400 + i * 70}ms, transform 0.5s ease ${400 + i * 70}ms`,
               }}
             >
               {t}
@@ -255,9 +253,10 @@ export default function Home() {
 
         {/* manifesto */}
         <div
+          className="manifesto"
           style={{
-            marginTop: 38,
-            paddingLeft: 20,
+            textAlign: "left",
+            paddingLeft: 16,
             borderLeft: "2px solid #F59E0B",
             boxShadow: "-10px 0 28px -14px rgba(245,158,11,0.8)",
             fontFamily: "'Cormorant Garamond', Georgia, serif",
@@ -269,13 +268,13 @@ export default function Home() {
             <p
               key={i}
               style={{
-                margin: "0 0 6px",
-                fontSize: "clamp(20px, 3vw, 30px)",
+                margin: 0,
+                fontSize: "clamp(17px, min(2.8vw, 3.8vh), 28px)",
                 lineHeight: 1.3,
                 color: i === MANIFESTO.length - 1 ? "#fde68a" : "#fff8ea",
-                opacity: stage >= 4 ? 1 : 0,
-                transform: stage >= 4 ? "translateX(0)" : "translateX(-14px)",
-                transition: `opacity 0.7s ease ${i * 450}ms, transform 0.7s ease ${i * 450}ms`,
+                opacity: stage >= 3 ? 1 : 0,
+                transform: stage >= 3 ? "translateX(0)" : "translateX(-14px)",
+                transition: `opacity 0.7s ease ${900 + i * 450}ms, transform 0.7s ease ${900 + i * 450}ms`,
               }}
             >
               {line}
@@ -283,49 +282,39 @@ export default function Home() {
           ))}
         </div>
 
-        {/* stay tuned */}
-        <div style={{ marginTop: 52, textAlign: "center" }}>
+        {/* work in progress + stay tuned */}
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "clamp(4px, 1vh, 10px)" }}>
           <div
             style={{
               display: "flex",
-              flexDirection: "column",
               alignItems: "center",
               gap: 10,
-              marginBottom: 18,
               opacity: stage >= 4 ? 1 : 0,
-              transform: stage >= 4 ? "translateY(0)" : "translateY(10px)",
-              transition: "opacity 0.8s ease 1.2s, transform 0.8s ease 1.2s",
+              transition: "opacity 0.8s ease 0.2s",
             }}
           >
             <div style={{ display: "flex", alignItems: "flex-end", gap: 2 }}>
-              <Gear size={52} duration={9} />
-              <div style={{ marginBottom: 2 }}>
-                <Gear size={30} duration={5} reverse />
+              <Gear size={30} duration={9} />
+              <div style={{ marginBottom: 1 }}>
+                <Gear size={18} duration={5} reverse />
               </div>
             </div>
-            <span
-              style={{
-                fontFamily: "'JetBrains Mono', monospace",
-                fontSize: 11,
-                letterSpacing: "0.2em",
-                textTransform: "uppercase",
-                color: "#fde68a",
-              }}
-            >
+            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase", color: "#fde68a" }}>
               work in progress<span className="dots"><span>.</span><span>.</span><span>.</span></span>
             </span>
           </div>
+
           <div
             className="danger"
             style={{
               fontFamily: "'Cormorant Garamond', Georgia, serif",
               fontStyle: "italic",
               fontWeight: 700,
-              fontSize: "clamp(34px, 7vw, 68px)",
+              fontSize: "clamp(32px, min(7vw, 9vh), 64px)",
               letterSpacing: "0.06em",
               textTransform: "uppercase",
               color: "#F59E0B",
-              lineHeight: 1.1,
+              lineHeight: 1.05,
             }}
           >
             {"Stay tuned.".split("").map((ch, i) => (
@@ -335,80 +324,87 @@ export default function Home() {
                   display: "inline-block",
                   opacity: stage >= 4 ? 1 : 0,
                   transform: stage >= 4 ? "translateY(0) scale(1)" : "translateY(24px) scale(0.8)",
-                  transition: `opacity 0.5s ease ${2000 + i * 90}ms, transform 0.6s cubic-bezier(.22,.68,0,1.4) ${2000 + i * 90}ms`,
+                  transition: `opacity 0.5s ease ${500 + i * 80}ms, transform 0.6s cubic-bezier(.22,.68,0,1.4) ${500 + i * 80}ms`,
                 }}
               >
                 {ch === " " ? "\u00A0" : ch}
               </span>
             ))}
           </div>
+
           <div
             style={{
               height: 2,
-              margin: "14px auto 0",
-              width: stage >= 4 ? "min(220px, 50%)" : 0,
+              width: stage >= 4 ? "min(200px, 50%)" : 0,
               background: "linear-gradient(90deg, transparent, #F59E0B, transparent)",
-              transition: "width 1.2s cubic-bezier(.22,.68,0,1.1) 3s",
+              transition: "width 1.2s cubic-bezier(.22,.68,0,1.1) 1.4s",
             }}
           />
         </div>
 
-        {/* quote */}
-        <div
+        {/* follow */}
+        <a
+          href={FOLLOW_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="follow-link"
           style={{
-            marginTop: 42,
+            display: "inline-block",
+            fontFamily: "'JetBrains Mono', monospace",
+            fontSize: "clamp(10.5px, 1.6vh, 12px)",
+            letterSpacing: "0.16em",
+            textTransform: "uppercase",
+            color: "#fde68a",
+            textDecoration: "none",
+            padding: "8px 18px",
+            borderRadius: 999,
+            border: "1px solid rgba(251,191,36,0.55)",
+            background: "rgba(245,158,11,0.1)",
             opacity: stage >= 4 ? 1 : 0,
-            transition: "opacity .8s ease .3s",
-            textAlign: "center",
+            transform: stage >= 4 ? "translateY(0)" : "translateY(10px)",
+            transition: "opacity 0.8s ease 1.6s, transform 0.8s ease 1.6s, background 0.25s ease, box-shadow 0.25s ease",
           }}
         >
-          <p
-            style={{
-              margin: 0,
-              fontFamily: "'Cormorant Garamond', Georgia, serif",
-              fontStyle: "italic",
-              fontSize: "clamp(17px,1.8vw,20px)",
-              color: "rgba(255,255,255,0.78)",
-              letterSpacing: "0.01em",
-            }}
-          >
-            “Find what you love and let it kill you.”
-          </p>
+          {FOLLOW_LABEL} →
+        </a>
 
-          <p
-            style={{
-              marginTop: 8,
-              fontSize: 11,
-              letterSpacing: "0.18em",
-              textTransform: "uppercase",
-              color: "rgba(255,255,255,0.58)",
-              fontFamily: "'JetBrains Mono', monospace",
-            }}
-          >
-            — Charles Bukowski
-          </p>
-        </div>
-
-        {/* footer signature + progress chip */}
-        <div
-          className="hero-footer"
+        {/* quote */}
+        <p
+          className="quote"
           style={{
-            marginTop: 40,
+            margin: 0,
+            fontFamily: "'Cormorant Garamond', Georgia, serif",
+            fontStyle: "italic",
+            fontSize: "clamp(14px, 2vh, 17px)",
+            color: "rgba(255,255,255,0.7)",
+            opacity: stage >= 4 ? 1 : 0,
+            transition: "opacity .8s ease 1.8s",
+          }}
+        >
+          “Find what you love and let it kill you.”
+          <span style={{ marginLeft: 8, fontFamily: "'JetBrains Mono', monospace", fontStyle: "normal", fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.5)" }}>
+            — Charles Bukowski
+          </span>
+        </p>
+
+        {/* signature */}
+        <div
+          style={{
             display: "flex",
             alignItems: "center",
-            gap: 16,
+            justifyContent: "center",
+            gap: "4px 14px",
             flexWrap: "wrap",
             opacity: stage >= 4 ? 1 : 0,
             transform: stage >= 4 ? "translateY(0)" : "translateY(10px)",
-            transition: "opacity 0.7s ease, transform 0.7s ease",
+            transition: "opacity 0.7s ease 0.6s, transform 0.7s ease 0.6s",
           }}
         >
-          <div style={{ width: stage >= 4 ? 48 : 0, height: 1, background: "linear-gradient(90deg, #F59E0B, transparent)", transition: "width 1s cubic-bezier(.22,.68,0,1.1) .4s" }} />
-          <span className="shimmer" style={{ fontSize: "clamp(24px, 3.6vw, 34px)", fontWeight: 700, fontStyle: "italic", letterSpacing: "0.03em", lineHeight: 1.1, fontFamily: "'Cormorant Garamond', Georgia, serif" }}>
+          <span className="shimmer" style={{ fontSize: "clamp(22px, min(3.4vw, 4.4vh), 32px)", fontWeight: 700, fontStyle: "italic", letterSpacing: "0.03em", lineHeight: 1.1, fontFamily: "'Cormorant Garamond', Georgia, serif" }}>
             Mehran Khan
           </span>
           <span style={{ fontSize: 11, color: "rgba(255,255,255,0.45)" }}>·</span>
-          <span style={{ fontSize: 12, letterSpacing: "0.1em", color: "rgba(255,255,255,0.68)", fontFamily: "'JetBrains Mono', monospace" }}>
+          <span style={{ fontSize: 11.5, letterSpacing: "0.1em", color: "rgba(255,255,255,0.68)", fontFamily: "'JetBrains Mono', monospace" }}>
             Full-Stack · AI engineer · RAG
           </span>
         </div>
@@ -418,14 +414,6 @@ export default function Home() {
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,600;1,700&family=Instrument+Sans:wght@400;500&family=JetBrains+Mono:wght@400;500;600&display=swap');
         @keyframes pingDot { 0%{box-shadow:0 0 0 0 rgba(251,191,36,0.7)} 60%{box-shadow:0 0 0 7px rgba(251,191,36,0)} 100%{box-shadow:0 0 0 0 rgba(251,191,36,0)} }
         @keyframes orbFloat { 0%,100%{transform:translate(0,0)} 50%{transform:translate(20px,-20px)} }
-        @keyframes warnFlash {
-          0%, 40%, 100% { opacity: 1; text-shadow: 0 0 40px rgba(245,158,11,0.25); }
-          4%  { opacity: 0.3; text-shadow: none; }
-          8%  { opacity: 1; text-shadow: 0 0 26px rgba(251,191,36,0.95), 0 0 60px rgba(245,158,11,0.7); }
-          12% { opacity: 0.4; text-shadow: none; }
-          16% { opacity: 1; text-shadow: 0 0 26px rgba(251,191,36,0.95), 0 0 60px rgba(245,158,11,0.7); }
-          22% { opacity: 1; text-shadow: 0 0 18px rgba(245,158,11,0.5); }
-        }
         @keyframes spin { to { transform: rotate(360deg); } }
         @keyframes spinRev { to { transform: rotate(-360deg); } }
         @keyframes dotBlink { 0%, 20% { opacity: 0.15; } 50%, 100% { opacity: 1; } }
@@ -436,11 +424,21 @@ export default function Home() {
           0%, 100% { text-shadow: 0 0 12px rgba(245,158,11,0.4); }
           50% { text-shadow: 0 0 22px rgba(251,191,36,0.95), 0 0 48px rgba(245,158,11,0.6); }
         }
-        .danger { animation: dangerPulse 1.8s ease-in-out 6.5s infinite; }
+        .danger { animation: dangerPulse 1.8s ease-in-out 5s infinite; }
+        @keyframes warnFlash {
+          0%, 40%, 100% { opacity: 1; text-shadow: 0 0 40px rgba(245,158,11,0.25); }
+          4%  { opacity: 0.3; text-shadow: none; }
+          8%  { opacity: 1; text-shadow: 0 0 26px rgba(251,191,36,0.95), 0 0 60px rgba(245,158,11,0.7); }
+          12% { opacity: 0.4; text-shadow: none; }
+          16% { opacity: 1; text-shadow: 0 0 26px rgba(251,191,36,0.95), 0 0 60px rgba(245,158,11,0.7); }
+          22% { opacity: 1; text-shadow: 0 0 18px rgba(245,158,11,0.5); }
+        }
         @keyframes idleBlink {
           0%, 100% { filter: brightness(1) drop-shadow(0 0 0 rgba(251,191,36,0)); }
           50% { filter: brightness(1.45) drop-shadow(0 0 14px rgba(251,191,36,0.9)); }
         }
+        .follow-link:hover { background: rgba(245,158,11,0.22) !important; box-shadow: 0 0 22px rgba(245,158,11,0.35); }
+        .follow-link:focus-visible { outline: 2px solid #fbbf24; outline-offset: 3px; }
         .headline { animation: warnFlash 4s ease-in-out 2.6s infinite; }
         @keyframes shimmer { 0%{background-position:0% 50%} 100%{background-position:200% 50%} }
         .shimmer {
@@ -457,16 +455,18 @@ export default function Home() {
         }
         * { box-sizing: border-box; }
 
-        .hero-main { padding: 48px 32px; }
-        .hero-footer { row-gap: 10px; }
+        .hero-main { padding: 24px 32px; }
+
+        /* keep everything on one screen: drop the least important pieces on short screens */
+        @media (max-height: 760px) { .quote { display: none; } }
+        @media (max-height: 640px) { .topics { display: none; } }
+        @media (max-height: 520px) { .manifesto { display: none; } }
 
         @media (max-width: 640px) {
-          .hero-main { padding: 32px 20px; }
-          .hero-footer { gap: 10px 14px; }
+          .hero-main { padding: 20px 20px; }
         }
-
         @media (max-width: 380px) {
-          .hero-main { padding: 24px 16px; }
+          .hero-main { padding: 16px 16px; }
         }
       `}</style>
     </main>
