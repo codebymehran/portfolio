@@ -4,15 +4,39 @@ import { useState, useEffect, useRef } from "react";
 
 const HEADLINE = ["Quiet", "is", "not", "the", "same", "as", "idle."];
 
+const TOPICS = ["Transformers", "Attention", "Embeddings", "Vector search", "RAG", "Reranking", "Agents", "Tool use", "MCP", "LoRA", "Evals"];
+
 const PARAGRAPHS = [
   `Yes, I promised this in public. And yes, I haven't shown it yet. That's on me, and I'd rather tell you straight than go silent and hope you forget.`,
-  `Here's what happened: AI rewired the software industry while I was building. I could have shipped on schedule and been outdated on arrival. Instead I went deep into how LLMs actually work, and into embeddings, retrieval, RAG and the machinery under the hype.`,
+  `Here's what happened: AI rewired the software industry while I was building. I could have shipped on schedule and been outdated on arrival. Instead I went deep into how LLMs actually work, from transformers, attention and tokenization to embeddings, vector search, chunking strategies, reranking and production RAG pipelines. Now I'm into agents, tool use, MCP, fine-tuning with LoRA and evals, because the machinery under the hype is where the real leverage is.`,
   `The work is still happening, and it's getting sharper. What I'm learning is changing how I build, and I think you'll see that when it lands.`,
-  `You get one life, and it's going to kill us all eventually. I'm not spending mine at half strength. Stay tuned.`,
 ];
 
-const FOOTNOTE_QUESTION = "Does God exist?";
-const FOOTNOTE_ANSWER = `I can help you understand — through psychology, logic, and modern science.`;
+const MANIFESTO = [
+  "You get one life.",
+  "It ends either way.",
+  "So I'm not spending mine at half strength.",
+  "I'm going all in, until it's built.",
+];
+
+function Gear({ size, reverse, duration }: { size: number; reverse?: boolean; duration: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 100 100"
+      fill="none"
+      aria-hidden="true"
+      style={{ animation: `${reverse ? "spinRev" : "spin"} ${duration}s linear infinite`, filter: "drop-shadow(0 0 6px rgba(245,158,11,0.55))" }}
+    >
+      {Array.from({ length: 8 }, (_, i) => (
+        <rect key={i} x="43" y="4" width="14" height="20" rx="3" fill="#F59E0B" transform={`rotate(${i * 45} 50 50)`} />
+      ))}
+      <circle cx="50" cy="50" r="31" fill="#F59E0B" />
+      <circle cx="50" cy="50" r="13" fill="#1a1409" />
+    </svg>
+  );
+}
 
 function Starfield() {
   const ref = useRef<HTMLCanvasElement>(null);
@@ -21,6 +45,8 @@ function Starfield() {
     if (!el) return;
     const ctx = el.getContext("2d");
     if (!ctx) return;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const shooters: { x: number; y: number; vx: number; vy: number; life: number }[] = [];
     const resize = () => { el.width = el.offsetWidth; el.height = el.offsetHeight; };
     resize();
     window.addEventListener("resize", resize);
@@ -29,8 +55,8 @@ function Starfield() {
       r: 0.4 + Math.random() * 1.2,
       speed: 0.003 + Math.random() * 0.01,
       phase: Math.random() * Math.PI * 2,
-      peak: 0.12 + Math.random() * 0.55,
-      col: Math.random() > 0.7 ? "139,124,246" : Math.random() > 0.5 ? "16,185,129" : "255,255,255",
+      peak: 0.1 + Math.random() * 0.4,
+      col: Math.random() > 0.7 ? "245,158,11" : Math.random() > 0.5 ? "16,185,129" : "255,255,255",
     }));
     let t = 0;
     let raf: number;
@@ -44,6 +70,19 @@ function Starfield() {
         ctx.fillStyle = `rgba(${s.col},${o})`;
         ctx.fill();
       });
+      if (!reduce && Math.random() < 0.006 && shooters.length < 2) {
+        shooters.push({ x: Math.random() * el.width * 0.8, y: Math.random() * el.height * 0.4, vx: 6 + Math.random() * 4, vy: 2.5 + Math.random() * 2, life: 1 });
+      }
+      for (let i = shooters.length - 1; i >= 0; i--) {
+        const sh = shooters[i];
+        sh.x += sh.vx; sh.y += sh.vy; sh.life -= 0.014;
+        if (sh.life <= 0 || sh.x > el.width || sh.y > el.height) { shooters.splice(i, 1); continue; }
+        const g = ctx.createLinearGradient(sh.x, sh.y, sh.x - sh.vx * 10, sh.y - sh.vy * 10);
+        g.addColorStop(0, `rgba(255,236,190,${0.9 * sh.life})`);
+        g.addColorStop(1, "rgba(255,236,190,0)");
+        ctx.strokeStyle = g; ctx.lineWidth = 1.4;
+        ctx.beginPath(); ctx.moveTo(sh.x, sh.y); ctx.lineTo(sh.x - sh.vx * 10, sh.y - sh.vy * 10); ctx.stroke();
+      }
       raf = requestAnimationFrame(draw);
     };
     draw();
@@ -52,156 +91,22 @@ function Starfield() {
   return <canvas ref={ref} style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />;
 }
 
-function Footnote() {
-  const [open, setOpen] = useState(false);
-  const [typed, setTyped] = useState("");
-  const [answerVisible, setAnswerVisible] = useState(false);
-  const reduceMotion = useRef(false);
-
-  useEffect(() => {
-    reduceMotion.current = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  }, []);
-
-  useEffect(() => {
-    if (!open) {
-      setTyped("");
-      setAnswerVisible(false);
-      return;
-    }
-    if (reduceMotion.current) {
-      setTyped(FOOTNOTE_QUESTION);
-      setAnswerVisible(true);
-      return;
-    }
-    let i = 0;
-    const interval = setInterval(() => {
-      i += 1;
-      setTyped(FOOTNOTE_QUESTION.slice(0, i));
-      if (i >= FOOTNOTE_QUESTION.length) {
-        clearInterval(interval);
-        setTimeout(() => setAnswerVisible(true), 350);
-      }
-    }, 55);
-    return () => clearInterval(interval);
-  }, [open]);
-
-  return (
-    <span style={{ position: "relative", display: "inline-block" }}>
-      <button
-        onClick={() => setOpen(v => !v)}
-        aria-expanded={open}
-        aria-label="Read footnote"
-        style={{
-          background: "none",
-          border: "none",
-          padding: 0,
-          marginLeft: 3,
-          cursor: "pointer",
-          font: "inherit",
-          fontSize: 10,
-          verticalAlign: "super",
-          color: open ? "#a78bfa" : "rgba(255,255,255,0.35)",
-          transition: "color 0.3s ease",
-        }}
-      >
-        [1]
-      </button>
-
-      <div
-        onClick={() => setOpen(false)}
-        style={{
-          position: "fixed",
-          inset: 0,
-          background: "rgba(0,0,0,0.55)",
-          opacity: open ? 1 : 0,
-          pointerEvents: open ? "auto" : "none",
-          transition: "opacity 0.4s ease",
-          zIndex: 40,
-        }}
-      />
-
-      <div
-        style={{
-          position: "fixed",
-          left: "50%",
-          bottom: "auto",
-          top: "50%",
-          transform: open ? "translate(-50%, -50%)" : "translate(-50%, -46%)",
-          width: "min(420px, calc(100vw - 40px))",
-          maxHeight: open ? "min(320px, 70vh)" : 0,
-          opacity: open ? 1 : 0,
-          overflow: "auto",
-          pointerEvents: open ? "auto" : "none",
-          transition: "opacity 0.4s ease, transform 0.4s cubic-bezier(.22,.68,0,1.1)",
-          background: "rgba(20,16,31,0.96)",
-          backdropFilter: "blur(10px)",
-          border: "1px solid rgba(167,139,250,0.25)",
-          borderRadius: 10,
-          padding: "18px 20px",
-          boxShadow: "0 12px 40px rgba(0,0,0,0.5)",
-          zIndex: 50,
-        }}
-      >
-        <div
-          style={{
-            fontFamily: "'JetBrains Mono', monospace",
-            fontSize: 10,
-            letterSpacing: "0.14em",
-            textTransform: "uppercase",
-            color: "rgba(255,255,255,0.3)",
-            marginBottom: 10,
-          }}
-        >
-          footnote · 01
-        </div>
-
-        <p
-          style={{
-            fontFamily: "'Cormorant Garamond', Georgia, serif",
-            fontStyle: "italic",
-            fontWeight: 600,
-            fontSize: "clamp(18px, 2.2vw, 22px)",
-            color: "#f2f0ff",
-            margin: 0,
-            minHeight: "1.4em",
-          }}
-        >
-          {typed}
-          <span
-            style={{
-              display: "inline-block",
-              width: 2,
-              height: "1em",
-              background: "#a78bfa",
-              marginLeft: 3,
-              verticalAlign: "text-bottom",
-              opacity: typed.length < FOOTNOTE_QUESTION.length ? 1 : 0,
-              animation: typed.length < FOOTNOTE_QUESTION.length ? "blink 0.9s step-end infinite" : "none",
-            }}
-          />
-        </p>
-
-        <p
-          style={{
-            fontFamily: "'Instrument Sans', system-ui, sans-serif",
-            fontSize: 13.5,
-            lineHeight: 1.7,
-            color: "rgba(238,234,248,0.75)",
-            margin: "12px 0 0",
-            opacity: answerVisible ? 1 : 0,
-            transform: answerVisible ? "translateY(0)" : "translateY(6px)",
-            transition: "opacity 0.6s ease, transform 0.6s ease",
-          }}
-        >
-          {FOOTNOTE_ANSWER}
-        </p>
-      </div>
-    </span>
-  );
-}
-
 export default function Home() {
   const [stage, setStage] = useState(0);
+  const mainRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const onMove = (e: MouseEvent) => {
+      const m = mainRef.current;
+      if (!m) return;
+      m.style.setProperty("--mx", e.clientX + "px");
+      m.style.setProperty("--my", e.clientY + "px");
+      m.style.setProperty("--px", String(e.clientX / window.innerWidth - 0.5));
+      m.style.setProperty("--py", String(e.clientY / window.innerHeight - 0.5));
+    };
+    window.addEventListener("mousemove", onMove);
+    return () => window.removeEventListener("mousemove", onMove);
+  }, []);
 
   useEffect(() => {
     const t1 = setTimeout(() => setStage(1), 250);   // badge
@@ -213,11 +118,12 @@ export default function Home() {
 
   return (
     <main
+      ref={mainRef}
       className="hero-main"
       style={{
         position: "fixed",
         inset: 0,
-        background: "radial-gradient(ellipse at 50% 40%, #14101f 0%, #060509 60%, #000 100%)",
+        background: "radial-gradient(ellipse at 50% 40%, #1a1409 0%, #060509 60%, #000 100%)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -228,9 +134,16 @@ export default function Home() {
       <Starfield />
 
       {/* ambient glow orbs */}
-      <div style={{ position: "absolute", top: "8%", left: "6%", width: "42vw", height: "42vw", maxWidth: 520, maxHeight: 520, borderRadius: "50%", background: "radial-gradient(circle, rgba(139,124,246,0.15) 0%, transparent 70%)", filter: "blur(24px)", animation: "orbFloat 10s ease-in-out infinite" }} />
-      <div style={{ position: "absolute", bottom: "6%", right: "8%", width: "36vw", height: "36vw", maxWidth: 440, maxHeight: 440, borderRadius: "50%", background: "radial-gradient(circle, rgba(16,185,129,0.12) 0%, transparent 70%)", filter: "blur(24px)", animation: "orbFloat 12s ease-in-out infinite reverse" }} />
-      <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at 50% 50%, transparent 40%, rgba(0,0,0,0.65) 100%)", pointerEvents: "none" }} />
+      <div style={{ position: "absolute", inset: 0, pointerEvents: "none", transform: "translate(calc(var(--px, 0) * -45px), calc(var(--py, 0) * -45px))", transition: "transform 0.7s ease-out" }}>
+        <div style={{ position: "absolute", top: "8%", left: "6%", width: "42vw", height: "42vw", maxWidth: 520, maxHeight: 520, borderRadius: "50%", background: "radial-gradient(circle, rgba(245,158,11,0.15) 0%, transparent 70%)", filter: "blur(24px)", animation: "orbFloat 10s ease-in-out infinite" }} />
+      </div>
+      <div style={{ position: "absolute", inset: 0, pointerEvents: "none", transform: "translate(calc(var(--px, 0) * 35px), calc(var(--py, 0) * 35px))", transition: "transform 0.7s ease-out" }}>
+        <div style={{ position: "absolute", bottom: "6%", right: "8%", width: "36vw", height: "36vw", maxWidth: 440, maxHeight: 440, borderRadius: "50%", background: "radial-gradient(circle, rgba(16,185,129,0.12) 0%, transparent 70%)", filter: "blur(24px)", animation: "orbFloat 12s ease-in-out infinite reverse" }} />
+      </div>
+      <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at 50% 50%, transparent 40%, rgba(0,0,0,0.75) 100%)", pointerEvents: "none" }} />
+
+      {/* cursor glow */}
+      <div style={{ position: "absolute", left: 0, top: 0, width: 440, height: 440, marginLeft: -220, marginTop: -220, borderRadius: "50%", background: "radial-gradient(circle, rgba(251,191,36,0.11) 0%, transparent 65%)", pointerEvents: "none", transform: "translate3d(var(--mx, 50vw), var(--my, 40vh), 0)", transition: "transform 0.4s ease-out", willChange: "transform" }} />
 
       {/* content */}
       <div style={{ position: "relative", zIndex: 2, maxWidth: 720, width: "100%" }}>
@@ -238,30 +151,32 @@ export default function Home() {
         {/* eyebrow badge */}
         <div
           style={{
-            display: "inline-flex",
+            display: "flex",
+            width: "fit-content",
             alignItems: "center",
             gap: 8,
-            fontSize: 10.5,
-            letterSpacing: "0.18em",
+            fontSize: 11.5,
+            letterSpacing: "0.16em",
             textTransform: "uppercase",
-            color: "#a78bfa",
+            color: "#fde68a",
             padding: "5px 14px",
             borderRadius: 20,
-            border: "1px solid rgba(167,139,250,0.35)",
-            background: "rgba(139,124,246,0.08)",
-            marginBottom: 30,
+            border: "1px solid rgba(251,191,36,0.35)",
+            background: "rgba(245,158,11,0.08)",
+            margin: "0 auto 30px",
             fontFamily: "'JetBrains Mono', monospace",
             opacity: stage >= 1 ? 1 : 0,
             transform: stage >= 1 ? "translateY(0)" : "translateY(8px)",
             transition: "opacity 0.6s ease, transform 0.6s ease",
           }}
         >
-          <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#a78bfa", boxShadow: "0 0 8px #a78bfa", animation: "pingDot 2s cubic-bezier(0.4,0,0.6,1) infinite" }} />
+          <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#fbbf24", boxShadow: "0 0 8px #fbbf24", animation: "pingDot 2s cubic-bezier(0.4,0,0.6,1) infinite" }} />
           a progress note, not an excuse
         </div>
 
         {/* headline — word by word */}
         <h1
+          className="headline"
           style={{
             fontFamily: "'Cormorant Garamond', Georgia, serif",
             fontStyle: "italic",
@@ -269,21 +184,22 @@ export default function Home() {
             fontSize: "clamp(30px, 5.2vw, 52px)",
             lineHeight: 1.2,
             letterSpacing: "-0.02em",
-            color: "#f2f0ff",
+            color: "#fff8ea",
             margin: "0 0 34px",
-            textShadow: "0 0 40px rgba(139,124,246,0.2)",
+            textAlign: "center",
+            textShadow: "0 0 40px rgba(245,158,11,0.2)",
           }}
         >
           {HEADLINE.map((word, i) => (
             <span
               key={i}
+              className={word === "idle." ? "shimmer" : undefined}
               style={{
                 display: "inline-block",
                 marginRight: "0.28em",
                 opacity: stage >= 2 ? 1 : 0,
                 transform: stage >= 2 ? "translateY(0)" : "translateY(14px)",
                 transition: `opacity 0.5s ease ${i * 90}ms, transform 0.5s cubic-bezier(.22,.68,0,1.1) ${i * 90}ms`,
-                color: word === "idle." ? "#8B7CF6" : undefined,
               }}
             >
               {word}
@@ -298,19 +214,143 @@ export default function Home() {
               key={i}
               style={{
                 fontFamily: "'Instrument Sans', system-ui, sans-serif",
-                fontSize: "clamp(14.5px, 1.6vw, 16.5px)",
+                fontSize: "clamp(16px, 1.8vw, 18px)",
                 lineHeight: 1.75,
-                color: i === PARAGRAPHS.length - 1 ? "rgba(238,234,248,0.55)" : "rgba(238,234,248,0.82)",
-                fontStyle: i === PARAGRAPHS.length - 1 ? "italic" : "normal",
-                margin: 0,
+                color: "rgba(255,249,238,0.94)",
+                                margin: 0,
                 opacity: stage >= 3 ? 1 : 0,
                 transform: stage >= 3 ? "translateY(0)" : "translateY(12px)",
-                transition: `opacity 0.65s ease ${i * 180}ms, transform 0.65s ease ${i * 180}ms`,
+                filter: stage >= 3 ? "blur(0px)" : "blur(6px)",
+                transition: `opacity 0.8s ease ${i * 180}ms, transform 0.8s ease ${i * 180}ms, filter 0.8s ease ${i * 180}ms`,
               }}
             >
               {p}
             </p>
           ))}
+        </div>
+
+        {/* topics */}
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 26 }}>
+          {TOPICS.map((t, i) => (
+            <span
+              key={t}
+              style={{
+                fontFamily: "'JetBrains Mono', monospace",
+                fontSize: 11,
+                letterSpacing: "0.06em",
+                color: "#fde68a",
+                padding: "4px 10px",
+                borderRadius: 6,
+                border: "1px solid rgba(251,191,36,0.35)",
+                background: "rgba(245,158,11,0.08)",
+                opacity: stage >= 3 ? 1 : 0,
+                transform: stage >= 3 ? "translateY(0)" : "translateY(8px)",
+                transition: `opacity 0.5s ease ${900 + i * 70}ms, transform 0.5s ease ${900 + i * 70}ms`,
+              }}
+            >
+              {t}
+            </span>
+          ))}
+        </div>
+
+        {/* manifesto */}
+        <div
+          style={{
+            marginTop: 38,
+            paddingLeft: 20,
+            borderLeft: "2px solid #F59E0B",
+            boxShadow: "-10px 0 28px -14px rgba(245,158,11,0.8)",
+            fontFamily: "'Cormorant Garamond', Georgia, serif",
+            fontStyle: "italic",
+            fontWeight: 600,
+          }}
+        >
+          {MANIFESTO.map((line, i) => (
+            <p
+              key={i}
+              style={{
+                margin: "0 0 6px",
+                fontSize: "clamp(20px, 3vw, 30px)",
+                lineHeight: 1.3,
+                color: i === MANIFESTO.length - 1 ? "#fde68a" : "#fff8ea",
+                opacity: stage >= 4 ? 1 : 0,
+                transform: stage >= 4 ? "translateX(0)" : "translateX(-14px)",
+                transition: `opacity 0.7s ease ${i * 450}ms, transform 0.7s ease ${i * 450}ms`,
+              }}
+            >
+              {line}
+            </p>
+          ))}
+        </div>
+
+        {/* stay tuned */}
+        <div style={{ marginTop: 52, textAlign: "center" }}>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: 10,
+              marginBottom: 18,
+              opacity: stage >= 4 ? 1 : 0,
+              transform: stage >= 4 ? "translateY(0)" : "translateY(10px)",
+              transition: "opacity 0.8s ease 1.2s, transform 0.8s ease 1.2s",
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "flex-end", gap: 2 }}>
+              <Gear size={52} duration={9} />
+              <div style={{ marginBottom: 2 }}>
+                <Gear size={30} duration={5} reverse />
+              </div>
+            </div>
+            <span
+              style={{
+                fontFamily: "'JetBrains Mono', monospace",
+                fontSize: 11,
+                letterSpacing: "0.2em",
+                textTransform: "uppercase",
+                color: "#fde68a",
+              }}
+            >
+              work in progress<span className="dots"><span>.</span><span>.</span><span>.</span></span>
+            </span>
+          </div>
+          <div
+            className="danger"
+            style={{
+              fontFamily: "'Cormorant Garamond', Georgia, serif",
+              fontStyle: "italic",
+              fontWeight: 700,
+              fontSize: "clamp(34px, 7vw, 68px)",
+              letterSpacing: "0.06em",
+              textTransform: "uppercase",
+              color: "#F59E0B",
+              lineHeight: 1.1,
+            }}
+          >
+            {"Stay tuned.".split("").map((ch, i) => (
+              <span
+                key={i}
+                style={{
+                  display: "inline-block",
+                  opacity: stage >= 4 ? 1 : 0,
+                  transform: stage >= 4 ? "translateY(0) scale(1)" : "translateY(24px) scale(0.8)",
+                  transition: `opacity 0.5s ease ${2000 + i * 90}ms, transform 0.6s cubic-bezier(.22,.68,0,1.4) ${2000 + i * 90}ms`,
+                }}
+              >
+                {ch === " " ? "\u00A0" : ch}
+              </span>
+            ))}
+          </div>
+          <div
+            style={{
+              height: 2,
+              margin: "14px auto 0",
+              width: stage >= 4 ? "min(220px, 50%)" : 0,
+              background: "linear-gradient(90deg, transparent, #F59E0B, transparent)",
+              transition: "width 1.2s cubic-bezier(.22,.68,0,1.1) 3s",
+            }}
+          />
         </div>
 
         {/* quote */}
@@ -327,8 +367,8 @@ export default function Home() {
               margin: 0,
               fontFamily: "'Cormorant Garamond', Georgia, serif",
               fontStyle: "italic",
-              fontSize: "clamp(15px,1.5vw,18px)",
-              color: "rgba(255,255,255,0.42)",
+              fontSize: "clamp(17px,1.8vw,20px)",
+              color: "rgba(255,255,255,0.78)",
               letterSpacing: "0.01em",
             }}
           >
@@ -338,10 +378,10 @@ export default function Home() {
           <p
             style={{
               marginTop: 8,
-              fontSize: 10,
+              fontSize: 11,
               letterSpacing: "0.18em",
               textTransform: "uppercase",
-              color: "rgba(255,255,255,0.22)",
+              color: "rgba(255,255,255,0.58)",
               fontFamily: "'JetBrains Mono', monospace",
             }}
           >
@@ -363,50 +403,66 @@ export default function Home() {
             transition: "opacity 0.7s ease, transform 0.7s ease",
           }}
         >
-          <div style={{ width: 32, height: 1, background: "linear-gradient(90deg, #8B7CF6, transparent)" }} />
-          <span style={{ fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.4)", fontFamily: "'JetBrains Mono', monospace" }}>
+          <div style={{ width: stage >= 4 ? 48 : 0, height: 1, background: "linear-gradient(90deg, #F59E0B, transparent)", transition: "width 1s cubic-bezier(.22,.68,0,1.1) .4s" }} />
+          <span className="shimmer" style={{ fontSize: "clamp(24px, 3.6vw, 34px)", fontWeight: 700, fontStyle: "italic", letterSpacing: "0.03em", lineHeight: 1.1, fontFamily: "'Cormorant Garamond', Georgia, serif" }}>
             Mehran Khan
           </span>
-          <span style={{ fontSize: 10, color: "rgba(255,255,255,0.2)" }}>·</span>
-          <span style={{ fontSize: 11, letterSpacing: "0.1em", color: "rgba(255,255,255,0.28)", fontFamily: "'JetBrains Mono', monospace" }}>
-            developer · philosopher · historian
-            <Footnote />
-          </span>
-          <span
-            className="hero-badge"
-            style={{
-              fontSize: 10,
-              fontWeight: 700,
-              padding: "4px 11px",
-              borderRadius: 20,
-              background: "rgba(16,185,129,0.1)",
-              color: "#34d399",
-              border: "1px solid rgba(16,185,129,0.25)",
-              letterSpacing: "0.05em",
-              fontFamily: "'JetBrains Mono', monospace",
-              marginLeft: "auto",
-            }}
-          >
-            still building — stay tuned
+          <span style={{ fontSize: 11, color: "rgba(255,255,255,0.45)" }}>·</span>
+          <span style={{ fontSize: 12, letterSpacing: "0.1em", color: "rgba(255,255,255,0.68)", fontFamily: "'JetBrains Mono', monospace" }}>
+            Full-Stack · AI engineer · RAG
           </span>
         </div>
       </div>
 
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,600&family=Instrument+Sans:wght@400;500&family=JetBrains+Mono:wght@400;500;600&display=swap');
-        @keyframes pingDot { 0%{box-shadow:0 0 0 0 rgba(167,139,250,0.7)} 60%{box-shadow:0 0 0 7px rgba(167,139,250,0)} 100%{box-shadow:0 0 0 0 rgba(167,139,250,0)} }
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,600;1,700&family=Instrument+Sans:wght@400;500&family=JetBrains+Mono:wght@400;500;600&display=swap');
+        @keyframes pingDot { 0%{box-shadow:0 0 0 0 rgba(251,191,36,0.7)} 60%{box-shadow:0 0 0 7px rgba(251,191,36,0)} 100%{box-shadow:0 0 0 0 rgba(251,191,36,0)} }
         @keyframes orbFloat { 0%,100%{transform:translate(0,0)} 50%{transform:translate(20px,-20px)} }
-        @keyframes blink { 50% { opacity: 0; } }
+        @keyframes warnFlash {
+          0%, 40%, 100% { opacity: 1; text-shadow: 0 0 40px rgba(245,158,11,0.25); }
+          4%  { opacity: 0.3; text-shadow: none; }
+          8%  { opacity: 1; text-shadow: 0 0 26px rgba(251,191,36,0.95), 0 0 60px rgba(245,158,11,0.7); }
+          12% { opacity: 0.4; text-shadow: none; }
+          16% { opacity: 1; text-shadow: 0 0 26px rgba(251,191,36,0.95), 0 0 60px rgba(245,158,11,0.7); }
+          22% { opacity: 1; text-shadow: 0 0 18px rgba(245,158,11,0.5); }
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes spinRev { to { transform: rotate(-360deg); } }
+        @keyframes dotBlink { 0%, 20% { opacity: 0.15; } 50%, 100% { opacity: 1; } }
+        .dots span { animation: dotBlink 1.4s infinite; }
+        .dots span:nth-child(2) { animation-delay: 0.25s; }
+        .dots span:nth-child(3) { animation-delay: 0.5s; }
+        @keyframes dangerPulse {
+          0%, 100% { text-shadow: 0 0 12px rgba(245,158,11,0.4); }
+          50% { text-shadow: 0 0 22px rgba(251,191,36,0.95), 0 0 48px rgba(245,158,11,0.6); }
+        }
+        .danger { animation: dangerPulse 1.8s ease-in-out 6.5s infinite; }
+        @keyframes idleBlink {
+          0%, 100% { filter: brightness(1) drop-shadow(0 0 0 rgba(251,191,36,0)); }
+          50% { filter: brightness(1.45) drop-shadow(0 0 14px rgba(251,191,36,0.9)); }
+        }
+        .headline { animation: warnFlash 4s ease-in-out 2.6s infinite; }
+        @keyframes shimmer { 0%{background-position:0% 50%} 100%{background-position:200% 50%} }
+        .shimmer {
+          background: linear-gradient(90deg, #F59E0B 0%, #fde68a 25%, #F59E0B 50%, #fde68a 75%, #F59E0B 100%);
+          background-size: 200% 100%;
+          -webkit-background-clip: text;
+          background-clip: text;
+          -webkit-text-fill-color: transparent;
+          color: transparent;
+          animation: shimmer 4s linear infinite, idleBlink 1.3s ease-in-out 2.6s infinite;
+        }
+        @media (prefers-reduced-motion: reduce) {
+          *, *::before, *::after { animation: none !important; transition-duration: 0.01ms !important; }
+        }
         * { box-sizing: border-box; }
 
         .hero-main { padding: 48px 32px; }
         .hero-footer { row-gap: 10px; }
-        .hero-badge { margin-left: auto; }
 
         @media (max-width: 640px) {
           .hero-main { padding: 32px 20px; }
           .hero-footer { gap: 10px 14px; }
-          .hero-badge { margin-left: 0; width: 100%; text-align: center; }
         }
 
         @media (max-width: 380px) {
