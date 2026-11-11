@@ -5,7 +5,7 @@ import { useState, useEffect, useRef } from "react";
 const FOLLOW_URL = "https://github.com/codebymehran";
 const FOLLOW_LABEL = "Follow the build";
 
-const HEADLINE = ["Quiet", "is", "not", "the", "same", "as", "idle."];
+const HEADLINE = ["I", "went", "quiet.", "I", "never", "stopped."];
 
 const INTRO = `I promised this in public and haven't shown it yet. That's on me. While I built, AI rewired the industry, so I went deep on how LLMs really work, and what I'm learning is changing how I build.`;
 
@@ -121,6 +121,7 @@ export default function Home() {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
+        gap: "clamp(24px, 5vw, 80px)",
         overflow: "hidden",
       }}
     >
@@ -143,8 +144,8 @@ export default function Home() {
         style={{
           position: "relative",
           zIndex: 2,
-          maxWidth: 680,
-          width: "100%",
+          flex: "0 1 680px",
+          minWidth: 0,
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
@@ -194,7 +195,7 @@ export default function Home() {
           {HEADLINE.map((word, i) => (
             <span
               key={i}
-              className={word === "idle." ? "shimmer" : undefined}
+              className={word === "stopped." ? "shimmer" : undefined}
               style={{
                 display: "inline-block",
                 marginRight: "0.28em",
@@ -410,6 +411,36 @@ export default function Home() {
         </div>
       </div>
 
+      {/* photo */}
+      <div
+        className="photo-wrap"
+        style={{
+          position: "relative",
+          zIndex: 2,
+          flexShrink: 0,
+          height: "min(78vh, 560px)",
+          aspectRatio: "4 / 5",
+          opacity: stage >= 2 ? 1 : 0,
+          transform: stage >= 2 ? "translateX(0)" : "translateX(30px)",
+          transition: "opacity 1s ease 0.4s, transform 1s cubic-bezier(.22,.68,0,1.1) 0.4s",
+        }}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/mehran2.jpeg"
+          alt="Mehran Khan"
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            objectPosition: "center top",
+            borderRadius: 20,
+            border: "1px solid rgba(251,191,36,0.35)",
+            boxShadow: "0 0 60px -10px rgba(245,158,11,0.45), 0 0 0 6px rgba(245,158,11,0.05)",
+          }}
+        />
+      </div>
+
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,600;1,700&family=Instrument+Sans:wght@400;500&family=JetBrains+Mono:wght@400;500;600&display=swap');
         @keyframes pingDot { 0%{box-shadow:0 0 0 0 rgba(251,191,36,0.7)} 60%{box-shadow:0 0 0 7px rgba(251,191,36,0)} 100%{box-shadow:0 0 0 0 rgba(251,191,36,0)} }
@@ -461,6 +492,9 @@ export default function Home() {
         @media (max-height: 760px) { .quote { display: none; } }
         @media (max-height: 640px) { .topics { display: none; } }
         @media (max-height: 520px) { .manifesto { display: none; } }
+
+        /* hide the photo on narrow screens so the content still fits */
+        @media (max-width: 900px) { .photo-wrap { display: none; } }
 
         @media (max-width: 640px) {
           .hero-main { padding: 20px 20px; }
