@@ -11,6 +11,13 @@ const INTRO = `I promised this in public and haven't shown it yet. That's on me.
 
 const TOPICS = ["Transformers", "Embeddings", "RAG", "Agents", "MCP", "LoRA", "Evals"];
 
+const TERMINAL = [
+  "> authentication complete",
+  "> user: mehran khan",
+  "> role: full-stack · ai engineer",
+  "> status: building",
+];
+
 const MANIFESTO = ["You get one life. It ends either way.", "I'm not spending mine at half strength."];
 
 function Gear({ size, reverse, duration }: { size: number; reverse?: boolean; duration: number }) {
@@ -419,7 +426,7 @@ export default function Home() {
           zIndex: 2,
           flexShrink: 0,
           height: "min(78vh, 560px)",
-          aspectRatio: "4 / 5",
+          aspectRatio: "1 / 1",
           opacity: stage >= 2 ? 1 : 0,
           transform: stage >= 2 ? "translateX(0)" : "translateX(30px)",
           transition: "opacity 1s ease 0.4s, transform 1s cubic-bezier(.22,.68,0,1.1) 0.4s",
@@ -433,12 +440,45 @@ export default function Home() {
             width: "100%",
             height: "100%",
             objectFit: "cover",
-            objectPosition: "center top",
             borderRadius: 20,
-            border: "1px solid rgba(251,191,36,0.35)",
-            boxShadow: "0 0 60px -10px rgba(245,158,11,0.45), 0 0 0 6px rgba(245,158,11,0.05)",
+            filter: "saturate(1.1) contrast(1.05)",
+            WebkitMaskImage: "linear-gradient(to right, transparent 0%, #000 12%)",
+            maskImage: "linear-gradient(to right, transparent 0%, #000 12%)",
           }}
         />
+
+        {/* floating status chips */}
+        {stage >= 3 && (
+          <>
+            <div className="chip" style={{ top: "6%", right: "4%", animationDelay: "0.2s" }}>
+              <span className="chip-dot" /> agents: 3 running
+            </div>
+            <div className="chip" style={{ top: "44%", left: "3%", animationDelay: "1s" }}>
+              <span className="chip-dot" /> model: training…
+            </div>
+          </>
+        )}
+
+        {/* terminal messages */}
+        {stage >= 3 && (
+          <div className="term">
+            {TERMINAL.map((line, i) => (
+              <div
+                key={line}
+                className="term-line"
+                style={
+                  {
+                    "--w": `${line.length}ch`,
+                    animation: `typing ${line.length * 0.045}s steps(${line.length}) ${0.8 + i * 1.5}s both`,
+                  } as React.CSSProperties
+                }
+              >
+                {line}
+                {i === TERMINAL.length - 1 && <span className="caret" />}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       <style>{`
@@ -493,8 +533,47 @@ export default function Home() {
         @media (max-height: 640px) { .topics { display: none; } }
         @media (max-height: 520px) { .manifesto { display: none; } }
 
+        @keyframes typing { from { width: 0; } to { width: var(--w); } }
+        @keyframes caretBlink { 50% { opacity: 0; } }
+        @keyframes chipIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes chipFloat { 0%,100% { margin-top: 0; } 50% { margin-top: -6px; } }
+        .term {
+          position: absolute;
+          left: 4%;
+          bottom: 5%;
+          padding: 10px 14px;
+          border-radius: 8px;
+          background: rgba(3, 12, 8, 0.72);
+          border: 1px solid rgba(52, 211, 153, 0.35);
+          box-shadow: 0 0 24px -6px rgba(52, 211, 153, 0.5);
+          backdrop-filter: blur(4px);
+          font-family: 'JetBrains Mono', monospace;
+          font-size: clamp(10px, 1.5vh, 12.5px);
+          color: #6ee7b7;
+          text-shadow: 0 0 8px rgba(52, 211, 153, 0.6);
+          text-align: left;
+        }
+        .term-line { overflow: hidden; white-space: nowrap; line-height: 1.7; }
+        .term-line:last-child { color: #fde68a; text-shadow: 0 0 8px rgba(245, 158, 11, 0.7); }
+        .caret { display: inline-block; width: 7px; height: 1em; margin-left: 3px; vertical-align: -2px; background: #fbbf24; animation: caretBlink 1s steps(1) infinite; }
+        .chip {
+          position: absolute;
+          display: flex; align-items: center; gap: 7px;
+          padding: 4px 10px;
+          border-radius: 6px;
+          background: rgba(3, 12, 8, 0.7);
+          border: 1px solid rgba(52, 211, 153, 0.4);
+          font-family: 'JetBrains Mono', monospace;
+          font-size: clamp(9.5px, 1.4vh, 11px);
+          letter-spacing: 0.06em;
+          color: #6ee7b7;
+          backdrop-filter: blur(4px);
+          animation: chipIn 0.7s ease both, chipFloat 5s ease-in-out 1s infinite;
+        }
+        .chip-dot { width: 6px; height: 6px; border-radius: 50%; background: #34d399; box-shadow: 0 0 8px #34d399; }
+
         /* hide the photo on narrow screens so the content still fits */
-        @media (max-width: 900px) { .photo-wrap { display: none; } }
+        @media (max-width: 1000px) { .photo-wrap { display: none; } }
 
         @media (max-width: 640px) {
           .hero-main { padding: 20px 20px; }
