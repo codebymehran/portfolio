@@ -22,8 +22,8 @@ const MANIFESTO = ["You get one life. It ends either way.", "I'm not spending mi
 
 // --- Note to employers (the brag) ---
 const BRAG_TITLE = "Note to employers who somehow found this page";
-const BRAG_OFFER = "$100k offer";
-const BRAG_REPLY = "Flattering. Genuinely. But that number is pocket change to where I'm headed. I'm one SaaS product away.";
+const BRAG_OFFER = "Job offer";
+const BRAG_REPLY = "Considered. Rejected. I'm not looking for a raise, I'm looking for a market.";
 const BRAG_URDU = "Hamara muqabla tufanon say hay, lehrein kion shor macha rahi hein.";
 const BRAG_EN = "My fight is with the storms. Why are the little waves making so much noise?";
 
