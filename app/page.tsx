@@ -20,6 +20,13 @@ const TERMINAL = [
 
 const MANIFESTO = ["You get one life. It ends either way.", "I'm not spending mine at half strength."];
 
+// --- Note to employers (the brag) ---
+const BRAG_TITLE = "Note to employers who somehow found this page";
+const BRAG_OFFER = "$100k offer";
+const BRAG_REPLY = "Flattering. Genuinely. But that number is pocket change to where I'm headed. I'm one SaaS product away.";
+const BRAG_URDU = "Hamara muqabla tufanon say hay, lehrein kion shor macha rahi hein.";
+const BRAG_EN = "My fight is with the storms. Why are the little waves making so much noise?";
+
 function Gear({ size, reverse, duration }: { size: number; reverse?: boolean; duration: number }) {
   return (
     <svg
@@ -113,7 +120,7 @@ export default function Home() {
     const t1 = setTimeout(() => setStage(1), 250);   // badge
     const t2 = setTimeout(() => setStage(2), 700);   // headline
     const t3 = setTimeout(() => setStage(3), 1700);  // intro, topics, manifesto
-    const t4 = setTimeout(() => setStage(4), 3000);  // stay tuned, quote, footer
+    const t4 = setTimeout(() => setStage(4), 3000);  // stay tuned, brag, footer
     return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); clearTimeout(t4); };
   }, []);
 
@@ -375,6 +382,39 @@ export default function Home() {
           {FOLLOW_LABEL} →
         </a>
 
+        {/* note to employers: the flex */}
+        <aside
+          className="brag"
+          style={{
+            width: "100%",
+            maxWidth: 540,
+            textAlign: "left",
+            padding: "clamp(8px, 1.5vh, 14px) 16px",
+            borderRadius: 10,
+            border: "1px dashed rgba(52,211,153,0.45)",
+            background: "rgba(3,12,8,0.6)",
+            backdropFilter: "blur(4px)",
+            opacity: stage >= 4 ? 1 : 0,
+            transform: stage >= 4 ? "translateY(0)" : "translateY(10px)",
+            transition: "opacity 0.8s ease 2.2s, transform 0.8s ease 2.2s",
+          }}
+        >
+          <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "clamp(9.5px, 1.4vh, 10.5px)", letterSpacing: "0.08em", color: "#6ee7b7", marginBottom: 6 }}>
+            // {BRAG_TITLE}
+          </div>
+
+          <p style={{ margin: 0, fontFamily: "'Cormorant Garamond', Georgia, serif", fontStyle: "italic", fontWeight: 600, fontSize: "clamp(15px, 2.3vh, 20px)", lineHeight: 1.25, color: "#fde68a" }}>
+            “{BRAG_URDU}”
+          </p>
+          <p style={{ margin: "2px 0 8px", fontFamily: "'Instrument Sans', system-ui, sans-serif", fontSize: "clamp(10.5px, 1.5vh, 12px)", color: "rgba(255,249,238,0.55)" }}>
+            {BRAG_EN}
+          </p>
+
+          <p style={{ margin: 0, fontFamily: "'Instrument Sans', system-ui, sans-serif", fontSize: "clamp(11.5px, 1.7vh, 13.5px)", lineHeight: 1.5, color: "rgba(255,249,238,0.88)" }}>
+            <span className={`strike ${stage >= 4 ? "on" : ""}`}>{BRAG_OFFER}</span> {BRAG_REPLY}
+          </p>
+        </aside>
+
         {/* quote */}
         <p
           className="quote"
@@ -528,10 +568,25 @@ export default function Home() {
 
         .hero-main { padding: 24px 32px; }
 
-        /* keep everything on one screen: drop the least important pieces on short screens */
-        @media (max-height: 760px) { .quote { display: none; } }
-        @media (max-height: 640px) { .topics { display: none; } }
-        @media (max-height: 520px) { .manifesto { display: none; } }
+        /* the "$100k offer" gets crossed out after the card appears */
+        .strike { position: relative; display: inline-block; font-weight: 600; color: #fde68a; }
+        .strike::after {
+          content: "";
+          position: absolute;
+          left: -2px; top: 52%;
+          height: 2px; width: 0;
+          background: #f87171;
+          box-shadow: 0 0 8px rgba(248,113,113,0.8);
+          transition: width 0.5s ease 3.4s;
+        }
+        .strike.on::after { width: calc(100% + 4px); }
+
+        /* keep everything on one screen: drop the least important pieces on short screens.
+           The brag card replaces the Bukowski quote on mid-height screens. */
+        @media (max-height: 900px) { .quote { display: none; } }
+        @media (max-height: 820px) { .topics { display: none; } }
+        @media (max-height: 740px) { .manifesto { display: none; } }
+        @media (max-height: 560px) { .brag { display: none; } }
 
         @keyframes typing { from { width: 0; } to { width: var(--w); } }
         @keyframes caretBlink { 50% { opacity: 0; } }
