@@ -11,14 +11,14 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: 'Mehran Khan - Coming Soon',
-  description: 'Building the future, one line at a time. Something amazing is coming soon.',
+  description: "Full-stack · AI engineer · LLM developer. Something is being built.",
   keywords: ['Mehran Khan', 'developer', 'coming soon', 'portfolio'],
   authors: [{ name: 'Mehran Khan' }],
   creator: 'Mehran Khan',
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    title: 'Mehran Khan - Coming Soon',
+    title: 'Mehran Khan',
     description: 'Building the future, one line at a time. Something amazing is coming soon.',
     siteName: 'Mehran Khan',
   },
@@ -32,6 +32,7 @@ export const metadata: Metadata = {
     follow: true,
   },
 };
+
 
 export const viewport: Viewport = {
   width: 'device-width',
