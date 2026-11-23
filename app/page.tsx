@@ -107,31 +107,60 @@ const fadeIn = (audio: HTMLAudioElement, target = 0.3) => {
 
 function MusicToggle() {
   const audioRef = useRef<HTMLAudioElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
   const [playing, setPlaying] = useState(false);
+
+  const start = async (): Promise<boolean> => {
+    const audio = audioRef.current;
+    if (!audio || !audio.paused) return false;
+    try {
+      audio.volume = 0;
+      await audio.play();
+      fadeIn(audio);
+      setPlaying(true);
+      return true;
+    } catch {
+      return false; // browser blocked it
+    }
+  };
+
+  // try autoplay on load, fall back to the first user interaction
+  useEffect(() => {
+    const events = ["click", "keydown", "touchend"];
+
+    const cleanup = () =>
+      events.forEach((e) => window.removeEventListener(e, onFirst));
+
+    const onFirst = (e: Event) => {
+      cleanup();
+      // if they clicked the button itself, let the button handle it
+      if (buttonRef.current?.contains(e.target as Node)) return;
+      start();
+    };
+
+    start().then((ok) => {
+      if (!ok) events.forEach((e) => window.addEventListener(e, onFirst));
+    });
+
+    return cleanup;
+  }, []);
 
   const toggle = async () => {
     const audio = audioRef.current;
     if (!audio) return;
-
     if (playing) {
       audio.pause();
       setPlaying(false);
     } else {
-      try {
-        audio.volume = 0;
-        await audio.play();
-        fadeIn(audio);
-        setPlaying(true);
-      } catch {
-        // browser refused to play
-      }
+      await start();
     }
   };
 
   return (
     <>
-      <audio ref={audioRef} src="/theme.mp3" loop preload="none" />
+      <audio ref={audioRef} src="/theme.mp3" loop preload="auto" />
       <button
+        ref={buttonRef}
         onClick={toggle}
         aria-label={playing ? "Turn music off" : "Turn music on"}
         style={{
