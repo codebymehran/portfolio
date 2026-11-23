@@ -196,6 +196,7 @@ export default function Home() {
       }}
     >
       <Starfield />
+      <MusicToggle />
 
       {/* ambient glow orbs */}
       <div style={{ position: "absolute", inset: 0, pointerEvents: "none", transform: "translate(calc(var(--px, 0) * -45px), calc(var(--py, 0) * -45px))", transition: "transform 0.7s ease-out" }}>
