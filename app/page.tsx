@@ -98,7 +98,63 @@ function Starfield() {
   }, []);
   return <canvas ref={ref} style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />;
 }
+const fadeIn = (audio: HTMLAudioElement, target = 0.3) => {
+  const id = setInterval(() => {
+    audio.volume = Math.min(audio.volume + 0.02, target);
+    if (audio.volume >= target) clearInterval(id);
+  }, 100);
+};
 
+function MusicToggle() {
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const [playing, setPlaying] = useState(false);
+
+  const toggle = async () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    if (playing) {
+      audio.pause();
+      setPlaying(false);
+    } else {
+      try {
+        audio.volume = 0;
+        await audio.play();
+        fadeIn(audio);
+        setPlaying(true);
+      } catch {
+        // browser refused to play
+      }
+    }
+  };
+
+  return (
+    <>
+      <audio ref={audioRef} src="/theme.mp3" loop preload="none" />
+      <button
+        onClick={toggle}
+        aria-label={playing ? "Turn music off" : "Turn music on"}
+        style={{
+          position: "absolute",
+          top: 20,
+          right: 20,
+          zIndex: 5,
+          fontFamily: "'JetBrains Mono', monospace",
+          fontSize: 11,
+          letterSpacing: "0.1em",
+          color: "#6ee7b7",
+          padding: "5px 12px",
+          borderRadius: 6,
+          border: "1px solid rgba(52,211,153,0.4)",
+          background: "rgba(3,12,8,0.7)",
+          cursor: "pointer",
+        }}
+      >
+        ♪ {playing ? "sound: on" : "sound: off"}
+      </button>
+    </>
+  );
+}
 export default function Home() {
   const [stage, setStage] = useState(0);
   const mainRef = useRef<HTMLElement>(null);
