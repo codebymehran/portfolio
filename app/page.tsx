@@ -140,10 +140,19 @@ const fadeIn = (audio: HTMLAudioElement, target = 0.3) => {
 
 function MusicToggle() {
   const audioRef = useRef<HTMLAudioElement>(null);
-  const buttonRef = useRef<HTMLButtonElement>(null);
+  const wrapRef = useRef<HTMLDivElement>(null); // wraps all 3 buttons
   const playlistRef = useRef<string[]>([]); // songs found in /public
   const currentRef = useRef(-1); // index of the loaded song (-1 = none yet)
+  const historyRef = useRef<number[]>([]); // songs already played, for "prev"
   const [playing, setPlaying] = useState(false);
+
+  // find the songs once, then reuse the result
+  const ensurePlaylist = async (): Promise<boolean> => {
+    if (playlistRef.current.length === 0) {
+      playlistRef.current = await loadPlaylist();
+    }
+    return playlistRef.current.length > 0;
+  };
 
   const loadSong = (index: number) => {
     const audio = audioRef.current;
@@ -152,16 +161,52 @@ function MusicToggle() {
     audio.src = playlistRef.current[index];
   };
 
+  // play whatever is loaded right now
+  const playCurrent = async (): Promise<boolean> => {
+    const audio = audioRef.current;
+    if (!audio) return false;
+    try {
+      audio.volume = 0.3;
+      await audio.play();
+      setPlaying(true);
+      return true;
+    } catch {
+      setPlaying(false);
+      return false;
+    }
+  };
+
+  // go to a different random song (also runs automatically when a song ends)
+  const next = async () => {
+    if (!(await ensurePlaylist())) return;
+    if (currentRef.current !== -1) historyRef.current.push(currentRef.current);
+    loadSong(pickRandom(currentRef.current, playlistRef.current.length));
+    await playCurrent();
+  };
+
+  // go back to the song before this one (or restart if we're past 3 seconds in)
+  const previous = async () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    if (!(await ensurePlaylist())) return;
+    if (currentRef.current === -1) {
+      loadSong(pickRandom(-1, playlistRef.current.length));
+    }
+    if (audio.currentTime > 3 || historyRef.current.length === 0) {
+      audio.currentTime = 0;
+      if (audio.paused) await playCurrent();
+      return;
+    }
+    loadSong(historyRef.current.pop() as number);
+    await playCurrent();
+  };
+
+  // first play: pick a random song and fade the volume in
   const start = async (): Promise<boolean> => {
     const audio = audioRef.current;
     if (!audio || !audio.paused) return false;
     try {
-      // first time only: find all the songs
-      if (playlistRef.current.length === 0) {
-        playlistRef.current = await loadPlaylist();
-      }
-      if (playlistRef.current.length === 0) return false; // no songs found
-
+      if (!(await ensurePlaylist())) return false; // no songs found
       if (currentRef.current === -1) {
         loadSong(pickRandom(-1, playlistRef.current.length));
       }
@@ -175,19 +220,6 @@ function MusicToggle() {
     }
   };
 
-  // when a song ends, load a different random one and play it
-  const handleEnded = async () => {
-    const audio = audioRef.current;
-    if (!audio) return;
-    loadSong(pickRandom(currentRef.current, playlistRef.current.length));
-    try {
-      audio.volume = 0.3;
-      await audio.play();
-    } catch {
-      setPlaying(false);
-    }
-  };
-
   // try autoplay on load, fall back to the first user interaction
   useEffect(() => {
     const events = ["click", "keydown", "touchend"];
@@ -197,8 +229,8 @@ function MusicToggle() {
 
     const onFirst = (e: Event) => {
       cleanup();
-      // if they clicked the button itself, let the button handle it
-      if (buttonRef.current?.contains(e.target as Node)) return;
+      // if they clicked one of our buttons, let that button handle it
+      if (wrapRef.current?.contains(e.target as Node)) return;
       start();
     };
 
@@ -220,32 +252,40 @@ function MusicToggle() {
     }
   };
 
+  const btn: React.CSSProperties = {
+    fontFamily: "'JetBrains Mono', monospace",
+    fontSize: 11,
+    letterSpacing: "0.1em",
+    color: "#6ee7b7",
+    padding: "5px 12px",
+    borderRadius: 6,
+    border: "1px solid rgba(52,211,153,0.4)",
+    background: "rgba(3,12,8,0.7)",
+    cursor: "pointer",
+  };
+
   return (
     <>
       {/* no src and no loop: src is set from code, and loop would stop onEnded from firing */}
-      <audio ref={audioRef} preload="auto" onEnded={handleEnded} />
-      <button
-        ref={buttonRef}
-        onClick={toggle}
-        aria-label={playing ? "Turn music off" : "Turn music on"}
-        style={{
-          position: "absolute",
-          top: 20,
-          right: 20,
-          zIndex: 5,
-          fontFamily: "'JetBrains Mono', monospace",
-          fontSize: 11,
-          letterSpacing: "0.1em",
-          color: "#6ee7b7",
-          padding: "5px 12px",
-          borderRadius: 6,
-          border: "1px solid rgba(52,211,153,0.4)",
-          background: "rgba(3,12,8,0.7)",
-          cursor: "pointer",
-        }}
+      <audio ref={audioRef} preload="auto" onEnded={next} />
+      <div
+        ref={wrapRef}
+        style={{ position: "absolute", top: 20, right: 20, zIndex: 5, display: "flex", gap: 6 }}
       >
-        ♪ {playing ? "sound: on" : "sound: off"}
-      </button>
+        <button onClick={previous} aria-label="Previous song" style={btn}>
+          ‹ prev
+        </button>
+        <button
+          onClick={toggle}
+          aria-label={playing ? "Turn music off" : "Turn music on"}
+          style={btn}
+        >
+          ♪ {playing ? "sound: on" : "sound: off"}
+        </button>
+        <button onClick={next} aria-label="Next song" style={btn}>
+          next ›
+        </button>
+      </div>
     </>
   );
 }
