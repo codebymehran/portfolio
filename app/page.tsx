@@ -11,6 +11,37 @@ const INTRO = `I promised this in public and haven't shown it yet. That's on me.
 
 const TOPICS = ["Transformers", "Embeddings", "RAG", "Agents", "MCP", "LoRA", "Evals"];
 
+// --- Music playlist: drop theme4.mp3, theme5.mp3 ... into /public and they get picked up ---
+const MAX_SONGS = 50; // safety limit so the search always stops
+
+// theme.mp3, theme2.mp3, theme3.mp3 ... (the first one has no number)
+const songPath = (n: number) => (n === 1 ? "/theme.mp3" : `/theme${n}.mp3`);
+
+// checks which songs exist in /public and stops at the first missing one
+const loadPlaylist = async (): Promise<string[]> => {
+  const found: string[] = [];
+  for (let n = 1; n <= MAX_SONGS; n++) {
+    try {
+      const res = await fetch(songPath(n), { method: "HEAD" });
+      if (!res.ok) break; // file doesn't exist, so we're done
+      found.push(songPath(n));
+    } catch {
+      break;
+    }
+  }
+  return found;
+};
+
+// pick a random index out of `length`, never the same one twice in a row
+const pickRandom = (exclude: number, length: number): number => {
+  if (length <= 1) return 0;
+  let next = exclude;
+  while (next === exclude) {
+    next = Math.floor(Math.random() * length);
+  }
+  return next;
+};
+
 const TERMINAL = [
   "> authentication complete",
   "> user: mehran khan",
@@ -21,9 +52,10 @@ const TERMINAL = [
 const MANIFESTO = ["You get one life. It ends either way.", "I'm not spending mine at half strength."];
 
 // --- Note to employers (the brag) ---
-const BRAG_TITLE = "Note to employers who somehow found this page";
-const BRAG_OFFER = "Job offer";
-const BRAG_REPLY = "Considered. Rejected. I'm not looking for a raise, I'm looking for a market.";
+const BRAG_TITLE = "Recruiters, hiring managers, and one very persistent LinkedIn bot";
+const BRAG_OFFER = "Six-figure offer";
+const BRAG_REPLY = "Flattering. Still no. I don't want a seat at your table, I'm building my own.";
+const BRAG_STAMP = "Nice try";
 const BRAG_URDU = "Hamara muqabla tufanon say hay, lehrein kion shor macha rahi hein.";
 const BRAG_EN = "My fight is with the storms. Why are the little waves making so much noise?";
 
@@ -98,6 +130,7 @@ function Starfield() {
   }, []);
   return <canvas ref={ref} style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />;
 }
+
 const fadeIn = (audio: HTMLAudioElement, target = 0.3) => {
   const id = setInterval(() => {
     audio.volume = Math.min(audio.volume + 0.02, target);
@@ -108,12 +141,30 @@ const fadeIn = (audio: HTMLAudioElement, target = 0.3) => {
 function MusicToggle() {
   const audioRef = useRef<HTMLAudioElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const playlistRef = useRef<string[]>([]); // songs found in /public
+  const currentRef = useRef(-1); // index of the loaded song (-1 = none yet)
   const [playing, setPlaying] = useState(false);
+
+  const loadSong = (index: number) => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    currentRef.current = index;
+    audio.src = playlistRef.current[index];
+  };
 
   const start = async (): Promise<boolean> => {
     const audio = audioRef.current;
     if (!audio || !audio.paused) return false;
     try {
+      // first time only: find all the songs
+      if (playlistRef.current.length === 0) {
+        playlistRef.current = await loadPlaylist();
+      }
+      if (playlistRef.current.length === 0) return false; // no songs found
+
+      if (currentRef.current === -1) {
+        loadSong(pickRandom(-1, playlistRef.current.length));
+      }
       audio.volume = 0;
       await audio.play();
       fadeIn(audio);
@@ -121,6 +172,19 @@ function MusicToggle() {
       return true;
     } catch {
       return false; // browser blocked it
+    }
+  };
+
+  // when a song ends, load a different random one and play it
+  const handleEnded = async () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    loadSong(pickRandom(currentRef.current, playlistRef.current.length));
+    try {
+      audio.volume = 0.3;
+      await audio.play();
+    } catch {
+      setPlaying(false);
     }
   };
 
@@ -158,7 +222,8 @@ function MusicToggle() {
 
   return (
     <>
-      <audio ref={audioRef} src="/theme.mp3" loop preload="auto" />
+      {/* no src and no loop: src is set from code, and loop would stop onEnded from firing */}
+      <audio ref={audioRef} preload="auto" onEnded={handleEnded} />
       <button
         ref={buttonRef}
         onClick={toggle}
@@ -184,6 +249,7 @@ function MusicToggle() {
     </>
   );
 }
+
 export default function Home() {
   const [stage, setStage] = useState(0);
   const mainRef = useRef<HTMLElement>(null);
@@ -472,6 +538,8 @@ export default function Home() {
         <aside
           className="brag"
           style={{
+            position: "relative",
+            overflow: "hidden",
             width: "100%",
             maxWidth: 540,
             textAlign: "left",
@@ -489,16 +557,22 @@ export default function Home() {
             // {BRAG_TITLE}
           </div>
 
-          <p style={{ margin: 0, fontFamily: "'Cormorant Garamond', Georgia, serif", fontStyle: "italic", fontWeight: 600, fontSize: "clamp(15px, 2.3vh, 20px)", lineHeight: 1.25, color: "#fde68a" }}>
-            “{BRAG_URDU}”
-          </p>
-          <p style={{ margin: "2px 0 8px", fontFamily: "'Instrument Sans', system-ui, sans-serif", fontSize: "clamp(10.5px, 1.5vh, 12px)", color: "rgba(255,249,238,0.55)" }}>
-            {BRAG_EN}
-          </p>
+          {/* the stamp slams down after the offer is crossed out */}
+          <span className={`stamp ${stage >= 4 ? "on" : ""}`}>{BRAG_STAMP}</span>
 
           <p style={{ margin: 0, fontFamily: "'Instrument Sans', system-ui, sans-serif", fontSize: "clamp(11.5px, 1.7vh, 13.5px)", lineHeight: 1.5, color: "rgba(255,249,238,0.88)" }}>
             <span className={`strike ${stage >= 4 ? "on" : ""}`}>{BRAG_OFFER}</span> {BRAG_REPLY}
           </p>
+
+          <p className="shimmer" style={{ margin: "8px 0 0", fontFamily: "'Cormorant Garamond', Georgia, serif", fontStyle: "italic", fontWeight: 600, fontSize: "clamp(15px, 2.3vh, 20px)", lineHeight: 1.25 }}>
+            “{BRAG_URDU}”
+          </p>
+          <p style={{ margin: "2px 0 0", fontFamily: "'Instrument Sans', system-ui, sans-serif", fontSize: "clamp(10.5px, 1.5vh, 12px)", color: "rgba(255,249,238,0.55)" }}>
+            {BRAG_EN}
+          </p>
+
+          {/* moving waves along the bottom edge */}
+          <div className="waves" />
         </aside>
 
         {/* quote */}
@@ -666,6 +740,42 @@ export default function Home() {
           transition: width 0.5s ease 3.4s;
         }
         .strike.on::after { width: calc(100% + 4px); }
+
+        /* red stamp */
+        .stamp {
+          position: absolute;
+          right: 14px;
+          top: 28px;
+          transform: rotate(-9deg);
+          font-family: 'JetBrains Mono', monospace;
+          font-size: clamp(11px, 1.8vh, 14px);
+          font-weight: 600;
+          letter-spacing: 0.22em;
+          text-transform: uppercase;
+          color: #f87171;
+          padding: 2px 10px;
+          border: 2px solid #f87171;
+          border-radius: 4px;
+          text-shadow: 0 0 8px rgba(248,113,113,0.6);
+          box-shadow: 0 0 14px rgba(248,113,113,0.45), inset 0 0 8px rgba(248,113,113,0.2);
+          pointer-events: none;
+        }
+        .stamp.on { animation: stampIn 0.45s cubic-bezier(.2,1.5,.4,1) 3.9s backwards; }
+        @keyframes stampIn {
+          from { opacity: 0; transform: rotate(-9deg) scale(2.4); }
+          to   { opacity: 1; transform: rotate(-9deg) scale(1); }
+        }
+
+        /* waves along the bottom of the card */
+        .waves {
+          height: 10px;
+          margin: 10px -16px -10px;
+          opacity: 0.6;
+          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='10' viewBox='0 0 40 10'%3E%3Cpath d='M0 5 Q10 0 20 5 T40 5' fill='none' stroke='%2334d399' stroke-width='1.5'/%3E%3C/svg%3E");
+          background-repeat: repeat-x;
+          animation: waveMove 3s linear infinite;
+        }
+        @keyframes waveMove { to { background-position-x: 40px; } }
 
         /* keep everything on one screen: drop the least important pieces on short screens.
            The brag card replaces the Bukowski quote on mid-height screens. */
